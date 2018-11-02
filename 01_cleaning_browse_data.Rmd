@@ -45,16 +45,6 @@ head(browse_sub)
 ```
 
 
-
-```{r}
-str(browse_sub$roadtype1)
-str(browse_sub$bros10)
-str(browse_sub$bbirch10)
-str(browse_sub$bpine10)
-str(browse_sub$distroad1)
-
-```
-
 ##### Explore NAs
 ```{r}
 nrow((browse_sub))
@@ -69,6 +59,7 @@ anyNA(browse_sub$bpine9)
 anyNA(browse_sub$roadtype1)
 anyNA(browse_sub$roadtype2)
 anyNA(browse_sub$roadtype3)
+anyNA(browse_sub$roadtype3)
 
 
 mean(is.na(browse_sub$bros10))
@@ -81,13 +72,22 @@ sum(is.na(browse_sub$bros10[is.na(browse_sub$bros10) & browse_sub$year > 2010]))
 ```
 
 ```{r}
-browse_sub$bros10 <- as.numeric(as.character(browse_sub$bros10))
-browse_sub$bbirch10 <- as.numeric(as.character(browse_sub$bbirch10))
-browse_sub$bpine10 <- as.numeric(as.character(browse_sub$bpine10))
 
 browse_sub$bros9 <- as.numeric(as.character(browse_sub$bros9))
 browse_sub$bdec9 <- as.numeric(as.character(browse_sub$bdec9))
 browse_sub$bpine9 <- as.numeric(as.character(browse_sub$bpine9))
+
+browse_sub$bros10 <- as.numeric(as.character(browse_sub$bros10))
+browse_sub$bbirch10 <- as.numeric(as.character(browse_sub$bbirch10))
+browse_sub$bpine10 <- as.numeric(as.character(browse_sub$bpine10))
+
+browse_sub$ros.ha9 <- as.numeric(as.character(browse_sub$ros.ha9))
+browse_sub$dec.ha9 <- as.numeric(as.character(browse_sub$dec.ha9))
+browse_sub$pine.ha9 <- as.numeric(as.character(browse_sub$pine.ha9))
+
+browse_sub$ros.ha10 <- as.numeric(as.character(browse_sub$ros.ha10))
+browse_sub$birch.ha10 <- as.numeric(as.character(browse_sub$birch.ha10))
+browse_sub$pine.ha10 <- as.numeric(as.character(browse_sub$pine.ha10))
 
 ```
 
