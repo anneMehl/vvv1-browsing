@@ -18,7 +18,7 @@ save(browse, file = "browse.rda")
 ```
 
 ```{r}
-load("processdata/browse.rda")
+# load("processdata/browse.rda")
 load("processdata/browse_sub.rda")
 ```
 
