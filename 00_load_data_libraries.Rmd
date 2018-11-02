@@ -1,0 +1,29 @@
+---
+title: "test_browsing"
+author: "anne"
+date: "31 oktober 2018"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+browse <- read.csv2("C:/Users/anne.mehlhoop/OneDrive - NINA/vei-veggi-vilt/Paper_1_browsing/analysis/rawdata/Beitetrykk_og_forstyrrelse.csv")
+save(browse, file = "browse.rda")
+
+```
+
+```{r}
+load("processdata/browse.rda")
+load("processdata/browse_sub.rda")
+```
+
+
+```{r}
+library("ggplot2", lib.loc="~/R/win-library/3.4")
+```
+

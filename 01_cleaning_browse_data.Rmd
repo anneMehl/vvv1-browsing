@@ -1,0 +1,143 @@
+---
+title: "01_cleaning_browse_data"
+author: "anne"
+date: "31 oktober 2018"
+output: word_document
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+load("processdata/browse.rda")
+load("processdata/browse_sub.rda")
+```
+
+
+```{r}
+str(browse)
+head(browse)
+
+```
+
+
+```{r}
+browse_sub  <- browse[,c(1,4,7:10,12:14,27:29, 31:45,49,51,53,59,62:68,70,72:83,85:88,90:91,99:107)]
+write.csv(browse_sub, file = "browse_sub.csv")
+
+browse_sub <- read.csv2("C:/Users/anne.mehlhoop/OneDrive - NINA/vei-veggi-vilt/Paper_1_browsing/analysis/rawdata/browse_sub.csv", sep = ",")
+save(browse_sub, file = "browse_sub.rda")
+
+
+load("processdata/browse_sub.rda")
+
+```
+
+
+```{r}
+str(browse_sub)
+head(browse_sub)
+
+```
+
+
+
+```{r}
+str(browse_sub$roadtype1)
+str(browse_sub$bros10)
+str(browse_sub$bbirch10)
+str(browse_sub$bpine10)
+str(browse_sub$distroad1)
+
+```
+
+##### Explore NAs
+```{r}
+nrow((browse_sub))
+nrow(na.omit(browse_sub))
+  
+anyNA(browse_sub$bros10)
+anyNA(browse_sub$bros9)
+anyNA(browse_sub$birch10)
+anyNA(browse_sub$bdec9)
+anyNA(browse_sub$bpine10)
+anyNA(browse_sub$bpine9)
+anyNA(browse_sub$roadtype1)
+anyNA(browse_sub$roadtype2)
+anyNA(browse_sub$roadtype3)
+
+
+mean(is.na(browse_sub$bros10))
+mean(is.na(browse_sub$bros9))
+sum(is.na(browse_sub$bros10))
+sum(is.na(browse_sub$bros9))
+
+sum(is.na(browse_sub$bros10[is.na(browse_sub$bros10) & browse_sub$year > 2010]))
+
+```
+
+```{r}
+browse_sub$bros10 <- as.numeric(as.character(browse_sub$bros10))
+browse_sub$bbirch10 <- as.numeric(as.character(browse_sub$bbirch10))
+browse_sub$bpine10 <- as.numeric(as.character(browse_sub$bpine10))
+
+browse_sub$bros9 <- as.numeric(as.character(browse_sub$bros9))
+browse_sub$bdec9 <- as.numeric(as.character(browse_sub$bdec9))
+browse_sub$bpine9 <- as.numeric(as.character(browse_sub$bpine9))
+
+```
+
+
+```{r}
+levels(browse_sub$roadtype1)
+levels(browse_sub$roadtype2)
+levels(browse_sub$roadtype3)
+levels(browse_sub$skogkategori)
+levels(browse_sub$edge)
+```
+
+```{r}
+table(browse_sub$roadtype1)
+table(browse_sub$roadtype2)
+table(browse_sub$roadtype3)
+
+```
+
+
+```{r}
+hist()
+```
+
+
+
+```{r}
+ggplot(data = browse_sub, aes(roadtype1)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse_sub, aes(roadtype2)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse_sub, aes(roadtype3)) +
+  geom_bar()+
+  theme_classic()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+

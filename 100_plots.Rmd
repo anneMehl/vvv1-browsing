@@ -1,0 +1,146 @@
+---
+title: "plots"
+author: "anne"
+date: "2 november 2018"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+#### get-to-know-the-data plots
+# ROS
+```{r}
+# 10th takst
+ggplot(data = browse_sub, aes(distroad1, bros10, fill = distroad1)) +
+            geom_smooth()+
+            labs(x = "Distance to closest public road (m)", y = "Browsing pressure on ROS %")+
+            theme_classic()
+
+ggplot(data = browse_sub, aes(distroad2, bros10, fill = distroad2)) +
+            geom_smooth()+
+            labs(x = "Distance to closest public and private roads (m)", y = "Browsing pressure on ROS %")+
+            theme_classic()
+
+ggplot(data = browse_sub, aes(distroad3, bros10, fill = distroad3)) +
+            geom_smooth()+
+            labs(x = "Distance to closest public, private and forest roads (m)", y = "Browsing pressure on ROS %")+
+            theme_classic()
+
+# 9th takst
+ggplot(data = browse_sub, aes(distroad1, bros9, fill = distroad1)) +
+            geom_smooth()+
+            labs(x = "Distance to closest public road (m)", y = "Browsing pressure on ROS %")+
+            theme_classic()
+
+ggplot(data = browse_sub, aes(distroad2, bros9, fill = distroad2)) +
+            geom_smooth()+
+            labs(x = "Distance to closest public and private roads (m)", y = "Browsing pressure on ROS %")+
+            theme_classic()
+
+ggplot(data = browse_sub, aes(distroad3, bros9, fill = distroad3)) +
+            geom_smooth()+
+            labs(x = "Distance to closest public, private and forest roads (m)", y = "Browsing pressure on ROS %")+
+            theme_classic()
+
+```
+# Birch
+```{r}
+# 10th takst
+ggplot(data = browse_sub, aes(distroad1, bbirch10, fill = distroad1)) +
+            geom_smooth()+
+            labs(x = "Distance to closest public road (m)", y = "Browsing pressure on birch %")+
+            theme_classic()
+
+ggplot(data = browse_sub, aes(distroad2, bbirch10, fill = distroad2)) +
+            geom_smooth()+
+            labs(x = "Distance to closest public and private roads (m)", y = "Browsing pressure on birch %")+
+            theme_classic()
+
+ggplot(data = browse_sub, aes(distroad3, bbirch10, fill = distroad3)) +
+            geom_smooth()+
+            labs(x = "Distance to closest public, private and forest roads (m)", y = "Browsing pressure on birch %")+
+            theme_classic()
+
+# 9th takst (here other deciduous)
+ggplot(data = browse_sub, aes(distroad1, bdec9, fill = distroad1)) +
+            geom_smooth()+
+            labs(x = "Distance to closest public road (m)", y = "Browsing pressure on other decisuous trees %")+
+            theme_classic()
+
+ggplot(data = browse_sub, aes(distroad2, bdec9, fill = distroad2)) +
+            geom_smooth()+
+            labs(x = "Distance to closest public and private roads (m)", y = "Browsing pressure on other decisuous trees %")+
+            theme_classic()
+
+ggplot(data = browse_sub, aes(distroad3, bdec9, fill = distroad3)) +
+            geom_smooth()+
+            labs(x = "Distance to closest public, private and forest roads (m)", y = "Browsing pressure on other decisuous trees %")+
+            theme_classic()
+
+```
+# Pine
+```{r}
+# 10th takst
+ggplot(data = browse_sub, aes(distroad1, bpine10, fill = distroad1)) +
+            geom_smooth()+
+            labs(x = "Distance to closest public road (m)", y = "Browsing pressure on pine %")+
+            theme_classic()
+
+ggplot(data = browse_sub, aes(distroad2, bpine10, fill = distroad2)) +
+            geom_smooth()+
+            labs(x = "Distance to closest public and private roads (m)", y = "Browsing pressure on pine %")+
+            theme_classic()
+
+ggplot(data = browse_sub, aes(distroad3, bpine10, fill = distroad3)) +
+            geom_smooth()+
+            labs(x = "Distance to closest public, private and forest roads (m)", y = "Browsing pressure on pine %")+
+            theme_classic()
+
+# 9th takst
+ggplot(data = browse_sub, aes(distroad1, bpine9, fill = distroad1)) +
+            geom_smooth()+
+            labs(x = "Distance to closest public road (m)", y = "Browsing pressure on pine %")+
+            theme_classic()
+
+ggplot(data = browse_sub, aes(distroad2, bpine9, fill = distroad2)) +
+            geom_smooth()+
+            labs(x = "Distance to closest public and private roads (m)", y = "Browsing pressure on pine %")+
+            theme_classic()
+
+ggplot(data = browse_sub, aes(distroad3, bpine9, fill = distroad3)) +
+            geom_smooth()+
+            labs(x = "Distance to closest public, private and forest roads (m)", y = "Browsing pressure on pine %")+
+            theme_classic()
+
+```
+
+```{r}
+ggplot(data = browse_sub, aes(distroad3, bpine9, fill = distroad3)) +
+            geom_smooth()+
+            labs(x = "Distance to closest public, private and forest roads (m)", y = "Browsing pressure on pine %")+
+            theme_classic()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -4,6 +4,11 @@
 
 # Session Data files
 .RData
+processdata/
+rawdata/
+figs/
+
+
 
 # Example code in package build process
 *-Ex.R
@@ -34,3 +39,4 @@ vignettes/*.pdf
 
 # Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
 rsconnect/
+.Rproj.user
