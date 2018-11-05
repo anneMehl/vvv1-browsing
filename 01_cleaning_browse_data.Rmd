@@ -26,7 +26,7 @@ head(browse)
 
 
 ```{r}
-browse_sub  <- browse[,c(1,4,7:10,12:14,27:29, 31:45,49,51,53,59,62:68,70,72:83,85:88,90:91,99:107)]
+browse_sub  <- browse[,c(1,4:5,7:10,12:14,27:29, 31:45,49,51,53,59,62:68,70,72:83,85:88,90:91,99:107)]
 write.csv(browse_sub, file = "browse_sub.csv")
 
 browse_sub <- read.csv2("C:/Users/anne.mehlhoop/OneDrive - NINA/vei-veggi-vilt/Paper_1_browsing/analysis/rawdata/browse_sub.csv", sep = ",")
@@ -77,6 +77,10 @@ browse_sub$bros9 <- as.numeric(as.character(browse_sub$bros9))
 browse_sub$bdec9 <- as.numeric(as.character(browse_sub$bdec9))
 browse_sub$bpine9 <- as.numeric(as.character(browse_sub$bpine9))
 
+# browse_sub9$bros9 <- as.numeric(as.character(browse_sub9$bros9))
+# browse_sub9$bdec9 <- as.numeric(as.character(browse_sub9$bdec9))
+# browse_sub9$bpine9 <- as.numeric(as.character(browse_sub9$bpine9))
+
 browse_sub$bros10 <- as.numeric(as.character(browse_sub$bros10))
 browse_sub$bbirch10 <- as.numeric(as.character(browse_sub$bbirch10))
 browse_sub$bpine10 <- as.numeric(as.character(browse_sub$bpine10))
@@ -88,6 +92,9 @@ browse_sub$pine.ha9 <- as.numeric(as.character(browse_sub$pine.ha9))
 browse_sub$ros.ha10 <- as.numeric(as.character(browse_sub$ros.ha10))
 browse_sub$birch.ha10 <- as.numeric(as.character(browse_sub$birch.ha10))
 browse_sub$pine.ha10 <- as.numeric(as.character(browse_sub$pine.ha10))
+browse_sub$dec.ha10 <- as.numeric(as.character(browse_sub$dec.ha10))
+
+browse_sub$bbcover <- as.numeric(as.character(browse_sub$bbcover))
 
 ```
 
@@ -108,9 +115,6 @@ table(browse_sub$roadtype3)
 ```
 
 
-```{r}
-hist()
-```
 
 
 
@@ -129,9 +133,22 @@ ggplot(data = browse_sub, aes(roadtype3)) +
 ```
 
 
+```{r}
+browse_sub$takst <- browse$takst
+```
 
 
 
+```{r}
+browse_sub910 <- split(browse_sub, browse_sub$takst)
+
+browse_sub9 <- browse_sub910[['9']]
+browse_sub10 <- browse_sub910[['10']]
+
+save(browse_sub9, file = "browse_sub9.rda")
+save(browse_sub10, file = "browse_sub10.rda")
+
+```
 
 
 
