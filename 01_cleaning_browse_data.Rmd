@@ -17,33 +17,63 @@ load("processdata/browse.rda")
 load("processdata/browse_sub.rda")
 ```
 
-
+## Cleaning data
 ```{r}
 str(browse)
 head(browse)
+names(browse)
 
 ```
 
-
+Create a subset of browse with less variables
 ```{r}
-browse_sub  <- browse[,c(1,4:5,7:10,12:14,27:29, 31:45,49,51,53,59,62:68,70,72:83,85:88,90:91,99:107)]
+browse_sub  <- browse[,c(1:5,7:10,12:25,27:45,49,51,53:54,59,62:68,70:82,87:88,96:104,109:119)]
+head(browse_sub, n = 3)
 write.csv(browse_sub, file = "browse_sub.csv")
 
-browse_sub <- read.csv2("C:/Users/anne.mehlhoop/OneDrive - NINA/vei-veggi-vilt/Paper_1_browsing/analysis/rawdata/browse_sub.csv", sep = ",")
-save(browse_sub, file = "browse_sub.rda")
+# browse_sub <- read_csv("processdata/browse_sub.csv", + na = "NA")
+# save(browse_sub, file = "browse_sub.rda")
 
 
 load("processdata/browse_sub.rda")
-
+names(browse_sub)
 ```
 
 
 ```{r}
+dim(browse_sub)
 str(browse_sub)
 head(browse_sub)
 
 ```
 
+##### change structure (numeric, integer, factor; also level names for factors)
+```{r}
+# col. names
+colnames(browse_sub)[68] <- "foresttype"
+colnames(browse_sub)[89] <- "distpubroad500"
+
+# structure
+browse_sub$pubescens.prha <- as.integer(browse_sub$pubescens.prha)
+browse_sub$rowan.prha <- as.integer(browse_sub$rowan.prha)
+browse_sub$aspen.prha <- as.integer(browse_sub$aspen.prha)
+browse_sub$spruce.prha <- as.integer(browse_sub$spruce.prha)
+browse_sub$oakprha <- as.integer(browse_sub$oakprha)
+browse_sub$pine.prha <- as.integer(browse_sub$pine.prha)
+browse_sub$other.prha <- as.integer(browse_sub$other.prha)
+
+
+# level names
+levels(browse_sub$region) <- c("Agder","Buskerud","Hedmark","Hordaland","More.Romsdal","Nord.Trondelag","Nordland","Oppland", "Ostfold.Akershus","Rogaland","Sogn.Fjordane","Sor.Trondelag","Troms","Vestfold.Telemark")
+levels(browse_sub$roadtype1) <- c("blanks","stateroad", "countyroad", "municipalityroad") 
+levels(browse_sub$roadtype2) <- c("blanks","stateroad", "countyroad", "municipalityroad","privateroad") 
+levels(browse_sub$roadtype3) <- c("blanks","stateroad", "countyroad", "municipalityroad","privateroad", "forestroad") 
+levels(browse_sub$treegroup) <- c("birch","pine","deciduous","ros")
+levels(browse_sub$landsdel) <- c("Midt.Norge","Nord.Norge","Soerlandet","Vestlandet","Oestlandet.vest", "Oestlandet.oest")
+levels(browse_sub$foresttype) <- c("old.high.productive", "young.high.productive","old.low.productive","young.low.productive", "unproductive")
+
+
+```
 
 ##### Explore NAs
 ```{r}
@@ -68,44 +98,11 @@ sum(is.na(browse_sub$bros10))
 sum(is.na(browse_sub$bros9))
 
 sum(is.na(browse_sub$bros10[is.na(browse_sub$bros10) & browse_sub$year > 2010]))
-
-```
-
-```{r}
-
-browse_sub$bros9 <- as.numeric(as.character(browse_sub$bros9))
-browse_sub$bdec9 <- as.numeric(as.character(browse_sub$bdec9))
-browse_sub$bpine9 <- as.numeric(as.character(browse_sub$bpine9))
-
-# browse_sub9$bros9 <- as.numeric(as.character(browse_sub9$bros9))
-# browse_sub9$bdec9 <- as.numeric(as.character(browse_sub9$bdec9))
-# browse_sub9$bpine9 <- as.numeric(as.character(browse_sub9$bpine9))
-
-browse_sub$bros10 <- as.numeric(as.character(browse_sub$bros10))
-browse_sub$bbirch10 <- as.numeric(as.character(browse_sub$bbirch10))
-browse_sub$bpine10 <- as.numeric(as.character(browse_sub$bpine10))
-
-browse_sub$ros.ha9 <- as.numeric(as.character(browse_sub$ros.ha9))
-browse_sub$dec.ha9 <- as.numeric(as.character(browse_sub$dec.ha9))
-browse_sub$pine.ha9 <- as.numeric(as.character(browse_sub$pine.ha9))
-
-browse_sub$ros.ha10 <- as.numeric(as.character(browse_sub$ros.ha10))
-browse_sub$birch.ha10 <- as.numeric(as.character(browse_sub$birch.ha10))
-browse_sub$pine.ha10 <- as.numeric(as.character(browse_sub$pine.ha10))
-browse_sub$dec.ha10 <- as.numeric(as.character(browse_sub$dec.ha10))
-
-browse_sub$bbcover <- as.numeric(as.character(browse_sub$bbcover))
+sum(is.na(browse_sub$bros9[is.na(browse_sub$bros9) & browse_sub$year < 2009]))
 
 ```
 
 
-```{r}
-levels(browse_sub$roadtype1)
-levels(browse_sub$roadtype2)
-levels(browse_sub$roadtype3)
-levels(browse_sub$skogkategori)
-levels(browse_sub$edge)
-```
 
 ```{r}
 table(browse_sub$roadtype1)
@@ -113,11 +110,6 @@ table(browse_sub$roadtype2)
 table(browse_sub$roadtype3)
 
 ```
-
-
-
-
-
 ```{r}
 ggplot(data = browse_sub, aes(roadtype1)) +
   geom_bar()+
@@ -133,12 +125,12 @@ ggplot(data = browse_sub, aes(roadtype3)) +
 ```
 
 
-```{r}
-browse_sub$takst <- browse$takst
-```
 
 
 
+## Subsetting
+
+Subset of browse_sub on 9th and 10th takst
 ```{r}
 browse_sub910 <- split(browse_sub, browse_sub$takst)
 
@@ -152,6 +144,17 @@ save(browse_sub10, file = "browse_sub10.rda")
 
 
 
+
+Creating subsets for different data
+```{r}
+browse2000 <- browse_sub[browse_sub$disthouse < 2001, ] # longest distance to house 2000m
+browse1500 <- browse_sub[browse_sub$distroad500 < 1501, ] # longest distance to any road (that is further than 500m from a house) 1500m
+browse1500pub <- browse_sub[browse_sub$distpubroad500 < 1501, ] # longest distance to public roads (that are further than 500m from a house) 1500m
+
+browseros <- browse2000[browse2000$treegroup=="raw", ]
+browserosdistroad <- browse1500[browse1500$treegroup=="raw", ]
+browserosdistpubroad <- browse1500pub[browse1500pub$treegroup=="raw", ]
+```
 
 
 
