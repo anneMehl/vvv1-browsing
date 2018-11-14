@@ -1,0 +1,19 @@
+---
+title: "browsing_pressure"
+author: "anne"
+date: "13 november 2018"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+```{r}
+
+```
+
