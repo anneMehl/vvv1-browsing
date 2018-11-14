@@ -32,7 +32,7 @@ head(browse_sub, n = 3)
 write.csv(browse_sub, file = "browse_sub.csv")
 
 # browse_sub <- read_csv("processdata/browse_sub.csv", + na = "NA")
-# save(browse_sub, file = "browse_sub.rda")
+save(browse_sub, file = "browse_sub.rda")
 
 
 load("processdata/browse_sub.rda")
