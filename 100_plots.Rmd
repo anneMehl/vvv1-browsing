@@ -15,12 +15,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r}
-# library(ggpubr)
-# theme_set(theme_pubr())
+library(ggpubr)
+theme_set(theme_pubr())
 ```
 
 
-## Frequency plots
+### Frequency plots
 
 ```{r}
 quickplot(bros10, data = browse_sub)
@@ -30,10 +30,10 @@ quickplot(bros9, data = browse_sub)
 quickplot(bdec9, data = browse_sub)
 quickplot(bpine9, data = browse_sub)
 
-quickplot(ros.ha10, data = browse_sub)
-quickplot(birch.ha10, data = browse_sub)
-quickplot(pine.ha10, data = browse_sub)
-quickplot(dec.ha10, data = browse_sub)
+# quickplot(ros.ha10, data = browse_sub)
+# quickplot(birch.ha10, data = browse_sub)
+# quickplot(pine.ha10, data = browse_sub)
+# quickplot(dec.ha10, data = browse_sub)
 
 quickplot(roadtype1, data = browse_sub)
 quickplot(roadtype2, data = browse_sub)
@@ -43,7 +43,9 @@ quickplot(distroad1, data = browse_sub)
 quickplot(distroad2, data = browse_sub)
 quickplot(distroad3, data = browse_sub)
 
-quickplot(bbcover, data = browse_sub)
+quickplot(bilberrycover, data = browse_sub)
+
+quickplot(browsingpressure, data = browse_sub)
 
 ```
 
@@ -54,6 +56,22 @@ quickplot(bbcover, data = browse_sub)
 ### Effect of distance to roads on browsing pressure %
 #### ROS
 ```{r}
+# browsingpressure = (akkumulert i 9., siste år i 10.)
+ggplot(data = browse_sub, aes(distroad1, browsingpressure, fill = distroad1)) +
+            geom_smooth()+
+            labs(x = "Distance to closest public road (m)", y = "Browsing pressure %")+
+            theme_classic()
+
+ggplot(data = browse_sub, aes(distroad2, browsingpressure, fill = distroad1)) +
+            geom_smooth()+
+            labs(x = "Distance to closest public road (m)", y = "Browsing pressure %")+
+            theme_classic()
+
+ggplot(data = browse_sub, aes(distroad3, browsingpressure, fill = distroad1)) +
+            geom_smooth()+
+            labs(x = "Distance to closest public road (m)", y = "Browsing pressure %")+
+            theme_classic()
+
 # 10th takst
 ggplot(data = browse_sub, aes(distroad1, bros10, fill = distroad1)) +
             geom_smooth()+
@@ -72,10 +90,6 @@ ggplot(data = browse_sub, aes(distroad3, bros10, fill = distroad3)) +
 
 # 9th takst
 ggplot(data = browse_sub, aes(distroad1, bros9, fill = distroad1)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public road (m)", y = "Browsing pressure on ROS %")+
-            theme_classic()
-ggplot(data = browse_sub9, aes(distroad1, bros9, fill = distroad1)) +
             geom_smooth()+
             labs(x = "Distance to closest public road (m)", y = "Browsing pressure on ROS %")+
             theme_classic()
@@ -165,17 +179,17 @@ ggplot(data = browse_sub, aes(distroad3, bpine9, fill = distroad3)) +
 #### Bilberry cover
 ```{r}
 
-ggplot(data = browse_sub, aes(distroad1, bbcover, fill = distroad1)) +
+ggplot(data = browse_sub, aes(distroad1, bilberrycover, fill = distroad1)) +
             geom_smooth()+
             labs(x = "Distance to closest public road (m)", y = "Bilberry cover %")+
             theme_classic()
 
-ggplot(data = browse_sub, aes(distroad2, bbcover, fill = distroad2)) +
+ggplot(data = browse_sub, aes(distroad2, bilberrycover, fill = distroad2)) +
             geom_smooth()+
             labs(x = "Distance to closest public and private roads (m)", y = "Bilberry cover %")+
             theme_classic()
 
-ggplot(data = browse_sub, aes(distroad3, bbcover, fill = distroad3)) +
+ggplot(data = browse_sub, aes(distroad3, bilberrycover, fill = distroad3)) +
             geom_smooth()+
             labs(x = "Distance to closest public, private and forest roads (m)", y = "Bilberry cover %")+
             theme_classic()
@@ -186,17 +200,17 @@ ggplot(data = browse_sub, aes(distroad3, bbcover, fill = distroad3)) +
 
 ```{r}
 # 10th takst
-ggplot(data = browse_sub10, aes(roadtype1, bros10, fill = roadtype1)) +
+ggplot(data = browse_sub, aes(roadtype1, bros10, fill = roadtype1)) +
             geom_boxplot()+
             labs(x = "Road type (public roads)", y = "Browsing pressure on ROS %")+
             theme_classic()
 
-ggplot(data = browse_sub10, aes(roadtype1, bbirch10, fill = roadtype1)) +
+ggplot(data = browse_sub, aes(roadtype1, bbirch10, fill = roadtype1)) +
             geom_boxplot()+
             labs(x = "Road type (public roads)", y = "Browsing pressure on birch %")+
             theme_classic()
 
-ggplot(data = browse_sub10, aes(roadtype1, bpine10, fill = roadtype1)) +
+ggplot(data = browse_sub, aes(roadtype1, bpine10, fill = roadtype1)) +
             geom_boxplot()+
             labs(x = "Road type (public roads)", y = "Browsing pressure on pine %")+
             theme_classic()
@@ -209,10 +223,10 @@ ggplot(data = browse_sub10, aes(roadtype1, bpine10, fill = roadtype1)) +
 ### Recruits per ha of different tree species
 #### 9th takst
 ```{r}
-ggplot(data = species_ha9, aes(species, nbha)) +
-            geom_col(show.legend = TRUE)+
-            labs(x = "", y = "Recruits per ha over a 5 year cycle")+
-            theme_classic()
+# ggplot(data = species_ha9, aes(species, nbha)) +
+#             geom_col(show.legend = TRUE)+
+#             labs(x = "", y = "Recruits per ha 2005-2009")+
+#             theme_classic()
 
 
 ```
@@ -220,7 +234,7 @@ ggplot(data = species_ha9, aes(species, nbha)) +
 ```{r}
 ggplot(data = species_ha10, aes(species10, nbha10)) +
             geom_col(show.legend = TRUE)+
-            labs(x = "", y = "Recruits per ha over a 5 year cycle")+
+            labs(x = "", y = "Recruits per ha 2010-2014")+
             theme_classic()
 
 
@@ -232,28 +246,12 @@ ggplot(data = species_ha10, aes(species10, nbha10)) +
 ```{r}
 # test <- summarise(browse_sub, mean(ros.ha9, na.rm = TRUE))
 
-mean(browse_sub$ros.ha9[browse_sub$year == 2005], na.rm = TRUE)
-mean(browse_sub$pine.ha9, na.rm = TRUE)
-mean(browse_sub$dec.ha9, na.rm = TRUE)
+mean(browse_sub$moosepineha10, na.rm = TRUE)
+mean(browse_sub$mooserosha10, na.rm = TRUE)
+mean(browse_sub$moosedecha10, na.rm = TRUE)
 
-species <- c("ros", "pine", "birch/ other deciduous trees")
-nbha <- c("489", "106", "1005")
-species_ha9 <- data.frame(species, nbha)
-
-str(species_ha9)
-
-species_ha9$nbha <- as.integer(as.character(species_ha9$nbha))
-
-```
-
-```{r}
-
-mean(browse_sub$ros.ha10, na.rm = TRUE)
-mean(browse_sub$pine.ha10, na.rm = TRUE)
-mean(browse_sub$birch.ha10, na.rm = TRUE)
-
-species10 <- c("ros", "pine", "birch/ other deciduous trees")
-nbha10 <- c("1062", "242", "2158")
+species10 <- c("pine", "ros", "other deciduous trees")
+nbha10 <- c("242", "1063", "469")
 species_ha10 <- data.frame(species10, nbha10)
 
 str(species_ha10)
@@ -261,6 +259,24 @@ str(species_ha10)
 species_ha10$nbha10 <- as.integer(as.character(species_ha10$nbha10))
 
 ```
+
+```{r}
+
+# mean(browse_sub$moosepineha9, na.rm = TRUE)
+# mean(browse_sub$mooserosha9, na.rm = TRUE)
+# mean(browse_sub$moosedecha9, na.rm = TRUE)
+# 
+# species9 <- c("other decisuous", "pine", "ros")
+# nbha9 <- c("106", "489", "1006")
+# species_ha9 <- data.frame(species9, nbha9)
+# 
+# str(species_ha9)
+# 
+# species_ha9$nbha9 <- as.integer(as.character(species_ha9$nbha9))
+
+```
+
+
 
 
 
