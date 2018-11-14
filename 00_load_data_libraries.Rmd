@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r}
-browse <- read.csv2("C:/Users/anne.mehlhoop/OneDrive - NINA/vei-veggi-vilt/Paper_1_browsing/analysis/rawdata/Beitetrykk_og_forstyrrelse.csv")
+browse <- read.csv2("C:/Users/anne.mehlhoop/OneDrive - NINA/vei-veggi-vilt/Paper_1_browsing/analysis/vvv1-browsing/processdata/beitetrykk_forstyrrelse_910_og_artsgruppeniva_engelsk.csv")
 save(browse, file = "browse.rda")
 
 ```
@@ -24,7 +24,13 @@ load("processdata/browse_sub.rda")
 
 
 ```{r}
+library("readr", lib.loc="~/R/win-library/3.4")
 library("ggplot2", lib.loc="~/R/win-library/3.4")
 library("plyr", lib.loc="~/R/win-library/3.4")
+library("mgcv", lib.loc="C:/Programs/R/R-3.4.4/library")
+library("AICcmodavg", lib.loc="~/R/win-library/3.4")
+library("visreg", lib.loc="~/R/win-library/3.4")
+library("lattice", lib.loc="C:/Programs/R/R-3.4.4/library")
+library("latticeExtra", lib.loc="~/R/win-library/3.4")
 ```
 
