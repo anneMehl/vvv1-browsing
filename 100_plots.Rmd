@@ -58,7 +58,7 @@ quickplot(browsingpressure, data = browse_sub)
 ```{r}
 # browsingpressure = (akkumulert i 9., siste år i 10.)
 ggplot(data = browse_sub, aes(distroad1, browsingpressure, fill = distroad1)) +
-            geom_smooth()+
+            geom_point()
             labs(x = "Distance to closest public road (m)", y = "Browsing pressure %")+
             theme_classic()
 
