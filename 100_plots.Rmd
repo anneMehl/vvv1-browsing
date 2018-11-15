@@ -61,6 +61,12 @@ ggplot(data = browse_sub, aes(distroad1, browsingpressure, fill = distroad1)) +
             geom_point()
             labs(x = "Distance to closest public road (m)", y = "Browsing pressure %")+
             theme_classic()
+            
+# ggplot(browse_sub, aes(x = distroad1, y = browsingpressure, colour = distroad1)) +
+#     geom_point() +
+#     geom_smooth(method = 'loess', se = FALSE) +
+#     scale_colour_brewer(type = 'qual', palette = 'Dark2') +
+#     theme(legend.position = 'top')
 
 ggplot(data = browse_sub, aes(distroad2, browsingpressure, fill = distroad1)) +
             geom_smooth()+
