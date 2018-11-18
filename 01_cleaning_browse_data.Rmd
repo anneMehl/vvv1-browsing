@@ -111,15 +111,19 @@ table(browse_sub$roadtype3)
 
 ```
 ```{r}
-ggplot(data = browse_sub, aes(roadtype1)) +
+ggplot(data = broad1500house2000, aes(roadtype1)) +
   geom_bar()+
   theme_classic()
 
-ggplot(data = browse_sub, aes(roadtype2)) +
+ggplot(data = broad1500house2000, aes(treegroup)) +
   geom_bar()+
   theme_classic()
 
-ggplot(data = browse_sub, aes(roadtype3)) +
+ggplot(data = browse_origin, aes(treartgruppe)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = broad1500house2000, aes(foresttype)) +
   geom_bar()+
   theme_classic()
 ```
