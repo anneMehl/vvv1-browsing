@@ -3,6 +3,8 @@ title: "plots"
 author: "anne"
 date: "2 november 2018"
 output: word_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -39,13 +41,27 @@ quickplot(roadtype1, data = browse_sub)
 quickplot(roadtype2, data = browse_sub)
 quickplot(roadtype3, data = browse_sub)
 
-quickplot(distroad1, data = browse_sub)
+quickplot(sqrt(distroad1), data = browse_sub)
 quickplot(distroad2, data = browse_sub)
 quickplot(distroad3, data = browse_sub)
+
+quickplot(sqrt(disthouse), data = browse_sub)
+
+quickplot(log(slope1), data = browse_sub)
+
+quickplot(sqrt(altitude), data = browse_sub)
+
+quickplot(foresttype, data = browse_sub)
 
 quickplot(bilberrycover, data = browse_sub)
 
 quickplot(browsingpressure, data = browse_sub)
+quickplot(sqrt(browsingpressure), data = browse_sub)
+quickplot(log(browsingpressure), data = browse_sub)
+quickplot(log10(browsingpressure), data = browse_sub)
+quickplot(asin(browsingpressure), data = browse_sub)
+
+
 
 ```
 
@@ -56,17 +72,30 @@ quickplot(browsingpressure, data = browse_sub)
 ### Effect of distance to roads on browsing pressure %
 #### ROS
 ```{r}
+
+ggplot(data = browse_sub, aes(browsingpressure)) +
+  stat_smooth(method = "lm", formula(y ~ x + I(x^2)))
+  theme_classic()
+ 
+
+
 # browsingpressure = (akkumulert i 9., siste år i 10.)
 ggplot(data = browse_sub, aes(distroad1, browsingpressure, fill = distroad1)) +
             geom_point()
             labs(x = "Distance to closest public road (m)", y = "Browsing pressure %")+
             theme_classic()
             
-# ggplot(browse_sub, aes(x = distroad1, y = browsingpressure, colour = distroad1)) +
-#     geom_point() +
-#     geom_smooth(method = 'loess', se = FALSE) +
-#     scale_colour_brewer(type = 'qual', palette = 'Dark2') +
-#     theme(legend.position = 'top')
+ggplot(browse_sub, aes(x = distroad1, y = browsingpressure)) +
+    geom_point() +
+    stat_smooth(method = "glm", formula = y ~ x + I(x^2)) +
+  stat_smooth(color = "blue")
+    
+            
+ggplot(browse_sub, aes(x = distroad1, y = browsingpressure)) +
+    stat_smooth(method = "lm", formula = y ~ x + I(x^2), color = "red") +
+  stat_smooth(color = "blue")
+
+  
 
 ggplot(data = browse_sub, aes(distroad2, browsingpressure, fill = distroad1)) +
             geom_smooth()+
