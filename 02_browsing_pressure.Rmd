@@ -25,11 +25,12 @@ load("processdata/browse_sub.rda")
 ## Creating subsets for different data
 ```{r}
 browse2000 <- browse_sub[browse_sub$disthouse < 2001, ] # longest distance to house 2000m
-# browse1500 <- browse_sub[browse_sub$distroad500 < 1501, ] # longest distance to any road (that is further than 500m from a house) 1500m
+browse1500 <- browse_sub[browse_sub$distroad500 < 1501, ] # longest distance to any road (that is further than 500m from a house) 1500m
 # browse1500pub <- browse_sub[browse_sub$distpubroad500 < 1501, ] # longest distance to public roads (that are further than 500m from a house) 1500m
 
 browseroad1500 <- browse_sub[browse_sub$distroad1 < 1501, ]
 broad1500house2000 <- browseroad1500[browseroad1500$disthouse < 2001, ]
+broad1500house1500 <- browseroad1500[browseroad1500$disthouse < 1501, ]
 
 # browseros <- browse2000[browse2000$treegroup=="raw", ]
 # browserosdistroad <- browse1500[browse1500$treegroup=="raw", ]
@@ -43,81 +44,167 @@ names(browseroad1500)
 
 ## gam
 
-Models for general browsing pressure, not more than 1500m to a *public* road
+Models for general browsing pressure, not more than 1500m to a *public* road and where houses are not more than 2000m away
 ```{r}
-m1 <- gam(browsingpressure ~ s(distroad1) + s(disthouse) + s(slope1) + s(altitude) + treegroup + foresttype, data = broad1500house2000, method = "REML")
+m1 <- gam(browsingpressure ~ s(distroad1) + s(disthouse) + s(slope1) + s(altitude) + foresttype, data = browse_sub, method = "REML")
+
+# m1alt <- gam(browsingpressure ~ s(distroad1) + s(disthouse) + s(slope1) + s(altitude) + treegroup + foresttype, data = broad1500house1500, method = "REML")
+
+m1alt2 <- gam(browsingpressure ~ s(distroad1) + s(disthouse) + s(slope1) + s(altitude) + treegroup + foresttype, data = browse1500, method = "REML")
+
+m1alt3 <- gam(browsingpressure ~ distroad1 + disthouse + slope1 + altitude + foresttype, data = browse_sub, method = "REML")
 
 # run the same model with obvious k, to see if the k is too low (as suggested in the summary), and then increase k
-ktestm1 <- gam(browsingpressure ~ s(distroad1, k = 31) + s(disthouse, k = 51) + s(slope1, k = 31) + s(altitude, k = 31) + treegroup + foresttype, data = broad1500house2000, method = "REML")
-plot(ktestm1, pages = 1, residuals = TRUE)
-gam.check(ktestm1)
+m1k <- gam(browsingpressure ~ s(distroad1, k = 26) + s(disthouse, k = 41) + s(slope1, k = 10) + s(altitude, k = 16) + treegroup + foresttype, data = broad1500house2000, method = "REML")
+
+gam.check(m1alt3)
+summary(m1)
+
 ```
+
 ```{r}
-summary(ktestm1)
-plot.gam(m1)
+m2 <- gam(browsingpressure ~ s(distroad1) + s(disthouse) + s(slope1) + treegroup + foresttype, data = broad1500house2000, method = "REML")
+
+gam.check(m2)
+summary(m2)
+
+```
+
+```{r}
+m3 <- gam(browsingpressure ~ s(distroad1) + s(disthouse) + treegroup + foresttype, data = broad1500house2000, method = "REML")
+
+gam.check(m1alt2)
+summary(m3)
+
+```
+
+```{r}
+m4 <- gam(browsingpressure ~ s(distroad1) + s(disthouse) + treegroup, data = broad1500house2000, method = "REML")
+
+gam.check(m4)
+summary(m4)
+
+```
+
+```{r}
+m5 <- gam(browsingpressure ~ s(distroad1) + s(disthouse) + foresttype, data = broad1500house2000, method = "REML")
+
+gam.check(m5)
+summary(m5)
+
+```
+
+```{r}
+m6 <- gam(browsingpressure ~ s(distroad1) + s(disthouse), data = broad1500house2000, method = "REML")
+
+gam.check(m6)
+summary(m6)
+
+```
+
+```{r}
+m7 <- gam(browsingpressure ~ s(distroad1), data = broad1500house2000, method = "REML")
+m7k <- gam(browsingpressure ~ s(distroad1, k = 19), data = broad1500house2000, method = "REML")
+
+m7alt <- gam(browsingpressure ~ s(distroad1), data = browse1500, method = "REML")
+
+gam.check(m7alt)
+summary(m7)
+
+```
+
+```{r}
+m8 <- gam(browsingpressure ~ s(disthouse), data = broad1500house2000, method = "REML")
+
+gam.check(m8)
+summary(m8)
+
+```
+
+```{r}
+m9 <- gam(browsingpressure ~ s(distroad1) + s(disthouse) + s(slope1), data = broad1500house2000, method = "REML")
+
+gam.check(m9)
+summary(m9)
+
+```
+
+```{r}
+m10 <- gam(browsingpressure ~ s(distroad1) + s(disthouse) + s(altitude), data = broad1500house2000, method = "REML")
+
+gam.check(m10)
+summary(m10)
+
+```
+
+```{r}
+m11 <- gam(browsingpressure ~ s(distroad1) + s(disthouse) + s(slope1) + s(altitude), data = broad1500house2000, method = "REML")
+
+gam.check(m11)
+summary(m11)
+
+```
+
+
+
+Roadtype1 instead of distroad1 *--> worse AIC than m1 (with distroad1)*
+```{r}
+m12 <- gam(browsingpressure ~  s(disthouse) + roadtype1 + s(slope1) + s(altitude) + foresttype + treegroup, data = broad1500house2000, method = "REML")
+
+gam.check(m12)
+summary(m12)
+
+```
+
+
+```{r}
+m1lm <- lm(browsingpressure ~ sqrt(distroad1), data = browse_sub)
+plot(m1lm)
+
+m1glm <- glm(browsingpressure ~ sqrt(distroad1), data = browse_sub)
+plot(m1glm)
+
+m1gam <- gam(browsingpressure ~ s(distroad1), data = browse_sub, method = "REML")
+gam.check(m1gam)
+
+
+```
+
+
+```{r}
+anova.gam(m1, m1k, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11)
+anova(m1, m1k, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, test = "F")
+anova(m1, m1k, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, test = "Chisq")
+anova.gam(m1)
+anova.gam(m1k)
+anova.gam(m2)
+anova.gam(m3)
+anova.gam(m5)
+
+AIC(m1, m1k, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12)
+AIC(m1, m1alt3)
+```
+
+```{r}
+summary(m1)
+plot.gam(m5)
 # summary(m1)$r.sq
 
 # par(mfrow = c(2,2))
-gam.check(m1)
+gam.check(m1alt3)
 
-vis.gam(m1)
-
-visreg(ktestm1,
+par(mfrow=c(1,2))
+visreg(m7, scale = "response",
+       ylab = "Browsing pressure %")
+visreg(m7alt, scale = "response",
        ylab = "Browsing pressure %")
 
-visreg(m1, "treegroup",
+visreg(m1k, "treegroup",
        xlab = "Tree-group", ylab = "Browsing pressure %")
 
-visreg(m1, "treegroup", by = "distroad1", breaks = c(50, 100, 200, 500, 1000, 1500),
+visreg(m1k, "treegroup", by = "distroad1", breaks = c(50, 100, 200, 500, 1000, 1500),
        ylab = "Browsing pressure %")
 ```
-
-```{r}
-m2 <- gam(browsingpressure ~ s(distroad1) + s(disthouse) + s(slope1) + treegroup + foresttype, data = browseroad1500, method = "REML")
-
-```
-```{r}
-summary(m2)
-plot.gam(m2)
-# summary(m2)$r.sq
-
-# par(mfrow = c(2,2))
-gam.check(m2)
-
-vis.gam(m2)
-
-visreg(m2, "distroad1", partial = FALSE, 
-       ylab = "Browsing pressure %",
-       line = list(col = "lightblue"),
-                    fill = list(col = "gold2")) # with points the CI was always in the background...
-
-```
-
-```{r}
-m3 <- gam(browsingpressure ~ s(distroad1) + s(disthouse) + treegroup + foresttype, data = browseroad1500, method = "REML")
-
-```
-```{r}
-summary(m3)
-plot.gam(m3)
-# summary(m2)$r.sq
-
-par(mfrow = c(2,2))
-gam.check(m3)
-
-vis.gam(m2)
-
-visreg(m2, "distroad1", partial = FALSE, 
-       ylab = "Browsing pressure %",
-       line = list(col = "lightblue"),
-                    fill = list(col = "gold2")) # with points the CI was always in the background...
-
-```
-
-
-
-
-
 
 
 
