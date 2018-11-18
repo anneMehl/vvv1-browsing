@@ -1,0 +1,36 @@
+---
+title: "help_notes"
+author: "anne"
+date: "18 november 2018"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Maybe install package bestNormalize??
+
+```{r}
+# Raises Y to the power of 3
+data_dat$trans_Y <- (data_dat$Y)^3      
+# Takes the ninth root of Y
+data_dat$trans_Y <- (data_dat$Y)^(1/9)  
+# Takes the natural logarithm (ln) of Y
+data_dat$trans_Y <- log(data_dat$Y)     
+# Takes the base-10 logarithm of Y
+data_dat$trans_Y <- log10(data_dat$Y)   
+# Raises the constant e to the power of Y
+data_dat$trans_Y <- exp(data_dat$Y)     
+# Finds the absolute value of Y
+data_dat$trans_Y <- abs(data_dat$Y)    
+# Calculates the sine of Y
+data_dat$trans_Y <- sin(data_dat$Y)    
+# Calculates the inverse sine (arcsine) of Y
+data_dat$trans_Y <- asin(data_dat$Y)   
+# Calcuates square root of Y
+data_dat$trans1_Y <- sqrt(data_dat$Y)
+```
+
+
