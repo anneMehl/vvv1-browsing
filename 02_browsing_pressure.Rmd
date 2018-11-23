@@ -18,6 +18,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 
 load("processdata/browse_sub.rda")
+load("processdata/browse_sub9.rda")
+load("processdata/browse_sub10.rda")
 
 ```
 
@@ -29,18 +31,30 @@ browse1500 <- browse_sub[browse_sub$distroad500 < 1501, ] # longest distance to 
 # browse1500pub <- browse_sub[browse_sub$distpubroad500 < 1501, ] # longest distance to public roads (that are further than 500m from a house) 1500m
 
 browseroad1500 <- browse_sub[browse_sub$distroad1 < 1501, ]
-broad1500house2000 <- browseroad1500[browseroad1500$disthouse < 2001, ]
-broad1500house1500 <- browseroad1500[browseroad1500$disthouse < 1501, ]
+broad1500house500 <- browse_sub[which(browse_sub$distroad1 < 1501 & browse_sub$disthouse > 499), ]
+
 
 # browseros <- browse2000[browse2000$treegroup=="raw", ]
 # browserosdistroad <- browse1500[browse1500$treegroup=="raw", ]
 # browserosdistpubroad <- browse1500pub[browse1500pub$treegroup=="raw", ]
 
 names(browseroad1500)
+head(broad1500house500)
 
 ```
 
 
+Subset of broad1500house500 on 9th and 10th takst
+```{r}
+broadhouse910 <- split(broad1500house500, broad1500house500$takst)
+
+broadhouse9 <- broadhouse910[['9']]
+broadhouse10 <- broadhouse910[['10']]
+
+save(broadhouse9 , file = "broadhouse9.rda")
+save(broadhouse10, file = "broadhouse10.rda")
+
+```
 
 ## gam
 
@@ -157,6 +171,8 @@ summary(m12)
 ```
 
 
+
+Linear models
 ```{r}
 m1lm <- lm(browsingpressure ~ sqrt(distroad1), data = browse_sub)
 plot(m1lm)
