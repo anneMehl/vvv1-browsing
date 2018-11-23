@@ -34,3 +34,35 @@ data_dat$trans1_Y <- sqrt(data_dat$Y)
 ```
 
 
+
+Subset on observations
+```{r}
+mydata[ which(gender=='F' & age > 65),]
+```
+
+
+### Erlings SSPS analysis:
+
+select if (disthus le 500).
+sort cases by takst.
+split file by takst.
+GENLIN beitetrykk BY landsdel skogkategori treartgruppe kant helling hohkatb (ORDER=ASCENDING) WITH disthus
+  /MODEL landsdel skogkategori treartgruppe kant helling hohkatb disthus treartgruppe*disthus skogkategori*disthus INTERCEPT=YES
+DISTRIBUTION=NORMAL LINK=IDENTITY
+  /CRITERIA SCALE=MLE COVB=MODEL PCONVERGE=1E-006(ABSOLUTE) SINGULAR=1E-012 ANALYSISTYPE=3(WALD) 
+    CILEVEL=95 CITYPE=WALD LIKELIHOOD=FULL
+  /MISSING CLASSMISSING=EXCLUDE
+  /PRINT CPS DESCRIPTIVES MODELINFO FIT SUMMARY SOLUTION.
+split file off.
+
+sort cases by takst.
+split file by takst.
+MIXED beitetrykk BY region treartgruppe skogkategori kant helling hohkatb WITH disthus
+  /CRITERIA=CIN(95) MXITER(100) MXSTEP(10) SCORING(1) SINGULAR(0.000000000001) HCONVERGE(0, 
+    ABSOLUTE) LCONVERGE(0, ABSOLUTE) PCONVERGE(0.000001, ABSOLUTE)
+  /FIXED=treartgruppe skogkategori kant helling disthus hohkatb treartgruppe*disthus skogkategori*disthus | 
+    SSTYPE(3)
+  /METHOD=REML
+  /PRINT=SOLUTION
+  /RANDOM=region| COVTYPE(VC).
+split file off.
