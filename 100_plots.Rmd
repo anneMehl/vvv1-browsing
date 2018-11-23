@@ -4,7 +4,7 @@ author: "anne"
 date: "2 november 2018"
 output: word_document
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -61,6 +61,8 @@ quickplot(log(browsingpressure), data = browse_sub)
 quickplot(log10(browsingpressure), data = browse_sub)
 quickplot(asin(browsingpressure), data = browse_sub)
 
+quickplot(browsingpressure, data = broadhouse9)
+quickplot(browsingpressure, data = broadhouse10)
 
 
 ```
@@ -84,16 +86,32 @@ ggplot(data = browse_sub, aes(distroad1, browsingpressure, fill = distroad1)) +
             geom_point()
             labs(x = "Distance to closest public road (m)", y = "Browsing pressure %")+
             theme_classic()
-            
-ggplot(browse_sub, aes(x = distroad1, y = browsingpressure)) +
-    geom_point() +
-    stat_smooth(method = "glm", formula = y ~ x + I(x^2)) +
+
+ggplot(browse_sub9, aes(x = distroad1, y = browsingpressure)) +
+            geom_point()+
+    stat_smooth(method = "lm", color = "red") +
   stat_smooth(color = "blue")
-    
             
-ggplot(browse_sub, aes(x = distroad1, y = browsingpressure)) +
+ggplot(browse_sub9, aes(x = distroad1, y = browsingpressure)) +
+            geom_point()+
     stat_smooth(method = "lm", formula = y ~ x + I(x^2), color = "red") +
   stat_smooth(color = "blue")
+            
+ggplot(browse_sub9, aes(x = distroad1, y = browsingpressure)) +
+            geom_point()+
+    stat_smooth(method = "lm", formula = y ~ x + I(x^2) + I(x^3), color = "red") +
+  stat_smooth(color = "blue")
+                    
+ggplot(broadhouse9, aes(x = distroad1, y = browsingpressure)) +
+    geom_point() +
+    stat_smooth(method = "glm", formula = y ~ x + I(x^2), color = "red") +
+  stat_smooth(color = "blue")
+
+ggplot(broadhouse9, aes(x = distroad1, y = browsingpressure)) +
+    geom_point() +
+    stat_smooth(method = "glm", formula = y ~ x + I(x^2) + I(x^3), color = "red") +
+  stat_smooth(color = "blue")
+            
 
   
 
