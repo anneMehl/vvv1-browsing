@@ -87,82 +87,100 @@ ggplot(data = browse_sub, aes(distroad1, browsingpressure, fill = distroad1)) +
             labs(x = "Distance to closest public road (m)", y = "Browsing pressure %")+
             theme_classic()
 
-ggplot(browse_sub9, aes(x = distroad1, y = browsingpressure)) +
+ggplot(broadhouse9, aes(x = distroad1, y = browsingpressure)) +
+            geom_point()+
+    stat_smooth(method = "lm", color = "red") +
+  stat_smooth(color = "blue") + 
+  labs(x = "Distance to closest public road in m (where closest house futher than 500 m away)", y = "Browsing pressure %")
+
+ggplot(broadhouse10, aes(x = distroad1, y = browsingpressure)) +
+            geom_point()+
+    stat_smooth(method = "lm", color = "red") +
+  stat_smooth(color = "blue") + 
+  labs(x = "Distance to closest public road in m (where closest house futher than 500 m away)", y = "Browsing pressure %")
+            
+ggplot(broadhouse9, aes(x = distroad1, y = browsingpressure)) +
+            geom_point()+
+    stat_smooth(method = "lm", formula = y ~ x + I(x^2), color = "red") +
+  stat_smooth(color = "blue")+ 
+  labs(x = "Distance to closest public road in m (where closest house futher than 500 m away)", y = "Browsing pressure %")
+
+ggplot(broadhouse9, aes(x = distroad1, y = browsingpressure)) +
+            geom_point()+
+    stat_smooth(method = "lm", formula = y ~ x + I(x^2) + I(x^3), color = "yellow") +
+  stat_smooth(color = "blue")+ 
+  labs(x = "Distance to closest public road in m (where closest house futher than 500 m away)", y = "Browsing pressure %")
+    
+ggplot(broadhouse9, aes(x = distroad1, y = log(browsingpressure + 1))) +
+            geom_point()+
+    stat_smooth(method = "lm", formula = y ~ x + I(x^2) + I(x^3), color = "yellow") +
+  stat_smooth(color = "blue")+ 
+  labs(x = "Distance to closest public road in m (where closest house futher than 500 m away)", y = "Browsing pressure %")
+
+
+ggplot(browseroad1500, aes(x = distroad1, y = browsingpressure)) +
             geom_point()+
     stat_smooth(method = "lm", color = "red") +
   stat_smooth(color = "blue")
             
-ggplot(browse_sub9, aes(x = distroad1, y = browsingpressure)) +
+ggplot(browseroad1500, aes(x = distroad1, y = browsingpressure)) +
             geom_point()+
     stat_smooth(method = "lm", formula = y ~ x + I(x^2), color = "red") +
   stat_smooth(color = "blue")
-            
-ggplot(browse_sub9, aes(x = distroad1, y = browsingpressure)) +
+
+ggplot(browseroad1500, aes(x = distroad1, y = browsingpressure)) +
             geom_point()+
-    stat_smooth(method = "lm", formula = y ~ x + I(x^2) + I(x^3), color = "red") +
+    stat_smooth(method = "lm", formula = y ~ x + I(x^2) + I(x^3), color = "yellow") +
   stat_smooth(color = "blue")
-                    
+    
+ggplot(browseroad1500, aes(x = distroad1, y = log(browsingpressure + 1))) +
+            geom_point()+
+    stat_smooth(method = "lm", formula = y ~ x + I(x^2) + I(x^3), color = "yellow") +
+  stat_smooth(color = "blue")
+
+
 ggplot(broadhouse9, aes(x = distroad1, y = browsingpressure)) +
+    geom_point() +
+    stat_smooth(method = "glm", color = "green") +
+  stat_smooth(color = "blue") + 
+  labs(x = "Distance to closest public road in m (where closest house futher than 500 m away)", y = "Browsing pressure %")
+
+ggplot(broadhouse9, aes(x = distroad1, y = browsingpressure)) +
+    geom_point() +
+    stat_smooth(method = "glm", formula = y ~ x + I(x^2), color = "red") +
+  stat_smooth(color = "blue") + 
+  labs(x = "Distance to closest public road in m (where closest house futher than 500 m away)", y = "Browsing pressure %")
+
+ggplot(broadhouse9, aes(x = distroad1, y = browsingpressure)) +
+    geom_point() +
+    stat_smooth(method = "glm", formula = y ~ x + I(x^2) + I(x^3), color = "yellow") +
+  stat_smooth(color = "blue") + 
+  labs(x = "Distance to closest public road in m (where closest house futher than 500 m away)", y = "Browsing pressure %")
+
+
+ggplot(browseroad1500, aes(x = distroad1, y = browsingpressure)) +
+    geom_point() +
+    stat_smooth(method = "glm", color = "green") +
+  stat_smooth(color = "blue")
+
+ggplot(browseroad1500, aes(x = distroad1, y = browsingpressure)) +
     geom_point() +
     stat_smooth(method = "glm", formula = y ~ x + I(x^2), color = "red") +
   stat_smooth(color = "blue")
 
-ggplot(broadhouse9, aes(x = distroad1, y = browsingpressure)) +
+ggplot(browseroad1500, aes(x = distroad1, y = browsingpressure)) +
     geom_point() +
-    stat_smooth(method = "glm", formula = y ~ x + I(x^2) + I(x^3), color = "red") +
+    stat_smooth(method = "glm", formula = y ~ x + I(x^2) + I(x^3), color = "yellow") +
   stat_smooth(color = "blue")
             
-
-  
-
-ggplot(data = browse_sub, aes(distroad2, browsingpressure, fill = distroad1)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public road (m)", y = "Browsing pressure %")+
-            theme_classic()
-
-ggplot(data = browse_sub, aes(distroad3, browsingpressure, fill = distroad1)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public road (m)", y = "Browsing pressure %")+
-            theme_classic()
-
-# 10th takst
-ggplot(data = browse_sub, aes(distroad1, bros10, fill = distroad1)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public road (m)", y = "Browsing pressure on ROS %")+
-            theme_classic()
-
-ggplot(data = browse_sub, aes(distroad2, bros10, fill = distroad2)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public and private roads (m)", y = "Browsing pressure on ROS %")+
-            theme_classic()
-
-ggplot(data = browse_sub, aes(distroad3, bros10, fill = distroad3)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public, private and forest roads (m)", y = "Browsing pressure on ROS %")+
-            theme_classic()
-
-# 9th takst
-ggplot(data = browse_sub, aes(distroad1, bros9, fill = distroad1)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public road (m)", y = "Browsing pressure on ROS %")+
-            theme_classic()
-
-ggplot(data = browse_sub, aes(distroad2, bros9, fill = distroad2)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public and private roads (m)", y = "Browsing pressure on ROS %")+
-            theme_classic()
-
-ggplot(data = browse_sub, aes(distroad3, bros9, fill = distroad3)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public, private and forest roads (m)", y = "Browsing pressure on ROS %")+
-            theme_classic()
 
 ```
 #### Birch/ other deciduous trees
 ```{r}
 # 10th takst
-ggplot(data = browse_sub, aes(distroad1, bbirch10, fill = distroad1)) +
-            geom_smooth()+
+ggplot(data = browse_sub, aes(distroad1, bbirch10)) +
+  geom_point() +
+  geom_smooth()+
             labs(x = "Distance to closest public road (m)", y = "Browsing pressure on birch %")+
             theme_classic()
 
