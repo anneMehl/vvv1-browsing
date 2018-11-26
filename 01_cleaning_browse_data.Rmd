@@ -72,6 +72,13 @@ levels(browse_sub$treegroup) <- c("birch","pine","deciduous","ros")
 levels(browse_sub$landsdel) <- c("Midt.Norge","Nord.Norge","Soerlandet","Vestlandet","Oestlandet.vest", "Oestlandet.oest")
 levels(browse_sub$foresttype) <- c("old.high.productive", "young.high.productive","old.low.productive","young.low.productive", "unproductive")
 
+broadhouse9$foresttype <- factor(broadhouse9$foresttype, levels = c("unproductive", "old.high.productive", "young.high.productive", "old.low.productive", "young.low.productive"))
+broadhouse9$landsdel <- factor(broadhouse9$landsdel, levels = c("Vestlandet", "Midt.Norge", "Nord.Norge", "Soerlandet", "Oestlandet.vest", "Oestlandet.oest"))
+broadhouse9$edge <-factor(broadhouse9$edge, levels = c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant")) 
+
+broadhouse10$foresttype <- factor(broadhouse10$foresttype, levels = c("unproductive", "old.high.productive", "young.high.productive", "old.low.productive", "young.low.productive"))
+levels(broadhouse10$landsdel) <- c("Vestlandet", "Midt.Norge", "Nord.Norge", "Soerlandet", "Oestlandet.vest", "Oestlandet.oest")
+broadhouse10$edge <-factor(broadhouse10$edge, levels = c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant")) 
 
 ```
 
@@ -109,6 +116,10 @@ table(browse_sub$roadtype1)
 table(browse_sub$roadtype2)
 table(browse_sub$roadtype3)
 
+table(broadhouse10$landsdel)
+table(broadhouse10$foresttype)
+table(broadhouse10$edge)
+
 ```
 ```{r}
 ggplot(data = broad1500house2000, aes(roadtype1)) +
@@ -124,6 +135,31 @@ ggplot(data = browse_origin, aes(treartgruppe)) +
   theme_classic()
 
 ggplot(data = broad1500house2000, aes(foresttype)) +
+  geom_bar()+
+  theme_classic()
+
+
+ggplot(data = broadhouse9, aes(distroad1)) +
+  geom_histogram()+
+  theme_classic()
+
+ggplot(data = broadhouse9, aes(roadtype1)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = broadhouse9, aes(treegroup)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = broadhouse9, aes(landsdel)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = broadhouse9, aes(foresttype)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = broadhouse9, aes(edge)) +
   geom_bar()+
   theme_classic()
 ```
