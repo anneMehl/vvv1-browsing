@@ -1,0 +1,94 @@
+---
+title: "hurdle"
+author: "anne"
+date: "3 desember 2018"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+browse_9_new <- browse_9[c("beitetrykk", "distvei1", "disthus", "landsdel", "skogkategori", "kant", "helling", "hohkatb", "region")]
+```
+
+
+```{r}
+browse9 <- na.omit(browse_9_new) # without NAs
+```
+
+## Hurdle model 
+For count data, helps with excess zeros and overdispersion
+```{r}
+mod1 <- glm(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb, data = browse9,
+            family = "poisson")
+
+modhurdle <- hurdle(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb, data = browse9,
+                    dist = "poisson", zero.dist = "poisson") # Don't get any Std. Error etc.
+
+mod2hurdle <- hurdle(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb, data = browse9,
+                    dist = "poisson", zero.dist = "binomial") 
+# Error in solve.default(as.matrix(fit_zero$hessian)) : system is computationally singular: reciprocal condition number = 7.95092e-21
+
+mod3hurdle <- hurdle(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb, data = browse9,
+                    dist = "poisson", zero.dist = "negbin") # produces NaNs
+
+mod4hurdle <- hurdle(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb, data = browse9,
+                    dist = "poisson", zero.dist = "geometric") # produces NaNs
+
+mod5hurdle <- hurdle(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb, data = browse9,
+                    dist = "poisson", zero.dist = "binomial",
+                    link = "log") # all other link function give errors as well
+
+
+```
+
+
+```{r}
+summary(modhurdle)
+summary(mod3hurdle)
+summary(mod4hurdle)
+```
+
+
+```{r}
+mu <- predict(mod1, type = "response") # predict expected mean count
+exp <- sum(dpois(x = 0, lambda = mu)) # sum the probabilities of a 0 count for each mean
+round(exp) # predicted number of 0's
+sum(browse9$beitetrykk < 1, na.rm = TRUE)  # observed number of 0's
+sum(browse9$beitetrykk > 1, na.rm = TRUE) 
+```
+
+```{r}
+
+ cor((as.matrix(browse9[browse9$beitetrykk,c("distvei1", "disthus", "helling")])),
+      use = "complete")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
