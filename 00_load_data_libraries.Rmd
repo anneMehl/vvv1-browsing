@@ -12,9 +12,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r}
-browse <- read.csv2("C:/Users/anne.mehlhoop/OneDrive - NINA/vei-veggi-vilt/Paper_1_browsing/analysis/vvv1-browsing/processdata/beitetrykk_forstyrrelse_910_og_artsgruppeniva_engelsk.csv")
+browse_english <- read.csv2("C:/Users/anne.mehlhoop/OneDrive - NINA/vei-veggi-vilt/Paper_1_browsing/analysis/vvv1-browsing/processdata/beitetrykk_forstyrrelse_910_og_artsgruppeniva_engelsk.csv")
 save(browse, file = "browse.rda")
-# browse_origin <- Beitetrykk_og_forstyrrelse_i_9_og_10_takst_pa_artsgruppeniva
+
+save(browse_norsk, file = "browse_norsk.rda")
 
 ```
 
@@ -26,6 +27,7 @@ load("processdata/browse_sub.rda")
 
 ```{r}
 library("readr", lib.loc="~/R/win-library/3.4")
+library("lme4", lib.loc="~/R/win-library/3.4")
 library("ggplot2", lib.loc="~/R/win-library/3.4")
 library("plyr", lib.loc="~/R/win-library/3.4")
 library("mgcv", lib.loc="C:/Programs/R/R-3.4.4/library")
@@ -34,5 +36,7 @@ library("visreg", lib.loc="~/R/win-library/3.4")
 library("lattice", lib.loc="C:/Programs/R/R-3.4.4/library")
 library("latticeExtra", lib.loc="~/R/win-library/3.4")
 library("car", lib.loc="~/R/win-library/3.4")
+
+# library("lmerTest", lib.loc="~/R/win-library/3.4")
 ```
 
