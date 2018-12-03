@@ -12,8 +12,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
+
 ```{r}
-load("processdata/browse.rda")
+load("processdata/browse_norsk.rda")
 load("processdata/browse_sub.rda")
 ```
 
@@ -47,20 +48,27 @@ head(browse_sub)
 
 ```
 
-##### change structure (numeric, integer, factor; also level names for factors)
+##### change column names, structure (numeric, integer, facto), and level names for factors
 ```{r}
+# new column
+browse9_dist2$bprop <- browse9_dist2$elgbROSprs9 / 100
+
 # col. names
 colnames(browse_sub)[68] <- "foresttype"
 colnames(browse_sub)[89] <- "distpubroad500"
 
 # structure
-browse_sub$pubescens.prha <- as.integer(browse_sub$pubescens.prha)
-browse_sub$rowan.prha <- as.integer(browse_sub$rowan.prha)
-browse_sub$aspen.prha <- as.integer(browse_sub$aspen.prha)
-browse_sub$spruce.prha <- as.integer(browse_sub$spruce.prha)
-browse_sub$oakprha <- as.integer(browse_sub$oakprha)
-browse_sub$pine.prha <- as.integer(browse_sub$pine.prha)
-browse_sub$other.prha <- as.integer(browse_sub$other.prha)
+browse_9$elgbFURUprs9 <- as.numeric(browse_9$elgbFURUprs9)
+browse_9$landsdel <- as.factor(browse_9$landsdel)
+browse_9$skogkategori <- as.factor(browse_9$skogkategori)
+browse_9$kant <- as.factor(browse_9$kant)
+browse_9$region <- as.factor(browse_9$region)
+browse_9$beitetrykk <- as.integer(browse_9$beitetrykk)
+
+# scale
+browse_9$distvei1.std <- scale(browse_9$distvei1)
+browse_9$disthus.std <- scale(browse_9$disthus)
+
 
 
 # level names
@@ -112,6 +120,8 @@ sum(is.na(browse_sub$bros9[is.na(browse_sub$bros9) & browse_sub$year < 2009]))
 
 
 ```{r}
+table(browse_norsk$elgbROSprs9)
+
 table(browse_sub$roadtype1)
 table(browse_sub$roadtype2)
 table(browse_sub$roadtype3)
@@ -122,6 +132,11 @@ table(broadhouse10$edge)
 
 ```
 ```{r}
+ggplot(data = browse_9, aes(beitetrykk)) +
+  geom_bar() +
+  theme_classic()
+
+
 ggplot(data = broad1500house2000, aes(roadtype1)) +
   geom_bar()+
   theme_classic()
@@ -170,13 +185,15 @@ ggplot(data = broadhouse9, aes(edge)) +
 
 ## Subsetting
 
-Subset of browse_sub on 9th and 10th takst
+Subset of "browse" (several) on 9th and 10th takst
 ```{r}
-browse_sub910 <- split(browse_sub, browse_sub$takst)
+browse_910 <- split(browse_norsk, browse_norsk$takst)
 
-browse_sub9 <- browse_sub910[['9']]
-browse_sub10 <- browse_sub910[['10']]
+browse_9 <- browse_910[['9']]
+browse_10 <- browse_910[['10']]
 
+save(browse_9, file = "browse_9.rda")
+save(browse_10, file = "browse_10.rda")
 save(browse_sub9, file = "browse_sub9.rda")
 save(browse_sub10, file = "browse_sub10.rda")
 
