@@ -18,8 +18,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 
 load("processdata/browse_sub.rda")
-load("processdata/browse_sub9.rda")
-load("processdata/browse_sub10.rda")
+load("processdata/browse_9.rda")
+load("processdata/browse_10.rda")
 load("processdata/broadhouse9.rda")
 load("processdata/broadhouse10.rda")
 
@@ -35,6 +35,10 @@ browse1500 <- browse_sub[browse_sub$distroad500 < 1501, ] # longest distance to 
 browseroad1500 <- browse_sub[browse_sub$distroad1 < 1501, ]
 broad1500house500 <- browse_sub[which(browse_sub$distroad1 < 1501 & browse_sub$disthouse > 499), ]
 
+browse9_dist <- browse_9[which(browse_9$distvei1 < 1501 & browse_9$disthus > 499), ] # longest distance to any road (that is further than 500m from a house) 1500m
+browse10_dist <- browse_10[which(browse_10$distvei1 < 1501 & browse_10$disthus > 499), ] # longest distance to any road (that is further than 500m from a house) 1500m
+
+browse9_dist2 <- browse_9[which(browse_9$distvei1 < 1501 & browse_9$disthus > 499 & browse_9$elgbROSprs9 < 101), ] # longest distance to any road (that is further than 500m from a house) 1500m and browsingpressure is under 101%
 
 # browseros <- browse2000[browse2000$treegroup=="raw", ]
 # browserosdistroad <- browse1500[browse1500$treegroup=="raw", ]
@@ -180,17 +184,43 @@ summary(m12)
 
 
 
-Linear models
+
+## Linear models
 ```{r}
-m1lm9 <- lm(browsingpressure ~ distroad1 + disthouse + landsdel + foresttype + edge + slope1 + altitude, data = broadhouse9)
+m1lm9 <- lm(elgbROSprs9 ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb, data = browse_9)
+
+m1glm9 <- glm(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb, 
+            family = quasipoisson, 
+            data = browse_9)
 
 m1glm9 <- glm(browsingpressure ~ distroad1 + disthouse + landsdel + foresttype + edge + slope1 + altitude, data = broadhouse9)
+
+m1glmlogit <- glm(cbind(browse_9$beitetrykk, browse_9$FLATEID) ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb, family = binomial(link = logit), data = browse_9)
+
+m1betareg <- betareg(bprop ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb, 
+            data = browse9_dist2)
+
+m1glmer <- glmer(elgbROSprs9 ~ distvei1.std + disthus.std + skogkategori + kant + helling + scale(HOH) + (1|region), 
+            data = browse_9,
+            family = poisson())
+
+m2glmer <- glmer(elgbROSprs9 ~ distvei1.std + disthus.std + skogkategori + kant + helling + scale(HOH) + (1|region), 
+            data = browse_9,
+            family = poisson(link = sqrt))
 
 plot(m1lm9)
 plot(m1glm9)
 
 summary(m1lm9)
 summary(m1glm9)
+summary(m1glmer)
+summary(m2glmer)
+
+plot(m1glmer)
+plot(m2glmer)
+hist(resid(m1glmer))
+hist(resid(m2glmer))
+
 
 par(mfrow=c(4,2))
 visreg(m1glm9)
@@ -199,6 +229,7 @@ visreg(m1glm9)
 ```
 
 
+## Testing/ selection
 ```{r}
 anova.gam(m1, m1k, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11)
 anova(m1, m1k, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, test = "F")
