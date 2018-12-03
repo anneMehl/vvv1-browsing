@@ -37,11 +37,11 @@ quickplot(bpine9, data = browse_sub)
 # quickplot(pine.ha10, data = browse_sub)
 # quickplot(dec.ha10, data = browse_sub)
 
-quickplot(roadtype1, data = browse_sub)
+quickplot(roadtype1, data = browse_9)
 quickplot(roadtype2, data = browse_sub)
 quickplot(roadtype3, data = browse_sub)
 
-quickplot(sqrt(distroad1), data = browse_sub)
+quickplot(sqrt(distvei1), data = browse_9)
 quickplot(distroad2, data = browse_sub)
 quickplot(distroad3, data = browse_sub)
 
@@ -64,6 +64,11 @@ quickplot(asin(browsingpressure), data = browse_sub)
 quickplot(browsingpressure, data = broadhouse9)
 quickplot(browsingpressure, data = broadhouse10)
 
+quickplot(log(beitetrykk + 1), data = browse_9)
+
+quickplot(elgbROSprs9, data = browse_9)
+quickplot(elgbFURUprs9, data = browse_9)
+quickplot(elgbLAUVprs9, data = browse_9)
 
 ```
 
@@ -87,11 +92,11 @@ ggplot(data = browse_sub, aes(distroad1, browsingpressure, fill = distroad1)) +
             labs(x = "Distance to closest public road (m)", y = "Browsing pressure %")+
             theme_classic()
 
-ggplot(broadhouse9, aes(x = distroad1, y = browsingpressure)) +
+ggplot(browse9_dist2, aes(x = distvei1, y = beitetrykk)) +
             geom_point()+
     stat_smooth(method = "lm", color = "red") +
   stat_smooth(color = "blue") + 
-  labs(x = "Distance to closest public road in m (where closest house futher than 500 m away)", y = "Browsing pressure %")
+  labs(x = "Distance to closest public road in m (where closest house further than 500 m away)", y = "Browsing pressure %")
 
 ggplot(broadhouse10, aes(x = distroad1, y = browsingpressure)) +
             geom_point()+
@@ -145,7 +150,13 @@ ggplot(broadhouse9, aes(x = distroad1, y = browsingpressure)) +
   stat_smooth(color = "blue") + 
   labs(x = "Distance to closest public road in m (where closest house futher than 500 m away)", y = "Browsing pressure %")
 
-ggplot(broadhouse9, aes(x = distroad1, y = browsingpressure)) +
+ggplot(browse_9, aes(x = distvei1, y = elgbROSprs9)) +
+    geom_point() +
+    stat_smooth(method = "glm", formula = y ~ x + I(x^2), color = "red") +
+  stat_smooth(color = "blue") + 
+  labs(x = "Distance to closest public road in m (where closest house futher than 500 m away)", y = "Browsing pressure %")
+
+ggplot(browse_9, aes(x = distvei1, y = beitetrykk)) +
     geom_point() +
     stat_smooth(method = "glm", formula = y ~ x + I(x^2), color = "red") +
   stat_smooth(color = "blue") + 
