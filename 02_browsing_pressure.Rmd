@@ -208,6 +208,29 @@ m2glmer <- glmer(elgbROSprs9 ~ distvei1.std + disthus.std + skogkategori + kant 
             data = browse_9,
             family = poisson(link = sqrt))
 
+tglm <- glm(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb, 
+            family = quasipoisson, 
+            data = browse_9)
+tglm2 <- glm(beitetrykk ~ distvei1 + skogkategori + kant + helling + hohkatb + landsdel + treartgruppe, 
+            family = quasipoisson, 
+            data = browse_9)
+
+# EP <- resid(tglm, type = "pearson")
+# ED <- resid(tglm, type = "deviance")
+# mu <- predict(tglm, type = "response")
+# E <- browse_9$beitetrykk - mu
+# EP2 <- E / sqrt(7.630148 * mu)
+# op <- par(mfrow = c(2, 2))
+# plot(x = mu, y = E, main = "response residuals")
+# plot(x = mu, y = EP, main = "Pearson residuals")
+# plot(x = mu, y = EP2, main = "Pearson residuals scaled")
+# plot(x = mu, y = ED, main = "Deviance residuals")
+# par(op)
+
+plot(tglm)
+drop1(tglm2, test = "F")
+
+
 plot(m1lm9)
 plot(m1glm9)
 
