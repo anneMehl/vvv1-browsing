@@ -25,50 +25,22 @@ theme_set(theme_pubr())
 ### Frequency plots
 
 ```{r}
-quickplot(bros10, data = browse_sub)
-quickplot(bbirch10, data = browse_sub)
-quickplot(bpine10, data = browse_sub)
-quickplot(bros9, data = browse_sub)
-quickplot(bdec9, data = browse_sub)
-quickplot(bpine9, data = browse_sub)
 
-# quickplot(ros.ha10, data = browse_sub)
-# quickplot(birch.ha10, data = browse_sub)
-# quickplot(pine.ha10, data = browse_sub)
-# quickplot(dec.ha10, data = browse_sub)
-
-quickplot(roadtype1, data = browse_9)
-quickplot(roadtype2, data = browse_sub)
-quickplot(roadtype3, data = browse_sub)
-
-quickplot(sqrt(distvei1), data = browse_9)
-quickplot(distroad2, data = browse_sub)
-quickplot(distroad3, data = browse_sub)
-
-quickplot(sqrt(disthouse), data = browse_sub)
-
-quickplot(log(slope1), data = browse_sub)
-
-quickplot(sqrt(altitude), data = browse_sub)
-
-quickplot(foresttype, data = browse_sub)
-
-quickplot(bilberrycover, data = browse_sub)
-
-quickplot(browsingpressure, data = browse_sub)
-quickplot(sqrt(browsingpressure), data = browse_sub)
-quickplot(log(browsingpressure), data = browse_sub)
-quickplot(log10(browsingpressure), data = browse_sub)
-quickplot(asin(browsingpressure), data = browse_sub)
-
-quickplot(browsingpressure, data = broadhouse9)
-quickplot(browsingpressure, data = broadhouse10)
-
-quickplot(log(beitetrykk + 1), data = browse_9)
-
-quickplot(elgbROSprs9, data = browse_9)
-quickplot(elgbFURUprs9, data = browse_9)
-quickplot(elgbLAUVprs9, data = browse_9)
+quickplot(beitetrykk, data = browse9)
+ggplot(data = browse9, aes(log(beitetrykk + 1))) +
+  geom_bar()+
+  theme_classic()
+quickplot(beitetrykk, data = browse9pos)
+ggplot(data = browse9pos, aes(beitetrykk)) +
+  geom_bar()+
+  theme_classic()
+quickplot(log(beitetrykk + 1), data = browse9)
+quickplot(sqrt(beitetrykk), data = browse9)
+quickplot(treartgruppe, data = browse9)
+quickplot(landsdel, data = browse9)
+quickplot(skogkategori, data = browse9)
+quickplot(kant, data = browse9)
+quickplot(region, data = browse9)
 
 ```
 
