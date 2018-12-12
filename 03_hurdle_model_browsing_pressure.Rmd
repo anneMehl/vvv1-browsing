@@ -10,61 +10,143 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-
 ```{r}
-browse_9_new <- browse_9[c("beitetrykk", "distvei1", "disthus", "landsdel", "skogkategori", "kant", "helling", "hohkatb", "region")]
+
+load("processdata/browse9.rda")
+load("processdata/browse9pos.rda")
+
+```
+
+
+## Creating datasets (load above); frequency plots
+```{r}
+browse_9_new <- browse_9[c("FLATEID", "beitetrykk", "distvei1", "disthus", "landsdel", "skogkategori", "kant", "helling", "hohkatb", "region", "treartgruppe")]
 ```
 
 
 ```{r}
+nrow((browse_9_new))
+nrow(na.omit(browse_9_new)) 
+
 browse9 <- na.omit(browse_9_new) # without NAs
+
 ```
 
-## Hurdle model 
+
+```{r}
+browse9$bt.binom <- NA
+browse9$bt.binom[browse9$beitetrykk == 0] <- 0
+browse9$bt.binom[browse9$beitetrykk > 0] <- 1
+
+browse9$beitetrykk <- as.integer(browse9$beitetrykk)
+browse9$treartgruppe <- as.factor(browse9$treartgruppe)
+browse9$treartgruppe <- factor(browse9$treartgruppe, levels = c("LAUV", "ROS", "FURU"))
+browse9$landsdel <- as.factor(browse9$landsdel)
+browse9$landsdel <- factor(browse9$landsdel, levels = c("Vestlandet", "Midt-Norge", "Nord-Norge", "Sørlandet", "Østlandet-vest", "Østlandet-Øst"))
+browse9$skogkategori <- as.factor(browse9$skogkategori)
+browse9$skogkategori <- factor(browse9$skogkategori, levels = c("Lavproduktiv_eldreskog", "Høyproduktiv_eldreskog", "Høyproduktiv_ungskog",   "Lavproduktiv_ungskog",   "Uproduktiv_skog"))
+browse9$kant <- as.factor(browse9$kant)
+browse9$kant <-factor(browse9$kant, levels = c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant")) 
+browse9$region <- as.factor(browse9$region)
+
+
+browse9pos <- browse9[browse9$beitetrykk > 0, ]
+
+save(browse9, file = "browse9.rda")
+save(browse9pos, file = "browse9pos.rda")
+
+```
+
+
+
+
+Frequency plots
+
+```{r}
+
+quickplot(beitetrykk, data = browse9)
+ggplot(data = browse9, aes(log(beitetrykk + 1))) +
+  geom_bar()+
+  theme_classic()
+quickplot(beitetrykk, data = browse9pos)
+ggplot(data = browse9pos, aes(beitetrykk)) +
+  geom_bar()+
+  theme_classic()
+quickplot(log(beitetrykk + 1), data = browse9)
+quickplot(sqrt(beitetrykk), data = browse9)
+quickplot(treartgruppe, data = browse9)
+quickplot(landsdel, data = browse9)
+quickplot(skogkategori, data = browse9)
+quickplot(kant, data = browse9)
+quickplot(region, data = browse9)
+
+```
+
+
+
+## Christer's approach
+
+```{r}
+m1 <- glm(cbind(bt.binom, beitetrykk) ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, family = "binomial", data = browse9) # Not sure, if I used the variables you (Christer) were thinking of for the respose, but now it workds at least.
+
+summary(m1)
+plot(m1)
+```
+
+
+
+
+## Hurdle model (Also: two-way model) and two-way model "old school" (Zuur 2009, chapter: Zero-truncated and zero-inflated models for count data)
 For count data, helps with excess zeros and overdispersion
+
 ```{r}
-mod1 <- glm(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb, data = browse9,
-            family = "poisson")
 
-modhurdle <- hurdle(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb, data = browse9,
-                    dist = "poisson", zero.dist = "poisson") # Don't get any Std. Error etc.
+# Hurdle model, using hurdle() from pscl package
+f1 <- formula(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe)
+f2 <- formula(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe | distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe) # This is the same as in f1: The first part before the | is for the binomial model, the second part is for the poission or negative binomial model, and it is possible to use different explanatories but when only one part is specified as in f1, both models are run with the same explanatories. Both parts are run after each other in the hurdle function. And as I understood it from the book, there is no need to use a binomial reponse, they use a normal count response in their example as well.
 
-mod2hurdle <- hurdle(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb, data = browse9,
-                    dist = "poisson", zero.dist = "binomial") 
-# Error in solve.default(as.matrix(fit_zero$hessian)) : system is computationally singular: reciprocal condition number = 7.95092e-21
+H1a <- hurdle(f1, dist = "poisson", link = "logit", 
+              data = browse9)  # Error in solve.default(as.matrix(fit_zero$hessian)) : system is computationally singular: reciprocal condition number = 1.25111e-20
+H1b <- hurdle(f1, dist = "negbin", link = "logit", 
+              data = browse9)  # NaNs producedNaNs produced - Error in solve.default(as.matrix(fit_zero$hessian)) : system is computationally singular: reciprocal condition number = 1.25111e-20
 
-mod3hurdle <- hurdle(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb, data = browse9,
-                    dist = "poisson", zero.dist = "negbin") # produces NaNs
 
-mod4hurdle <- hurdle(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb, data = browse9,
-                    dist = "poisson", zero.dist = "geometric") # produces NaNs
 
-mod5hurdle <- hurdle(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb, data = browse9,
-                    dist = "poisson", zero.dist = "binomial",
-                    link = "log") # all other link function give errors as well
+# Two-way model "old school" with first running a binomial glm with a binomial respose (browsing yes/no), then running a poisson glm 
+B1 <- glm(bt.binom ~ distvei1 + disthus + landsdel + skogkategori + treartgruppe + kant + helling + hohkatb, data = browse9,
+            family = "binomial")
+P1 <- glm(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + treartgruppe + kant + helling + hohkatb, data = browse9pos,
+            family = "poisson") 
+P2 <- glm(beitetrykk ~ distvei1 + landsdel + skogkategori + treartgruppe + kant + helling + hohkatb, data = browse9pos,
+            family = "poisson") # Here I took out the distance to house, because it was not significant. However, when comparing both AIC, the models barely differ.
 
+
+
+summary(B1)
+summary(P1)
+summary(P2)
+plot(P1)
+plot(P2)
+AIC(P1, P2)
 
 ```
 
 
-```{r}
-summary(modhurdle)
-summary(mod3hurdle)
-summary(mod4hurdle)
-```
 
 
 ```{r}
+mod1 <- glm(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, family = "poisson", data = browse9)
+
 mu <- predict(mod1, type = "response") # predict expected mean count
 exp <- sum(dpois(x = 0, lambda = mu)) # sum the probabilities of a 0 count for each mean
-round(exp) # predicted number of 0's
+exp # predicted number of 0's
 sum(browse9$beitetrykk < 1, na.rm = TRUE)  # observed number of 0's
-sum(browse9$beitetrykk > 1, na.rm = TRUE) 
+
 ```
 
 ```{r}
 
- cor((as.matrix(browse9[browse9$beitetrykk,c("distvei1", "disthus", "helling")])),
+cor((as.matrix(browse9[browse9$beitetrykk,c("distvei1", "disthus", "helling")])),
       use = "complete")
 ```
 
