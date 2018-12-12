@@ -36,6 +36,7 @@ library("visreg", lib.loc="~/R/win-library/3.4")
 library("lattice", lib.loc="C:/Programs/R/R-3.4.4/library")
 library("latticeExtra", lib.loc="~/R/win-library/3.4")
 library("car", lib.loc="~/R/win-library/3.4")
+library("pscl", lib.loc="~/R/win-library/3.4")
 
 # library("lmerTest", lib.loc="~/R/win-library/3.4")
 ```
