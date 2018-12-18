@@ -7,7 +7,9 @@
 processdata/
 rawdata/
 figs/
-
+.rda
+.csv
+.docx
 
 
 # Example code in package build process
