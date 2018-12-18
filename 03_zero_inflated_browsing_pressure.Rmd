@@ -12,73 +12,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 
-load("processdata/browse9.rda")
-load("processdata/browse9pos.rda")
-
-```
-
-
-## Creating datasets (load above); frequency plots
-```{r}
-browse_9_new <- browse_9[c("FLATEID", "beitetrykk", "distvei1", "disthus", "landsdel", "skogkategori", "kant", "helling", "hohkatb", "region", "treartgruppe")]
-```
-
-
-```{r}
-nrow((browse_9_new))
-nrow(na.omit(browse_9_new)) 
-
-browse9 <- na.omit(browse_9_new) # without NAs
-
-```
-
-
-```{r}
-browse9$bt.binom <- NA
-browse9$bt.binom[browse9$beitetrykk == 0] <- 0
-browse9$bt.binom[browse9$beitetrykk > 0] <- 1
-
-browse9$beitetrykk <- as.integer(browse9$beitetrykk)
-browse9$treartgruppe <- as.factor(browse9$treartgruppe)
-browse9$treartgruppe <- factor(browse9$treartgruppe, levels = c("LAUV", "ROS", "FURU"))
-browse9$landsdel <- as.factor(browse9$landsdel)
-browse9$landsdel <- factor(browse9$landsdel, levels = c("Vestlandet", "Midt-Norge", "Nord-Norge", "Sørlandet", "Østlandet-vest", "Østlandet-Øst"))
-browse9$skogkategori <- as.factor(browse9$skogkategori)
-browse9$skogkategori <- factor(browse9$skogkategori, levels = c("Lavproduktiv_eldreskog", "Høyproduktiv_eldreskog", "Høyproduktiv_ungskog",   "Lavproduktiv_ungskog",   "Uproduktiv_skog"))
-browse9$kant <- as.factor(browse9$kant)
-browse9$kant <-factor(browse9$kant, levels = c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant")) 
-browse9$region <- as.factor(browse9$region)
-
-
-browse9pos <- browse9[browse9$beitetrykk > 0, ]
-
-save(browse9, file = "browse9.rda")
-save(browse9pos, file = "browse9pos.rda")
-
-```
-
-
-
-
-Frequency plots
-
-```{r}
-
-quickplot(beitetrykk, data = browse9)
-ggplot(data = browse9, aes(log(beitetrykk + 1))) +
-  geom_bar()+
-  theme_classic()
-quickplot(beitetrykk, data = browse9pos)
-ggplot(data = browse9pos, aes(beitetrykk)) +
-  geom_bar()+
-  theme_classic()
-quickplot(log(beitetrykk + 1), data = browse9)
-quickplot(sqrt(beitetrykk), data = browse9)
-quickplot(treartgruppe, data = browse9)
-quickplot(landsdel, data = browse9)
-quickplot(skogkategori, data = browse9)
-quickplot(kant, data = browse9)
-quickplot(region, data = browse9)
+load("processdata/browse_9.rda")
+# load("processdata/browse9pos.rda")
 
 ```
 
@@ -87,7 +22,7 @@ quickplot(region, data = browse9)
 ## Christer's approach
 
 ```{r}
-m1 <- glm(cbind(bt.binom, beitetrykk) ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, family = "binomial", data = browse9) # Not sure, if I used the variables you (Christer) were thinking of for the respose, but now it workds at least.
+m1 <- glm(cbind(bt.binom, beitetrykk) ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, family = "binomial", data = browse9) # not the right variables in the response, should be: "beitet, totaltundersokt"
 
 summary(m1)
 plot(m1)
@@ -99,9 +34,9 @@ plot(m1)
 ## Hurdle model (Also: two-way model) and two-way model "old school" (Zuur 2009, chapter: Zero-truncated and zero-inflated models for count data)
 For count data, helps with excess zeros and overdispersion
 
+##### Hurdle model, using hurdle() from pscl package
 ```{r}
 
-# Hurdle model, using hurdle() from pscl package
 f1 <- formula(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe)
 f2 <- formula(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe | distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe) # This is the same as in f1: The first part before the | is for the binomial model, the second part is for the poission or negative binomial model, and it is possible to use different explanatories but when only one part is specified as in f1, both models are run with the same explanatories. Both parts are run after each other in the hurdle function. And as I understood it from the book, there is no need to use a binomial reponse, they use a normal count response in their example as well.
 
@@ -110,9 +45,11 @@ H1a <- hurdle(f1, dist = "poisson", link = "logit",
 H1b <- hurdle(f1, dist = "negbin", link = "logit", 
               data = browse9)  # NaNs producedNaNs produced - Error in solve.default(as.matrix(fit_zero$hessian)) : system is computationally singular: reciprocal condition number = 1.25111e-20
 
+```
 
+##### Two-way model "old school" with first running a binomial glm with a binomial respose (browsing yes/no), then running a poisson glm 
+```{r}
 
-# Two-way model "old school" with first running a binomial glm with a binomial respose (browsing yes/no), then running a poisson glm 
 B1 <- glm(bt.binom ~ distvei1 + disthus + landsdel + skogkategori + treartgruppe + kant + helling + hohkatb, data = browse9,
             family = "binomial")
 P1 <- glm(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + treartgruppe + kant + helling + hohkatb, data = browse9pos,
