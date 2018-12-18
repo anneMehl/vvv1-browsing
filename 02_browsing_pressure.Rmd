@@ -20,49 +20,11 @@ knitr::opts_chunk$set(echo = TRUE)
 load("processdata/browse_sub.rda")
 load("processdata/browse_9.rda")
 load("processdata/browse_10.rda")
-load("processdata/broadhouse9.rda")
-load("processdata/broadhouse10.rda")
+# load("processdata/broadhouse9.rda")
+# load("processdata/broadhouse10.rda")
 
 ```
 
-
-## Creating subsets for different data
-```{r}
-browse2000 <- browse_sub[browse_sub$disthouse < 2001, ] # longest distance to house 2000m
-browse1500 <- browse_sub[browse_sub$distroad500 < 1501, ] # longest distance to any road (that is further than 500m from a house) 1500m
-# browse1500pub <- browse_sub[browse_sub$distpubroad500 < 1501, ] # longest distance to public roads (that are further than 500m from a house) 1500m
-
-browseroad1500 <- browse_sub[browse_sub$distroad1 < 1501, ]
-broad1500house500 <- browse_sub[which(browse_sub$distroad1 < 1501 & browse_sub$disthouse > 499), ]
-
-browse9_dist <- browse_9[which(browse_9$distvei1 < 1501 & browse_9$disthus > 499), ] # longest distance to any road (that is further than 500m from a house) 1500m
-browse10_dist <- browse_10[which(browse_10$distvei1 < 1501 & browse_10$disthus > 499), ] # longest distance to any road (that is further than 500m from a house) 1500m
-
-browse9_dist2 <- browse_9[which(browse_9$distvei1 < 1501 & browse_9$disthus > 499 & browse_9$elgbROSprs9 < 101), ] # longest distance to any road (that is further than 500m from a house) 1500m and browsingpressure is under 101%
-
-# browseros <- browse2000[browse2000$treegroup=="raw", ]
-# browserosdistroad <- browse1500[browse1500$treegroup=="raw", ]
-# browserosdistpubroad <- browse1500pub[browse1500pub$treegroup=="raw", ]
-
-names(browseroad1500)
-head(broad1500house500)
-
-save(browseroad1500, file = "browseroad1500.rda")
-
-```
-
-
-Subset of broad1500house500 on 9th and 10th takst
-```{r}
-broadhouse910 <- split(broad1500house500, broad1500house500$takst)
-
-broadhouse9 <- broadhouse910[['9']]
-broadhouse10 <- broadhouse910[['10']]
-
-save(broadhouse9 , file = "broadhouse9.rda")
-save(broadhouse10, file = "broadhouse10.rda")
-
-```
 
 
 ## gam
@@ -183,76 +145,7 @@ summary(m12)
 ```
 
 
-
-
-## Linear models
-```{r}
-m1lm9 <- lm(elgbROSprs9 ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb, data = browse_9)
-
-m1glm9 <- glm(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb, 
-            family = quasipoisson, 
-            data = browse_9)
-
-m1glm9 <- glm(browsingpressure ~ distroad1 + disthouse + landsdel + foresttype + edge + slope1 + altitude, data = broadhouse9)
-
-m1glmlogit <- glm(cbind(browse_9$beitetrykk, browse_9$FLATEID) ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb, family = binomial(link = logit), data = browse_9)
-
-m1betareg <- betareg(bprop ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb, 
-            data = browse9_dist2)
-
-m1glmer <- glmer(elgbROSprs9 ~ distvei1.std + disthus.std + skogkategori + kant + helling + scale(HOH) + (1|region), 
-            data = browse_9,
-            family = poisson())
-
-m2glmer <- glmer(elgbROSprs9 ~ distvei1.std + disthus.std + skogkategori + kant + helling + scale(HOH) + (1|region), 
-            data = browse_9,
-            family = poisson(link = sqrt))
-
-tglm <- glm(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb, 
-            family = quasipoisson, 
-            data = browse_9)
-tglm2 <- glm(beitetrykk ~ distvei1 + skogkategori + kant + helling + hohkatb + landsdel + treartgruppe, 
-            family = quasipoisson, 
-            data = browse_9)
-
-# EP <- resid(tglm, type = "pearson")
-# ED <- resid(tglm, type = "deviance")
-# mu <- predict(tglm, type = "response")
-# E <- browse_9$beitetrykk - mu
-# EP2 <- E / sqrt(7.630148 * mu)
-# op <- par(mfrow = c(2, 2))
-# plot(x = mu, y = E, main = "response residuals")
-# plot(x = mu, y = EP, main = "Pearson residuals")
-# plot(x = mu, y = EP2, main = "Pearson residuals scaled")
-# plot(x = mu, y = ED, main = "Deviance residuals")
-# par(op)
-
-plot(tglm)
-drop1(tglm2, test = "F")
-
-
-plot(m1lm9)
-plot(m1glm9)
-
-summary(m1lm9)
-summary(m1glm9)
-summary(m1glmer)
-summary(m2glmer)
-
-plot(m1glmer)
-plot(m2glmer)
-hist(resid(m1glmer))
-hist(resid(m2glmer))
-
-
-par(mfrow=c(4,2))
-visreg(m1glm9)
-
-
-```
-
-
-## Testing/ selection
+Testing/ selection
 ```{r}
 anova.gam(m1, m1k, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11)
 anova(m1, m1k, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, test = "F")
@@ -266,6 +159,8 @@ anova.gam(m5)
 AIC(m1, m1k, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12)
 AIC(m1, m1alt3)
 ```
+
+
 
 ```{r}
 summary(m1)
@@ -287,6 +182,96 @@ visreg(m1k, "treegroup",
 visreg(m1k, "treegroup", by = "distroad1", breaks = c(50, 100, 200, 500, 1000, 1500),
        ylab = "Browsing pressure %")
 ```
+
+
+
+
+
+
+
+
+
+
+## (Generalized) Linear models
+
+##### with browse_9
+```{r}
+
+m1lm <- lm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse_91)
+
+
+
+m1glm <- glm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, 
+            family = "poisson", 
+            data = browse_91)
+
+m2glm <- glm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, 
+            family = "quasipoisson", 
+            data = browse_91)
+
+m3glm <- glm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, 
+            family = "quasi", 
+            data = browse_91)
+
+# m2glm <- glm(beitetrykk ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, 
+#             family = "Gamma", 
+#             data = browse_91)
+
+m4glm <- glm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, 
+            family = "gaussian", 
+            data = browse_91)
+
+# m5glm <- glm(beitetrykk ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, 
+#             family = "inverse.gaussian", 
+#             data = browse_91)
+
+
+
+
+
+
+m1glmer <- glmer(beitetrykkr ~ scale(distvei3) + scale(disthus) + skogkategori + kant + scale(helling) + hohkatb + treartgruppe + (1|region), 
+            data = browse_91,
+            family = poisson())
+
+m2lmer <- lmer(beitetrykkr ~ distvei3 + disthus + skogkategori + kant + helling + hohkatb + treartgruppe + (1|region), 
+            data = browse_91)
+
+
+
+AIC(m1lm, m1glm, m2glm, m3glm, m4glm)
+
+plot(m1lm)
+plot(m1glm)
+plot(m4glm)
+
+
+plot(tglm)
+drop1(tglm2, test = "F")
+
+plot(m1glmer)
+plot(m2lmer)
+
+summary(m1lm9)
+
+summary(m1glm9)
+
+summary(m1glmer)
+summary(m2glmer)
+
+
+hist(resid(m1glmer))
+hist(resid(m2glmer))
+hist(resid(m2lmer))
+
+par(mfrow=c(4,2))
+visreg(m1glm9)
+
+
+```
+
+
+
 
 
 
