@@ -14,196 +14,101 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r}
-load("processdata/browse_norsk.rda")
+load("processdata/browse.rda")
 load("processdata/browse_sub.rda")
 ```
 
 ## Cleaning data
 ```{r}
+class(browse)
 str(browse)
-head(browse)
+head(browse, n = 3)
 names(browse)
+
+str(browse_sub)
+head(browse_sub, n = 3)
+names(browse-sub)
 
 ```
 
 Create a subset of browse with less variables
 ```{r}
-browse_sub  <- browse[,c(1:5,7:10,12:25,27:45,49,51,53:54,59,62:68,70:82,87:88,96:104,109:119)]
+browse_sub  <- browse[,c(1:5,7:9,15:24,27:45,51,59,61:67,69,74,76:83,85,87:90,92:97,99:105,108:122)]
 head(browse_sub, n = 3)
-write.csv(browse_sub, file = "browse_sub.csv")
 
-# browse_sub <- read_csv("processdata/browse_sub.csv", + na = "NA")
 save(browse_sub, file = "browse_sub.rda")
 
 
 load("processdata/browse_sub.rda")
+head(browse_sub)
 names(browse_sub)
 ```
 
 
-```{r}
-dim(browse_sub)
-str(browse_sub)
-head(browse_sub)
 
-```
-
-##### change column names, structure (numeric, integer, facto), and level names for factors
+##### change column names, structure (numeric, integer, factor), and level names for factors
 ```{r}
 # new column
-browse9_dist2$bprop <- browse9_dist2$elgbROSprs9 / 100
+
 
 # col. names
-colnames(browse_sub)[68] <- "foresttype"
-colnames(browse_sub)[89] <- "distpubroad500"
 
-# structure
-browse_9$elgbFURUprs9 <- as.numeric(browse_9$elgbFURUprs9)
-browse_9$landsdel <- as.factor(browse_9$landsdel)
-browse_9$skogkategori <- as.factor(browse_9$skogkategori)
-browse_9$kant <- as.factor(browse_9$kant)
-browse_9$region <- as.factor(browse_9$region)
-browse_9$beitetrykk <- as.integer(browse_9$beitetrykk)
-
-# scale
-browse_9$distvei1.std <- scale(browse_9$distvei1)
-browse_9$disthus.std <- scale(browse_9$disthus)
+# colnames(fdata1)[colnames(fdata1)=="ï..ID"] <- "ID"
 
 
-
-# level names
-levels(browse_sub$region) <- c("Agder","Buskerud","Hedmark","Hordaland","More.Romsdal","Nord.Trondelag","Nordland","Oppland", "Ostfold.Akershus","Rogaland","Sogn.Fjordane","Sor.Trondelag","Troms","Vestfold.Telemark")
-levels(browse_sub$roadtype1) <- c("blanks","stateroad", "countyroad", "municipalityroad") 
-levels(browse_sub$roadtype2) <- c("blanks","stateroad", "countyroad", "municipalityroad","privateroad") 
-levels(browse_sub$roadtype3) <- c("blanks","stateroad", "countyroad", "municipalityroad","privateroad", "forestroad") 
-levels(browse_sub$treegroup) <- c("birch","pine","deciduous","ros")
-levels(browse_sub$landsdel) <- c("Midt.Norge","Nord.Norge","Soerlandet","Vestlandet","Oestlandet.vest", "Oestlandet.oest")
-levels(browse_sub$foresttype) <- c("old.high.productive", "young.high.productive","old.low.productive","young.low.productive", "unproductive")
-
-broadhouse9$foresttype <- factor(broadhouse9$foresttype, levels = c("unproductive", "old.high.productive", "young.high.productive", "old.low.productive", "young.low.productive"))
-broadhouse9$landsdel <- factor(broadhouse9$landsdel, levels = c("Vestlandet", "Midt.Norge", "Nord.Norge", "Soerlandet", "Oestlandet.vest", "Oestlandet.oest"))
-broadhouse9$edge <-factor(broadhouse9$edge, levels = c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant")) 
-
-broadhouse10$foresttype <- factor(broadhouse10$foresttype, levels = c("unproductive", "old.high.productive", "young.high.productive", "old.low.productive", "young.low.productive"))
-levels(broadhouse10$landsdel) <- c("Vestlandet", "Midt.Norge", "Nord.Norge", "Soerlandet", "Oestlandet.vest", "Oestlandet.oest")
-broadhouse10$edge <-factor(broadhouse10$edge, levels = c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant")) 
+# structure 
+browse_sub$FYLNR <- as.integer(browse_sub$FYLNR)
+browse_sub$KOMNR <- as.integer(browse_sub$KOMNR)
+browse_sub$elgbROSprs10 <- as.numeric(browse_sub$elgbROSprs10)
+browse_sub$elgbFURUprs10 <- as.numeric(browse_sub$elgbFURUprs10)
+browse_sub$elgbBJORKprs10 <- as.numeric(browse_sub$elgbBJORKprs10)
+browse_sub$ROS_0_PRHA <- as.integer(browse_sub$ROS_0_PRHA)
+browse_sub$ROS_0_25_PRHA <- as.integer(browse_sub$ROS_0_25_PRHA)
+browse_sub$ROS_25_49_PRHA <- as.integer(browse_sub$ROS_25_49_PRHA)
+browse_sub$Bjork_0_PRHA <- as.integer(browse_sub$Bjork_0_PRHA)
+browse_sub$Bjork_0_25_PRHA <- as.integer(browse_sub$Bjork_0_25_PRHA)
+browse_sub$Bjork_25_49_PRHA <- as.integer(browse_sub$Bjork_25_49_PRHA)
+browse_sub$elgFURUha10 <- as.numeric(browse_sub$elgFURUha10)
+browse_sub$elgROSha10 <- as.numeric(browse_sub$elgROSha10)
+browse_sub$elgBJORKha10 <- as.numeric(browse_sub$elgBJORKha10)
+browse_sub$elgLAUVha10 <- as.numeric(browse_sub$elgLAUVha10)
+browse_sub$treartgruppe <- as.factor(browse_sub$treartgruppe)
+browse_sub$skogkategori <- as.factor(browse_sub$skogkategori)
+browse_sub$kant <- as.factor(browse_sub$kant)
+browse_sub$region <- as.factor(browse_sub$region)
+browse_sub$landsdel <- as.factor(browse_sub$landsdel)
+browse_sub$tretetthet0 <- as.numeric(browse_sub$tretetthet0)
+browse_sub$tretetthet025 <- as.numeric(browse_sub$tretetthet025)
+browse_sub$tretetthet2549 <- as.numeric(browse_sub$tretetthet2549)
+browse_sub$tretetthetpluss50 <- as.numeric(browse_sub$tretetthetpluss50)
+browse_sub$tretetthetminus25 <- as.numeric(browse_sub$tretetthetminus25)
 
 ```
-
-##### Explore NAs
-```{r}
-nrow((browse_sub))
-nrow(na.omit(browse_sub))
-  
-anyNA(browse_sub$bros10)
-anyNA(browse_sub$bros9)
-anyNA(browse_sub$birch10)
-anyNA(browse_sub$bdec9)
-anyNA(browse_sub$bpine10)
-anyNA(browse_sub$bpine9)
-anyNA(browse_sub$roadtype1)
-anyNA(browse_sub$roadtype2)
-anyNA(browse_sub$roadtype3)
-anyNA(browse_sub$roadtype3)
-
-
-mean(is.na(browse_sub$bros10))
-mean(is.na(browse_sub$bros9))
-sum(is.na(browse_sub$bros10))
-sum(is.na(browse_sub$bros9))
-
-sum(is.na(browse_sub$bros10[is.na(browse_sub$bros10) & browse_sub$year > 2010]))
-sum(is.na(browse_sub$bros9[is.na(browse_sub$bros9) & browse_sub$year < 2009]))
-
-```
-
-
-
-```{r}
-table(browse_norsk$elgbROSprs9)
-
-table(browse_sub$roadtype1)
-table(browse_sub$roadtype2)
-table(browse_sub$roadtype3)
-
-table(broadhouse10$landsdel)
-table(broadhouse10$foresttype)
-table(broadhouse10$edge)
-
-```
-```{r}
-ggplot(data = browse_9, aes(beitetrykk)) +
-  geom_bar() +
-  theme_classic()
-
-
-ggplot(data = broad1500house2000, aes(roadtype1)) +
-  geom_bar()+
-  theme_classic()
-
-ggplot(data = broad1500house2000, aes(treegroup)) +
-  geom_bar()+
-  theme_classic()
-
-ggplot(data = browse_origin, aes(treartgruppe)) +
-  geom_bar()+
-  theme_classic()
-
-ggplot(data = broad1500house2000, aes(foresttype)) +
-  geom_bar()+
-  theme_classic()
-
-
-ggplot(data = broadhouse9, aes(distroad1)) +
-  geom_histogram()+
-  theme_classic()
-
-ggplot(data = broadhouse9, aes(roadtype1)) +
-  geom_bar()+
-  theme_classic()
-
-ggplot(data = broadhouse9, aes(treegroup)) +
-  geom_bar()+
-  theme_classic()
-
-ggplot(data = broadhouse9, aes(landsdel)) +
-  geom_bar()+
-  theme_classic()
-
-ggplot(data = broadhouse9, aes(foresttype)) +
-  geom_bar()+
-  theme_classic()
-
-ggplot(data = broadhouse9, aes(edge)) +
-  geom_bar()+
-  theme_classic()
-```
-
-
 
 
 
 ## Subsetting
 
-Subset of "browse" (several) on 9th and 10th takst
+Subset of "browse_sub" (several) on 9th and 10th takst
 ```{r}
-browse_910 <- split(browse_norsk, browse_norsk$takst)
+browse_910 <- split(browse_sub, browse_sub$takst)
 
 browse_9 <- browse_910[['9']]
 browse_10 <- browse_910[['10']]
 
+
 save(browse_9, file = "browse_9.rda")
 save(browse_10, file = "browse_10.rda")
-save(browse_sub9, file = "browse_sub9.rda")
-save(browse_sub10, file = "browse_sub10.rda")
+
+# just temporary until I get back info on variables from Erling
+browse_9 <- browse_9[,c(1:8,47:48,57:82,88:89)]
+browse_91 <- browse_9[,c(1:8,10,12:15,24,27:28,32:36)]
 
 ```
 
-
-
-
 Creating subsets for different data
 ```{r}
+
 browse2000 <- browse_sub[browse_sub$disthouse < 2001, ] # longest distance to house 2000m
 browse1500 <- browse_sub[browse_sub$distroad500 < 1501, ] # longest distance to any road (that is further than 500m from a house) 1500m
 browse1500pub <- browse_sub[browse_sub$distpubroad500 < 1501, ] # longest distance to public roads (that are further than 500m from a house) 1500m
@@ -211,7 +116,118 @@ browse1500pub <- browse_sub[browse_sub$distpubroad500 < 1501, ] # longest distan
 browseros <- browse2000[browse2000$treegroup=="raw", ]
 browserosdistroad <- browse1500[browse1500$treegroup=="raw", ]
 browserosdistpubroad <- browse1500pub[browse1500pub$treegroup=="raw", ]
+
+
+
+browse2000 <- browse_sub[browse_sub$disthouse < 2001, ] # longest distance to house 2000m
+browse1500 <- browse_sub[browse_sub$distroad500 < 1501, ] # longest distance to any road (that is further than 500m from a house) 1500m
+# browse1500pub <- browse_sub[browse_sub$distpubroad500 < 1501, ] # longest distance to public roads (that are further than 500m from a house) 1500m
+
+browseroad1500 <- browse_sub[browse_sub$distroad1 < 1501, ]
+broad1500house500 <- browse_sub[which(browse_sub$distroad1 < 1501 & browse_sub$disthouse > 499), ]
+
+browse9_dist <- browse_9[which(browse_9$distvei1 < 1501 & browse_9$disthus > 499), ] # longest distance to any road (that is further than 500m from a house) 1500m
+browse10_dist <- browse_10[which(browse_10$distvei1 < 1501 & browse_10$disthus > 499), ] # longest distance to any road (that is further than 500m from a house) 1500m
+
+browse9_dist2 <- browse_9[which(browse_9$distvei1 < 1501 & browse_9$disthus > 499 & browse_9$elgbROSprs9 < 101), ] # longest distance to any road (that is further than 500m from a house) 1500m and browsingpressure is under 101%
+
+# browseros <- browse2000[browse2000$treegroup=="raw", ]
+# browserosdistroad <- browse1500[browse1500$treegroup=="raw", ]
+# browserosdistpubroad <- browse1500pub[browse1500pub$treegroup=="raw", ]
+
+names(browseroad1500)
+head(broad1500house500)
+
+save(browseroad1500, file = "browseroad1500.rda")
+
 ```
+
+
+
+## For browse_9
+
+##### Explore NAs 
+```{r}
+
+nrow(browse_91)
+nrow(na.omit(browse_91))
+
+head(browse_9, n = 10)
+tail(browse_9, n = 10)
+# unique(unlist(lapply(browse_9, function (x) which(is.na(x)))))
+# fdata1[102, ]
+
+# browse_9$distvei1[is.na(browse_9$distvei1)] <- 10000
+# browse_9$distvei2[is.na(browse_9$distvei2)] <- 10000
+# browse_9$distvei3[is.na(browse_9$distvei3)] <- 10000
+
+browse_91 <- na.omit(browse_91)
+
+save(browse_91, file = "browse_91.rda")
+load("browse_91.rda")
+
+```
+
+##### Data structure -> factor levels
+```{r}
+
+ggplot(data = browse_91, aes(landsdel)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse_91, aes(skogkategori)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse_91, aes(kant)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse_91, aes(treartgruppe)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse_91, aes(hohkatb)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse_91, aes(region)) +
+  geom_bar()+
+  theme_classic()
+
+```
+
+```{r}
+browse_91$beitetrykkr <- round(browse_91$beitetrykk)
+```
+
+```{r}
+browse_91$landsdel <- as.factor(browse_91$landsdel)
+browse_91$hohkatb <- as.factor(browse_91$hohkatb)
+browse_91$landsdel <- factor(browse_91$landsdel, levels = c("Østlandet-Øst", "Midt-Norge", "Nord-Norge", "Sørlandet", "Vestlandet", "Østlandet-vest"))
+browse_91$skogkategori <- factor(browse_91$skogkategori, levels = c("Lavproduktiv_eldreskog", "Høyproduktiv_eldreskog", "Høyproduktiv_ungskog",  "Lavproduktiv_ungskog", "Uproduktiv_skog"))
+browse_91$kant <- factor(browse_91$kant, levels = c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant")) 
+browse_91$treartgruppe <- factor(browse_91$treartgruppe, levels = c("LAUV", "BJORK", "FURU", "ROS"))
+browse_91$hohkatb <- factor(browse_91$hohkatb, levels = c("200", "0", "100", "300", "400", "500", "600", "700", "800"))
+browse_91$region <- factor(browse_91$region, levels = c("Hedmark", "Agder", "Buskerud", "Hordaland", "More og Romsdal", "Nord-Trondelag", "Nordland", "Oppland", "Ostfold-Akershus", "Rogaland", "Sogn og Fjordane", "Sor-Trondelag", "Troms", "Vestfold-Telemark"))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
