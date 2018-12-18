@@ -12,10 +12,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r}
-browse_english <- read.csv2("C:/Users/anne.mehlhoop/OneDrive - NINA/vei-veggi-vilt/Paper_1_browsing/analysis/vvv1-browsing/processdata/beitetrykk_forstyrrelse_910_og_artsgruppeniva_engelsk.csv")
-save(browse, file = "browse.rda")
+library(readr)
+browse <- read_delim("rawdata/Beitetrykk og forstyrrelse  i 9 og 10 takst pa artsgruppeniva.csv", ";", escape_double = FALSE, locale = locale(decimal_mark = ","), na = "NA", trim_ws = TRUE)
+browse <- as.data.frame(browse)
 
-save(browse_norsk, file = "browse_norsk.rda")
+
+browse <- read.csv2("rawdata/Beitetrykk og forstyrrelse i 9 og 10 takst pa artsgruppeniva.csv", sep = ";", dec = ",")
+
+save(browse, file = "browse.rda")
 
 ```
 
