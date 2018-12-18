@@ -26,21 +26,18 @@ theme_set(theme_pubr())
 
 ```{r}
 
-quickplot(beitetrykk, data = browse9)
-ggplot(data = browse9, aes(log(beitetrykk + 1))) +
-  geom_bar()+
+ggplot(data = browse_91, aes(beitetrykk)) +
+  geom_histogram(bins = 70)+
   theme_classic()
-quickplot(beitetrykk, data = browse9pos)
-ggplot(data = browse9pos, aes(beitetrykk)) +
-  geom_bar()+
+
+ggplot(data = browse_91, aes(distvei3)) +
+  geom_histogram(bins = 70)+
   theme_classic()
-quickplot(log(beitetrykk + 1), data = browse9)
-quickplot(sqrt(beitetrykk), data = browse9)
-quickplot(treartgruppe, data = browse9)
-quickplot(landsdel, data = browse9)
-quickplot(skogkategori, data = browse9)
-quickplot(kant, data = browse9)
-quickplot(region, data = browse9)
+
+ggplot(data = browse_91, aes(disthus)) +
+  geom_histogram(bins = 70)+
+  theme_classic()
+
 
 ```
 
@@ -59,12 +56,12 @@ ggplot(data = browse_sub, aes(browsingpressure)) +
 
 
 # browsingpressure = (akkumulert i 9., siste år i 10.)
-ggplot(data = browse_sub, aes(distroad1, browsingpressure, fill = distroad1)) +
+ggplot(data = browse9, aes(distroad1, browsingpressure, fill = distroad1)) +
             geom_point()
             labs(x = "Distance to closest public road (m)", y = "Browsing pressure %")+
             theme_classic()
 
-ggplot(browse9_dist2, aes(x = distvei1, y = beitetrykk)) +
+ggplot(browse9, aes(x = distvei1, y = beitetrykk)) +
             geom_point()+
     stat_smooth(method = "lm", color = "red") +
   stat_smooth(color = "blue") + 
