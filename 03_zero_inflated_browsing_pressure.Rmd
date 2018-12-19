@@ -3,6 +3,8 @@ title: "hurdle"
 author: "anne"
 date: "3 desember 2018"
 output: word_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -37,13 +39,40 @@ For count data, helps with excess zeros and overdispersion
 ##### Hurdle model, using hurdle() from pscl package
 ```{r}
 
-f1 <- formula(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe)
-f2 <- formula(beitetrykk ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe | distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe) # This is the same as in f1: The first part before the | is for the binomial model, the second part is for the poission or negative binomial model, and it is possible to use different explanatories but when only one part is specified as in f1, both models are run with the same explanatories. Both parts are run after each other in the hurdle function. And as I understood it from the book, there is no need to use a binomial reponse, they use a normal count response in their example as well.
+f1 <- formula(beitetrykkr ~ distvei3 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe)
 
-H1a <- hurdle(f1, dist = "poisson", link = "logit", 
-              data = browse9)  # Error in solve.default(as.matrix(fit_zero$hessian)) : system is computationally singular: reciprocal condition number = 1.25111e-20
-H1b <- hurdle(f1, dist = "negbin", link = "logit", 
-              data = browse9)  # NaNs producedNaNs produced - Error in solve.default(as.matrix(fit_zero$hessian)) : system is computationally singular: reciprocal condition number = 1.25111e-20
+f2 <- formula(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe)
+
+H1a <- hurdle(f1, dist = "poisson",  
+              data = browse_91)  
+
+H1b <- hurdle(f1, dist = "negbin", 
+              data = browse_91)  
+
+H2b <- hurdle(f2, dist = "negbin", 
+              data = browse_91)
+
+H1c <- hurdle(f1, dist = "negbin", 
+              data = browse91_dist) 
+
+## These are glms that can be used instead of hurdle, so its possible to use effect plots. But it only works for poisson....
+# H1btest <- glm(factor(beitetrykkr > 0) ~ distvei3 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse_91,
+#                family = binomial(link = "cloglog"))
+# dv0c <- glm(visits ~ gender + health + income + poly(age, 2), data = DoctorVisits, family = ztpoisson, subset = visits > 0)
+
+
+hurdletest(H1b)
+plot(residuals(H1b) ~ fitted(H1b))
+
+summary(H1a)
+summary(H1b)
+summary(H1btest)
+summary(H1c)
+
+AIC(H1a, H1b, H2b, m5glm, m4lm, H1btest)
+AIC(H1b, H1c)
+
+plot(allEffects(H1btest))
 
 ```
 
