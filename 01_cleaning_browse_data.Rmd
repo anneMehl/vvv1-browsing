@@ -109,31 +109,37 @@ browse_91 <- browse_9[,c(1:8,10,12:15,24,27:28,32:36)]
 Creating subsets for different data
 ```{r}
 
-browse2000 <- browse_sub[browse_sub$disthouse < 2001, ] # longest distance to house 2000m
-browse1500 <- browse_sub[browse_sub$distroad500 < 1501, ] # longest distance to any road (that is further than 500m from a house) 1500m
-browse1500pub <- browse_sub[browse_sub$distpubroad500 < 1501, ] # longest distance to public roads (that are further than 500m from a house) 1500m
+browse91_dist <- browse_91[which(browse_91$distvei1 < 1501 & browse_91$disthus > 499), ] # longest distance to any road (that is further than 500m from a house) 1500m
 
-browseros <- browse2000[browse2000$treegroup=="raw", ]
-browserosdistroad <- browse1500[browse1500$treegroup=="raw", ]
-browserosdistpubroad <- browse1500pub[browse1500pub$treegroup=="raw", ]
+browse91_dist <- browse_91[browse_91$distvei3 < 1501, ] # longest distance to any road 1500m
 
 
-
-browse2000 <- browse_sub[browse_sub$disthouse < 2001, ] # longest distance to house 2000m
-browse1500 <- browse_sub[browse_sub$distroad500 < 1501, ] # longest distance to any road (that is further than 500m from a house) 1500m
+# 
+# browse2000 <- browse_sub[browse_sub$disthouse < 2001, ] # longest distance to house 2000m
+# browse1500 <- browse_sub[browse_sub$distroad500 < 1501, ] # longest distance to any road (that is further than 500m from a house) 1500m
 # browse1500pub <- browse_sub[browse_sub$distpubroad500 < 1501, ] # longest distance to public roads (that are further than 500m from a house) 1500m
-
-browseroad1500 <- browse_sub[browse_sub$distroad1 < 1501, ]
-broad1500house500 <- browse_sub[which(browse_sub$distroad1 < 1501 & browse_sub$disthouse > 499), ]
-
-browse9_dist <- browse_9[which(browse_9$distvei1 < 1501 & browse_9$disthus > 499), ] # longest distance to any road (that is further than 500m from a house) 1500m
-browse10_dist <- browse_10[which(browse_10$distvei1 < 1501 & browse_10$disthus > 499), ] # longest distance to any road (that is further than 500m from a house) 1500m
-
-browse9_dist2 <- browse_9[which(browse_9$distvei1 < 1501 & browse_9$disthus > 499 & browse_9$elgbROSprs9 < 101), ] # longest distance to any road (that is further than 500m from a house) 1500m and browsingpressure is under 101%
-
+# 
 # browseros <- browse2000[browse2000$treegroup=="raw", ]
 # browserosdistroad <- browse1500[browse1500$treegroup=="raw", ]
 # browserosdistpubroad <- browse1500pub[browse1500pub$treegroup=="raw", ]
+# 
+# 
+# 
+# browse2000 <- browse_sub[browse_sub$disthouse < 2001, ] # longest distance to house 2000m
+# browse1500 <- browse_sub[browse_sub$distroad500 < 1501, ] # longest distance to any road (that is further than 500m from a house) 1500m
+# # browse1500pub <- browse_sub[browse_sub$distpubroad500 < 1501, ] # longest distance to public roads (that are further than 500m from a house) 1500m
+# 
+# browseroad1500 <- browse_sub[browse_sub$distroad1 < 1501, ]
+# broad1500house500 <- browse_sub[which(browse_sub$distroad1 < 1501 & browse_sub$disthouse > 499), ]
+# 
+# browse9_dist <- browse_9[which(browse_9$distvei1 < 1501 & browse_9$disthus > 499), ] # longest distance to any road (that is further than 500m from a house) 1500m
+# browse10_dist <- browse_10[which(browse_10$distvei1 < 1501 & browse_10$disthus > 499), ] # longest distance to any road (that is further than 500m from a house) 1500m
+# 
+# browse9_dist2 <- browse_9[which(browse_9$distvei1 < 1501 & browse_9$disthus > 499 & browse_9$elgbROSprs9 < 101), ] # longest distance to any road (that is further than 500m from a house) 1500m and browsingpressure is under 101%
+# 
+# # browseros <- browse2000[browse2000$treegroup=="raw", ]
+# # browserosdistroad <- browse1500[browse1500$treegroup=="raw", ]
+# # browserosdistpubroad <- browse1500pub[browse1500pub$treegroup=="raw", ]
 
 names(browseroad1500)
 head(broad1500house500)
