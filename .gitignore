@@ -9,8 +9,9 @@ rawdata/
 figs/
 .rda
 .csv
-.docx
 
+*.docx
+*.pdf
 
 # Example code in package build process
 *-Ex.R
