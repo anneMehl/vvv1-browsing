@@ -22,7 +22,7 @@ load("processdata/browse_9.rda")
 load("processdata/browse_10.rda")
 # load("processdata/broadhouse9.rda")
 # load("processdata/broadhouse10.rda")
-
+load("processdata/browse_91.rda")
 ```
 
 
@@ -192,12 +192,18 @@ visreg(m1k, "treegroup", by = "distroad1", breaks = c(50, 100, 200, 500, 1000, 1
 
 
 
-## (Generalized) Linear models
+## (Generalized) Linear (mixed) models
 
 ##### with browse_9
 ```{r}
 
 m1lm <- lm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse_91)
+## m1lm fits data better than m2lm and m3lm.
+# m2lm <- lm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + treartgruppe, data = browse_91)
+# 
+# m3lm <- lm(beitetrykkr ~ distvei3 + disthus + skogkategori + kant + helling + treartgruppe, data = browse_91)
+
+m4lm <- lm(beitetrykkr ~ distvei3 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse_91)
 
 
 
@@ -225,57 +231,110 @@ m4glm <- glm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant +
 #             family = "inverse.gaussian", 
 #             data = browse_91)
 
+m5glm <- glm(beitetrykkr ~ distvei3 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe, 
+            family = "gaussian", 
+            data = browse_91)
+
+## weights on tretetthet makes the model very bad.
+# m6glm <- glm(beitetrykkr ~ distvei3 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe, 
+#             family = "gaussian", 
+#             weights = tretetthet,
+#             data = browse_91)
+# 
+# m7glm <- glm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, 
+#             family = "poisson", 
+#             weights = tretetthet,
+#             data = browse_91)
 
 
 
 
 
-m1glmer <- glmer(beitetrykkr ~ scale(distvei3) + scale(disthus) + skogkategori + kant + scale(helling) + hohkatb + treartgruppe + (1|region), 
+
+m1mix <- glmer(beitetrykkr ~ scale(distvei3) + scale(disthus) + skogkategori + kant + scale(helling) + hohkatb + treartgruppe + (1|region), 
             data = browse_91,
             family = poisson())
 
-m2lmer <- lmer(beitetrykkr ~ distvei3 + disthus + skogkategori + kant + helling + hohkatb + treartgruppe + (1|region), 
-            data = browse_91)
+m2mix <- lmer(beitetrykkr ~ distvei3 + disthus + skogkategori + kant + helling + hohkatb + treartgruppe + (1|region), data = browse_91)
+
+m3mix <- lmer(beitetrykkr ~ distvei3 + disthus + skogkategori + kant + helling + hohkatb + treartgruppe + (1|landsdel), data = browse_91)
 
 
 
-AIC(m1lm, m1glm, m2glm, m3glm, m4glm)
+
+```
+
+Testing fit and effect plots
+```{r}
+
+
+AIC(m1lm, m2lm, m3lm, m4lm)
+AIC(m1glm, m2glm, m3glm, m4glm, m5glm, m6glm, m7glm)
+
+
+plot(allEffects(m1lm))
+plot(allEffects(m4lm))
+plot(allEffects(m1glm))
+plot(allEffects(m2glm))
+plot(allEffects(m3glm))
+plot(allEffects(m4glm))
+plot(predictorEffect("region", m4lm))
+plot(allEffects(m7glm))
+
+
+plot(allEffects(m2mix))
+plot(allEffects(m3mix))
+
+
 
 plot(m1lm)
-plot(m1glm)
-plot(m4glm)
+
+plot(m2glm) # quasipoisson (accounts for overdispersion)
+plot(m4glm) # gaussian
 
 
-plot(tglm)
-drop1(tglm2, test = "F")
+summary(m1lm)
 
-plot(m1glmer)
-plot(m2lmer)
+summary(m1glm)
+summary(m2glm)
+summary(m4glm)
+summary(m5glm)
+summary(m6glm)
 
-summary(m1lm9)
+summary(m1mix)
+summary(m2mix)
+summary(m3mix)
 
-summary(m1glm9)
-
-summary(m1glmer)
-summary(m2glmer)
+anova(m3mix)
 
 
-hist(resid(m1glmer))
-hist(resid(m2glmer))
-hist(resid(m2lmer))
+hist(resid(m1lm))
+hist(resid(m1glm))
+hist(resid(m4glm))
 
-par(mfrow=c(4,2))
-visreg(m1glm9)
-
+hist(resid(m1mix))
+hist(resid(m2mix))
+hist(resid(m3mix))
 
 ```
 
 
 
+##### with browse9_dist
 
+```{r}
 
+m1lmdist <- lm(beitetrykkr ~ disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse91_dist)
 
+```
+```{r}
+plot(allEffects(m1lmdist))
 
+summary(m1lmdist)
+
+plot(m1lmdist)
+
+```
 
 
 
