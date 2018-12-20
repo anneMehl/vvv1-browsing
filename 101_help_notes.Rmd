@@ -66,3 +66,10 @@ MIXED beitetrykk BY region treartgruppe skogkategori kant helling hohkatb WITH d
   /PRINT=SOLUTION
   /RANDOM=region| COVTYPE(VC).
 split file off.
+
+
+### To test hurdle and zeroinf models
+coeftest() and waldtest() from lmtest, as well as linearHypothesis()
+from car can be used for Wald tests, and lrtest() from lmtest for LR tests of nested model
+
+
