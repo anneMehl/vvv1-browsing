@@ -4,7 +4,7 @@ author: "anne"
 date: "2 november 2018"
 output: word_document
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -26,11 +26,11 @@ theme_set(theme_pubr())
 
 ```{r}
 
-ggplot(data = browse_91, aes(beitetrykk)) +
+ggplot(data = browse_9, aes(beitetrykkr)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-ggplot(data = browse_91, aes(distvei3)) +
+ggplot(data = browse_9, aes(distvei1)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
