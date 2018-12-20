@@ -43,7 +43,7 @@ library("car", lib.loc="~/R/win-library/3.4")
 library("pscl", lib.loc="~/R/win-library/3.4")
 library("effects", lib.loc="~/R/win-library/3.4")
 library("lmerTest", lib.loc="~/R/win-library/3.4")
-
+library("dplyr", lib.loc="~/R/win-library/3.4")
 
 ```
 
