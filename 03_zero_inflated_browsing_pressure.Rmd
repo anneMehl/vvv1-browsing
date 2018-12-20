@@ -43,17 +43,32 @@ f1 <- formula(beitetrykkr ~ distvei3 + disthus + region + skogkategori + kant + 
 
 f2 <- formula(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe)
 
+f3 <- formula(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + + kant + helling + hohkatb + tretetthet + skogkategori*distvei1)
+
+
+
 H1a <- hurdle(f1, dist = "poisson",  
-              data = browse_91)  
+              data = browse_9)  
 
 H1b <- hurdle(f1, dist = "negbin", 
-              data = browse_91)  
+              data = browse_9)  
 
 H2b <- hurdle(f2, dist = "negbin", 
-              data = browse_91)
+              data = browse_9)
 
-H1c <- hurdle(f1, dist = "negbin", 
-              data = browse91_dist) 
+H2c <- hurdle(f3, dist = "negbin", 
+              data = browse_9) 
+
+H2d <- hurdle(f3, dist = "geometric", 
+              data = browse_9)
+
+H3a <- zeroinfl(f3, dist = "negbin", 
+              data = browse_9)
+
+H3b <- zeroinfl(f3, dist = "geometric", 
+              data = browse_9)
+
+
 
 ## These are glms that can be used instead of hurdle, so its possible to use effect plots. But it only works for poisson....
 # H1btest <- glm(factor(beitetrykkr > 0) ~ distvei3 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse_91,
@@ -68,11 +83,20 @@ summary(H1a)
 summary(H1b)
 summary(H1btest)
 summary(H1c)
+summary(H2c)
+summary(H3a)
+summary(H3b)
+
 
 AIC(H1a, H1b, H2b, m5glm, m4lm, H1btest)
-AIC(H1b, H1c)
+AIC(H1a, H1b, H2b, H2c, H2d, H3a, H3b)
+waldtest(H3a, H3b)
+lrtest(H1b, H2b, H2c)
+lrtest(H3a, H3b)
 
-plot(allEffects(H1btest))
+plot(factor(beitetrykkr == 0) ~ distvei1, data = browse_9, main = "Zero")
+plot(log(beitetrykkr) ~ distvei1, data = browse_9, subset = beitetrykkr > 0,
+  main = "Count")
 
 ```
 
