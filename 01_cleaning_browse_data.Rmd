@@ -100,9 +100,12 @@ browse_10 <- browse_910[['10']]
 save(browse_9, file = "browse_9.rda")
 save(browse_10, file = "browse_10.rda")
 
-# just temporary until I get back info on variables from Erling
-browse_9 <- browse_9[,c(1:8,47:48,57:82,88:89)]
-browse_91 <- browse_9[,c(1:8,10,12:15,24,27:28,32:36)]
+
+browse_9 <- browse_9[,c(1:8,10:18,26:28,32:39, 41:46,48:52,58:61,68:74,79:82)]
+
+browse_9$elgbROSprs9 <- NULL
+browse_9$elgbLAUVprs9 <- NULL
+browse_9$elgbFURUprs9 <- NULL
 
 ```
 
@@ -155,8 +158,8 @@ save(browseroad1500, file = "browseroad1500.rda")
 ##### Explore NAs 
 ```{r}
 
-nrow(browse_91)
-nrow(na.omit(browse_91))
+nrow(browse_9)
+nrow(na.omit(browse_9))
 
 head(browse_9, n = 10)
 tail(browse_9, n = 10)
@@ -167,58 +170,61 @@ tail(browse_9, n = 10)
 # browse_9$distvei2[is.na(browse_9$distvei2)] <- 10000
 # browse_9$distvei3[is.na(browse_9$distvei3)] <- 10000
 
-browse_91 <- na.omit(browse_91)
+browse_9 <- na.omit(browse_9)
 
-save(browse_91, file = "browse_91.rda")
-load("browse_91.rda")
+save(browse_9, file = "browse_9.rda")
+load("browse_9.rda")
 
 ```
 
 ##### Data structure -> factor levels
 ```{r}
 
-ggplot(data = browse_91, aes(landsdel)) +
+ggplot(data = browse_9, aes(landsdel)) +
   geom_bar()+
   theme_classic()
 
-ggplot(data = browse_91, aes(skogkategori)) +
+ggplot(data = browse_9, aes(skogkategori)) +
   geom_bar()+
   theme_classic()
 
-ggplot(data = browse_91, aes(kant)) +
+ggplot(data = browse_9, aes(kant)) +
   geom_bar()+
   theme_classic()
 
-ggplot(data = browse_91, aes(treartgruppe)) +
+ggplot(data = browse_9, aes(treartgruppe)) +
   geom_bar()+
   theme_classic()
 
-ggplot(data = browse_91, aes(hohkatb)) +
+ggplot(data = browse_9, aes(hohkatb)) +
   geom_bar()+
   theme_classic()
 
-ggplot(data = browse_91, aes(region)) +
+ggplot(data = browse_9, aes(region)) +
   geom_bar()+
   theme_classic()
 
 ```
 
 ```{r}
-browse_91$beitetrykkr <- round(browse_91$beitetrykk)
+browse_9$beitetrykkr <- round(browse_9$beitetrykk)
 ```
 
 ```{r}
-browse_91$landsdel <- as.factor(browse_91$landsdel)
-browse_91$hohkatb <- as.factor(browse_91$hohkatb)
-browse_91$landsdel <- factor(browse_91$landsdel, levels = c("Østlandet-Øst", "Midt-Norge", "Nord-Norge", "Sørlandet", "Vestlandet", "Østlandet-vest"))
-browse_91$skogkategori <- factor(browse_91$skogkategori, levels = c("Lavproduktiv_eldreskog", "Høyproduktiv_eldreskog", "Høyproduktiv_ungskog",  "Lavproduktiv_ungskog", "Uproduktiv_skog"))
-browse_91$kant <- factor(browse_91$kant, levels = c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant")) 
-browse_91$treartgruppe <- factor(browse_91$treartgruppe, levels = c("LAUV", "BJORK", "FURU", "ROS"))
-browse_91$hohkatb <- factor(browse_91$hohkatb, levels = c("200", "0", "100", "300", "400", "500", "600", "700", "800"))
-browse_91$region <- factor(browse_91$region, levels = c("Hedmark", "Agder", "Buskerud", "Hordaland", "More og Romsdal", "Nord-Trondelag", "Nordland", "Oppland", "Ostfold-Akershus", "Rogaland", "Sogn og Fjordane", "Sor-Trondelag", "Troms", "Vestfold-Telemark"))
+browse_9$landsdel <- as.factor(browse_9$landsdel)
+browse_9$hohkatb <- as.factor(browse_9$hohkatb)
+browse_9$landsdel <- factor(browse_9$landsdel, levels = c("Sørlandet", "Østlandet-Øst", "Midt-Norge", "Nord-Norge", "Vestlandet", "Østlandet-vest"))
+browse_9$skogkategori <- factor(browse_9$skogkategori, levels = c("Lavproduktiv_eldreskog", "Høyproduktiv_eldreskog", "Høyproduktiv_ungskog",  "Lavproduktiv_ungskog", "Uproduktiv_skog"))
+browse_9$kant <- factor(browse_9$kant, levels = c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant")) 
+browse_9$treartgruppe <- factor(browse_9$treartgruppe, levels = c("LAUV", "BJORK", "FURU", "ROS"))
+browse_9$hohkatb <- factor(browse_9$hohkatb, levels = c("100", "0", "200", "300", "400", "500", "600", "700", "800"))
+browse_9$region <- factor(browse_9$region, levels = c("Agder", "Buskerud", "Hordaland", "Hedmark", "More og Romsdal", "Nord-Trondelag", "Nordland", "Oppland", "Ostfold-Akershus", "Rogaland", "Sogn og Fjordane", "Sor-Trondelag", "Troms", "Vestfold-Telemark"))
 
 ```
 
+```{r}
+save(browse_9, file = "browse_9.rda")
+```
 
 
 
