@@ -26,15 +26,19 @@ theme_set(theme_pubr())
 
 ```{r}
 
-ggplot(data = browse_9, aes(beitetrykkr)) +
+ggplot(data = browse9bro, aes(beitetrykkr)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-ggplot(data = browse_9, aes(distvei1)) +
+ggplot(data = browse9bro_dist, aes(distvei1)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-ggplot(data = browse_91, aes(disthus)) +
+ggplot(data = browse9bro, aes(disthus)) +
+  geom_histogram(bins = 70)+
+  theme_classic()
+
+ggplot(data = browse9bro, aes(tretetthet)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
