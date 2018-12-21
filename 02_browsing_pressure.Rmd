@@ -19,15 +19,17 @@ knitr::opts_chunk$set(echo = TRUE)
 
 load("processdata/browse_sub.rda")
 load("processdata/browse_9.rda")
+load("processdata/browse9bro.rda")
+load("processdata/browse9bro_dist.rda")
 load("processdata/browse_10.rda")
 # load("processdata/broadhouse9.rda")
 # load("processdata/broadhouse10.rda")
-load("processdata/browse_91.rda")
+
 ```
 
 
 
-## gam
+# gam
 
 Models for general browsing pressure, not more than 1500m to a *public* road and where houses are not more than 2000m away
 ```{r}
@@ -192,9 +194,11 @@ visreg(m1k, "treegroup", by = "distroad1", breaks = c(50, 100, 200, 500, 1000, 1
 
 
 
-## (Generalized) Linear (mixed) models
+# (Generalized) Linear (mixed) models
 
-##### with browse_9
+---- !All models in the different sections (with different datasets) have the same names! ----
+
+### with browse_9
 ```{r}
 
 m1lm <- lm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse_9)
@@ -206,6 +210,7 @@ m1lm <- lm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + h
 m4lm <- lm(beitetrykkr ~ distvei3 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse_9)
 
 m5lm <- lm(beitetrykkr ~ distvei1 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse_9)
+m5lmN <- lm(beitetrykkr ~ distvei1 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse9bro)
 
 m6lm <- lm(beitetrykkr ~ distvei1 + region + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse_9)
 
@@ -332,6 +337,7 @@ plot(m4glm) # gaussian
 summary(m1lm)
 summary(m4lm)
 summary(m5lm)
+summary(m5lmN)
 summary(m7lm)
 summary(m10lm)
 
@@ -360,19 +366,399 @@ hist(resid(m3mix))
 
 
 
-##### with browse9_dist
 
+
+
+
+### With browse9bro
 ```{r}
 
-m1lmdist <- lm(beitetrykkr ~ disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse91_dist)
+m1lm <- lm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse9bro)
+## m1lm fits data better than m2lm and m3lm.
+# m2lm <- lm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + treartgruppe, data = browse9bro)
+# 
+# m3lm <- lm(beitetrykkr ~ distvei3 + disthus + skogkategori + kant + helling + treartgruppe, data = browse9bro)
+
+m4lm <- lm(beitetrykkr ~ distvei3 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse9bro)
+
+m5lm <- lm(beitetrykkr ~ distvei1 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse9bro)
+m5lmN <- lm(beitetrykkr ~ distvei1 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse9bro)
+
+m6lm <- lm(beitetrykkr ~ distvei1 + region + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse9bro)
+
+m7lm <- lm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + + kant + helling + hohkatb + skogkategori*distvei1, data = browse9bro)
+
+m7alm <- lm(beitetrykkr ~ distvei1 + disthus + skogkategori + treartgruppe + region + + kant + helling + hohkatb + skogkategori*distvei1, data = browse9bro)
+
+m8lm <- lm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + + kant + helling + hohkatb + treartgruppe*distvei1, data = browse9bro)
+
+m9lm <- lm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + + kant + helling + hohkatb + skogkategori*distvei1 + treartgruppe*distvei1, data = browse9bro)
+
+
+m10lm <- lm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, data = browse9bro)
+
+
+m11lm <- lm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + + kant + helling + hohkatb + tretetthet + tretetthet*distvei1, data = browse9bro)
+
+
+m12lm <- lm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + + kant + helling + hohkatb + tretetthet + skogkategori*distvei1 + treartgruppe*distvei1, data = browse9bro)
+
+m13lm <- lm(beitetrykkr ~ veitype1 + skogkategori + treartgruppe + region + + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, data = browse9bro)
+
+m14lm <- lm(beitetrykkr ~ distvei1 + vegetasjon + treartgruppe + region + + kant + helling + hohkatb + tretetthet + vegetasjon*distvei1, data = browse9bro)
+
+
+
+
+
+m1glm <- glm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, 
+            family = "poisson", 
+            data = browse9bro)
+
+m2glm <- glm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, 
+            family = "quasipoisson", 
+            data = browse9bro)
+
+m3glm <- glm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, 
+            family = "quasi", 
+            data = browse9bro)
+
+# m2glm <- glm(beitetrykk ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, 
+#             family = "Gamma", 
+#             data = browse9bro)
+
+m4glm <- glm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, 
+            family = "gaussian", 
+            data = browse9bro)
+
+# m5glm <- glm(beitetrykk ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, 
+#             family = "inverse.gaussian", 
+#             data = browse9bro)
+
+m5glm <- glm(beitetrykkr ~ distvei3 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe, 
+            family = "gaussian", 
+            data = browse9bro)
+
+## weights on tretetthet makes the model very bad.
+# m6glm <- glm(beitetrykkr ~ distvei3 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe, 
+#             family = "gaussian", 
+#             weights = tretetthet,
+#             data = browse9bro)
+# 
+# m7glm <- glm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, 
+#             family = "poisson", 
+#             weights = tretetthet,
+#             data = browse9bro)
+
+m8glm <- glm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
+            family = "quasipoisson", 
+            data = browse9bro)
+
+m9glm <- glm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
+            family = "gaussian", 
+            data = browse9bro)
+
+
+
+
+
+
+m1mix <- glmer(beitetrykkr ~ scale(distvei3) + scale(disthus) + skogkategori + kant + scale(helling) + hohkatb + treartgruppe + (1|region), 
+            data = browse9bro,
+            family = poisson())
+
+m2mix <- lmer(beitetrykkr ~ distvei3 + disthus + skogkategori + kant + helling + hohkatb + treartgruppe + (1|region), data = browse9bro)
+
+m3mix <- lmer(beitetrykkr ~ distvei3 + disthus + skogkategori + kant + helling + hohkatb + treartgruppe + (1|landsdel), data = browse9bro)
+
+m4mix <- lmer(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + kant + helling + hohkatb + tretetthet + skogkategori*distvei1 + (1|region), data = browse9bro)
+
 
 ```
+
+Testing fit and effect plots
 ```{r}
-plot(allEffects(m1lmdist))
 
-summary(m1lmdist)
 
-plot(m1lmdist)
+AIC(m1lm, m4lm, m5lm, m6lm, m7lm, m8lm, m9lm, m10lm, m11lm, m12lm)
+AIC(m1glm, m2glm, m3glm, m4glm, m5glm, m8glm, m9glm)
+
+AIC(m7lm, m7alm)
+AIC(m10lm, m14lm)
+AIC(m10lm, m9glm)
+
+AIC(m1mix, m2mix, m3mix, m4mix)
+
+
+plot(allEffects(m1lm))
+plot(allEffects(m4lm))
+plot(allEffects(m5lm))
+plot(allEffects(m7lm))
+plot(allEffects(m10lm))
+plot(allEffects(m12lm))
+plot(allEffects(m13lm))
+
+plot(allEffects(m1glm))
+plot(allEffects(m2glm))
+plot(allEffects(m3glm))
+plot(allEffects(m4glm))
+plot(allEffects(m7glm))
+
+
+
+plot(predictorEffect("distvei3", m4lm))
+plot(predictorEffect("distvei1", m5lm))
+plot(Effect(c("distvei1","skogkategori"), m7lm))
+plot(Effect(c("distvei1","skogkategori"), m10lm))
+plot(Effect(c("distvei1","skogkategori"), m12lm))
+plot(Effect(c("distvei1","treartgruppe"), m12lm))
+
+
+plot(allEffects(m2mix))
+plot(allEffects(m3mix))
+plot(allEffects(m4mix))
+
+
+plot(m1lm)
+plot(m10lm)
+
+plot(m2glm) # quasipoisson (accounts for overdispersion)
+plot(m4glm) # gaussian
+
+
+summary(m1lm)
+summary(m4lm)
+summary(m5lm)
+summary(m5lmN)
+summary(m7lm)
+summary(m10lm) # best
+summary(m12lm) # (2nd best with 3 points difference)
+summary(m13lm) # best, but logical?
+summary(m14lm)
+
+summary(m1glm)
+summary(m2glm)
+summary(m4glm)
+summary(m5glm)
+summary(m6glm)
+summary(m9glm) # best
+
+
+summary(m1mix)
+summary(m2mix)
+summary(m3mix)
+summary(m4mix) # best
+
+anova(m3mix)
+
+
+hist(resid(m10lm))
+hist(resid(m9glm))
+
+hist(resid(m1mix))
+hist(resid(m2mix))
+hist(resid(m3mix))
+hist(resid(m4mix))
+
+```
+
+
+
+
+
+
+
+### With browse9bro_dist
+
+```{r}
+
+
+m1lm <- lm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse9bro_dist)
+## m1lm fits data better than m2lm and m3lm.
+# m2lm <- lm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + treartgruppe, data = browse9bro_dist)
+# 
+# m3lm <- lm(beitetrykkr ~ distvei3 + disthus + skogkategori + kant + helling + treartgruppe, data = browse9bro_dist)
+
+m4lm <- lm(beitetrykkr ~ distvei3 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse9bro_dist)
+
+m5lm <- lm(beitetrykkr ~ distvei1 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse9bro_dist)
+m5lmN <- lm(beitetrykkr ~ distvei1 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse9bro_dist)
+
+m6lm <- lm(beitetrykkr ~ distvei1 + region + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse9bro_dist)
+
+m7lm <- lm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + + kant + helling + hohkatb + skogkategori*distvei1, data = browse9bro_dist)
+
+m7alm <- lm(beitetrykkr ~ distvei1 + disthus + skogkategori + treartgruppe + region + + kant + helling + hohkatb + skogkategori*distvei1, data = browse9bro_dist)
+
+m8lm <- lm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + + kant + helling + hohkatb + treartgruppe*distvei1, data = browse9bro_dist)
+
+m9lm <- lm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + + kant + helling + hohkatb + skogkategori*distvei1 + treartgruppe*distvei1, data = browse9bro_dist)
+
+
+m10lm <- lm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, data = browse9bro_dist)
+
+
+m11lm <- lm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + + kant + helling + hohkatb + tretetthet + tretetthet*distvei1, data = browse9bro_dist)
+
+
+m12lm <- lm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + + kant + helling + hohkatb + tretetthet + skogkategori*distvei1 + treartgruppe*distvei1, data = browse9bro_dist)
+
+m13lm <- lm(beitetrykkr ~ veitype1 + skogkategori + treartgruppe + region + + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, data = browse9bro_dist)
+
+m14lm <- lm(beitetrykkr ~ distvei1 + vegetasjon + treartgruppe + region + + kant + helling + hohkatb + tretetthet + vegetasjon*distvei1, data = browse9bro_dist)
+
+
+
+
+
+m1glm <- glm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, 
+            family = "poisson", 
+            data = browse9bro_dist)
+
+m2glm <- glm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, 
+            family = "quasipoisson", 
+            data = browse9bro_dist)
+
+m3glm <- glm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, 
+            family = "quasi", 
+            data = browse9bro_dist)
+
+# m2glm <- glm(beitetrykk ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, 
+#             family = "Gamma", 
+#             data = browse9bro_dist)
+
+m4glm <- glm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, 
+            family = "gaussian", 
+            data = browse9bro_dist)
+
+# m5glm <- glm(beitetrykk ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, 
+#             family = "inverse.gaussian", 
+#             data = browse9bro_dist)
+
+m5glm <- glm(beitetrykkr ~ distvei3 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe, 
+            family = "gaussian", 
+            data = browse9bro_dist)
+
+## weights on tretetthet makes the model very bad.
+# m6glm <- glm(beitetrykkr ~ distvei3 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe, 
+#             family = "gaussian", 
+#             weights = tretetthet,
+#             data = browse9bro_dist)
+# 
+# m7glm <- glm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, 
+#             family = "poisson", 
+#             weights = tretetthet,
+#             data = browse9bro_dist)
+
+m8glm <- glm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
+            family = "quasipoisson", 
+            data = browse9bro_dist)
+
+m9glm <- glm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
+            family = "gaussian", 
+            data = browse9bro_dist)
+
+
+
+
+
+
+m1mix <- glmer(beitetrykkr ~ scale(distvei3) + scale(disthus) + skogkategori + kant + scale(helling) + hohkatb + treartgruppe + (1|region), 
+            data = browse9bro_dist,
+            family = poisson())
+
+m2mix <- lmer(beitetrykkr ~ distvei3 + disthus + skogkategori + kant + helling + hohkatb + treartgruppe + (1|region), data = browse9bro_dist)
+
+m3mix <- lmer(beitetrykkr ~ distvei3 + disthus + skogkategori + kant + helling + hohkatb + treartgruppe + (1|landsdel), data = browse9bro_dist)
+
+m4mix <- lmer(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + kant + helling + hohkatb + tretetthet + skogkategori*distvei1 + (1|region), data = browse9bro_dist)
+
+
+```
+
+Testing fit and effect plots
+```{r}
+
+AIC(m1lm, m4lm, m5lm, m6lm, m7lm, m8lm, m9lm, m10lm, m11lm, m12lm)
+AIC(m1glm, m2glm, m3glm, m4glm, m5glm, m8glm, m9glm)
+
+AIC(m7lm, m7alm)
+AIC(m10lm, m13lm)
+AIC(m10lm, m9glm)
+AICc(m2glm, m8glm)
+
+AIC(m1mix, m2mix, m3mix, m4mix)
+
+
+plot(allEffects(m1lm))
+plot(allEffects(m4lm))
+plot(allEffects(m5lm))
+plot(allEffects(m7lm))
+plot(allEffects(m10lm))
+plot(allEffects(m12lm))
+plot(allEffects(m13lm))
+
+plot(allEffects(m1glm))
+plot(allEffects(m2glm))
+plot(allEffects(m3glm))
+plot(allEffects(m4glm))
+plot(allEffects(m7glm))
+
+
+
+plot(predictorEffect("distvei3", m4lm))
+plot(predictorEffect("distvei1", m5lm))
+plot(Effect(c("distvei1","skogkategori"), m7lm))
+plot(Effect(c("distvei1","skogkategori"), m10lm))
+plot(Effect(c("distvei1","skogkategori"), m12lm))
+plot(Effect(c("distvei1","treartgruppe"), m12lm))
+
+
+plot(allEffects(m2mix))
+plot(allEffects(m3mix))
+plot(allEffects(m4mix))
+
+
+plot(m1lm)
+plot(m10lm)
+
+plot(m2glm) # quasipoisson (accounts for overdispersion)
+plot(m4glm) # gaussian
+
+
+summary(m1lm)
+summary(m4lm)
+summary(m5lm)
+summary(m5lmN)
+summary(m7lm)
+summary(m10lm) # best
+summary(m12lm) # (2nd best with 3 points difference)
+summary(m13lm) # best, but logical?
+summary(m14lm)
+
+summary(m1glm)
+summary(m2glm)
+summary(m4glm)
+summary(m5glm)
+summary(m6glm)
+summary(m9glm) # best
+
+
+summary(m1mix)
+summary(m2mix)
+summary(m3mix)
+summary(m4mix) # best
+
+anova(m3mix)
+
+
+hist(resid(m10lm))
+hist(resid(m9glm))
+
+hist(resid(m1mix))
+hist(resid(m2mix))
+hist(resid(m3mix))
+hist(resid(m4mix))
 
 ```
 
