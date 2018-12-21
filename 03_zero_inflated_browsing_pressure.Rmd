@@ -39,34 +39,38 @@ For count data, helps with excess zeros and overdispersion
 ##### Hurdle model, using hurdle() from pscl package
 ```{r}
 
-f1 <- formula(beitetrykkr ~ distvei3 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe)
+f1 <- formula(beitetrykkr ~ distvei1 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe)
 
-f2 <- formula(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe)
+f2 <- formula(beitetrykkr ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe)
 
 f3 <- formula(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + + kant + helling + hohkatb + tretetthet + skogkategori*distvei1)
 
 
-
+# hurdle
 H1a <- hurdle(f1, dist = "poisson",  
-              data = browse_9)  
+              data = browse9bro_dist)  
 
 H1b <- hurdle(f1, dist = "negbin", 
-              data = browse_9)  
+              data = browse9bro_dist)  
 
-H2b <- hurdle(f2, dist = "negbin", 
-              data = browse_9)
 
-H2c <- hurdle(f3, dist = "negbin", 
-              data = browse_9) 
+H2a <- hurdle(f2, dist = "negbin", 
+              data = browse9bro_dist)
 
-H2d <- hurdle(f3, dist = "geometric", 
-              data = browse_9)
+H2b <- hurdle(f3, dist = "negbin", 
+              data = browse9bro_dist) 
 
+H2c <- hurdle(f3, dist = "geometric", 
+              data = browse9bro_dist)
+
+
+
+# zero inflated
 H3a <- zeroinfl(f3, dist = "negbin", 
-              data = browse_9)
+              data = browse9bro_dist)
 
 H3b <- zeroinfl(f3, dist = "geometric", 
-              data = browse_9)
+              data = browse9bro_dist)
 
 
 
@@ -76,29 +80,39 @@ H3b <- zeroinfl(f3, dist = "geometric",
 # dv0c <- glm(visits ~ gender + health + income + poly(age, 2), data = DoctorVisits, family = ztpoisson, subset = visits > 0)
 
 
-hurdletest(H1b)
-plot(residuals(H1b) ~ fitted(H1b))
+# hurdletest(H2c) ---- I don't get why this is not working
+plot(residuals(H2c) ~ fitted(H2c))
+plot(residuals(H3a) ~ fitted(H3a))
 
 summary(H1a)
 summary(H1b)
-summary(H1btest)
-summary(H1c)
+summary(H2b) # best
 summary(H2c)
-summary(H3a)
+
+summary(H3a) # best
 summary(H3b)
 
 
-AIC(H1a, H1b, H2b, m5glm, m4lm, H1btest)
-AIC(H1a, H1b, H2b, H2c, H2d, H3a, H3b)
-waldtest(H3a, H3b)
-lrtest(H1b, H2b, H2c)
+
+lrtest(H1a, H1b, H2a, H2b, H2c)
 lrtest(H3a, H3b)
+
+AIC(H2b)
+AIC(H3a)
+AICc(H2b)
+AICc(H3a)
+
+
 
 plot(factor(beitetrykkr == 0) ~ distvei1, data = browse_9, main = "Zero")
 plot(log(beitetrykkr) ~ distvei1, data = browse_9, subset = beitetrykkr > 0,
   main = "Count")
 
 ```
+
+
+
+
 
 ##### Two-way model "old school" with first running a binomial glm with a binomial respose (browsing yes/no), then running a poisson glm 
 ```{r}
