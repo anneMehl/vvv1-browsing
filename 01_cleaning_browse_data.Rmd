@@ -101,11 +101,14 @@ save(browse_9, file = "browse_9.rda")
 save(browse_10, file = "browse_10.rda")
 
 
-browse_9 <- browse_9[,c(1:8,10:18,26:28,32:39, 41:46,48:52,58:61,68:74,79:82)]
+browse_9 <- browse_9[,c(1:8,10:18,26:28,32:39,41:46,48:52,58:61,68:74,79:82)]
 
-browse_9$elgbROSprs9 <- NULL
-browse_9$elgbLAUVprs9 <- NULL
-browse_9$elgbFURUprs9 <- NULL
+browse9bro <- browse_9[,c(1:8, 28, 35, 40:54)] # for browsing pressure response
+browse9tree <- browse_9[,c(1:8, 10:12, 28, 32, 35:36, 40:54)] # for tree density/ number response
+
+# browse_9$elgROSprs9 <- NULL
+# browse_9$elgLAUVprs9 <- NULL
+# browse_9$elgFURUprs9 <- NULL
 
 ```
 
@@ -114,7 +117,7 @@ Creating subsets for different data
 
 browse91_dist <- browse_91[which(browse_91$distvei1 < 1501 & browse_91$disthus > 499), ] # longest distance to any road (that is further than 500m from a house) 1500m
 
-browse91_dist <- browse_91[browse_91$distvei3 < 1501, ] # longest distance to any road 1500m
+browse9bro_dist <- browse9bro[browse9bro$distvei1 < 1501, ] # longest distance to any public road 1500m
 
 
 # 
@@ -231,11 +234,244 @@ save(browse_9, file = "browse_9.rda")
 
 
 
+## For browse9bro
+
+##### Explore NAs 
+```{r}
+
+nrow(browse9bro)
+nrow(na.omit(browse9bro))
+
+head(browse9bro, n = 10)
+tail(browse9bro, n = 10)
+# unique(unlist(lapply(browse9bro, function (x) which(is.na(x)))))
+# fdata1[102, ]
+
+# browse9bro$distvei1[is.na(browse9bro$distvei1)] <- 10000
+# browse9bro$distvei2[is.na(browse9bro$distvei2)] <- 10000
+# browse9bro$distvei3[is.na(browse9bro$distvei3)] <- 10000
+
+browse9bro <- na.omit(browse9bro)
+
+save(browse9bro, file = "browse9bro.rda")
+load("browse9bro.rda")
+
+```
+
+##### Data structure -> factor levels
+```{r}
+
+ggplot(data = browse9bro, aes(landsdel)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9bro, aes(skogkategori)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9bro, aes(kant)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9bro, aes(treartgruppe)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9bro, aes(hohkatb)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9bro, aes(region)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9bro, aes(vegetasjon)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9bro, aes(veitype1)) +
+  geom_bar()+
+  theme_classic()
+
+```
+
+
+
+```{r}
+browse9bro$beitetrykkr <- round(browse9bro$beitetrykk)
+```
+
+```{r}
+browse9bro$landsdel <- as.factor(browse9bro$landsdel)
+browse9bro$hohkatb <- as.factor(browse9bro$hohkatb)
+browse9bro$landsdel <- factor(browse9bro$landsdel, levels = c("Vestlandet", "Sørlandet", "Østlandet-Øst", "Midt-Norge", "Nord-Norge", "Østlandet-vest"))
+browse9bro$skogkategori <- factor(browse9bro$skogkategori, levels = c("Lavproduktiv_eldreskog", "Høyproduktiv_eldreskog", "Høyproduktiv_ungskog",  "Lavproduktiv_ungskog", "Uproduktiv_skog"))
+browse9bro$kant <- factor(browse9bro$kant, levels = c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant")) 
+browse9bro$treartgruppe <- factor(browse9bro$treartgruppe, levels = c("LAUV", "BJORK", "FURU", "ROS"))
+browse9bro$hohkatb <- factor(browse9bro$hohkatb, levels = c("100", "0", "200", "300", "400", "500", "600", "700", "800"))
+browse9bro$region <- factor(browse9bro$region, levels = c("Agder", "Buskerud", "Hordaland", "Hedmark", "More og Romsdal", "Nord-Trondelag", "Nordland", "Oppland", "Ostfold-Akershus", "Rogaland", "Sogn og Fjordane", "Sor-Trondelag", "Troms", "Vestfold-Telemark"))
+browse9bro$vegetasjon <- as.factor(browse9bro$vegetasjon)
+browse9bro$vegetasjon <- factor(browse9bro$vegetasjon, levels = c("Blaabaerskog", "Alm-lindeskog", "Baerlyngskog", "Berg-grus",  "Blokkebaerskog", "Flommarkskog", "Graaorskog", "Hagemarkskog", "Hogstaudeskog", "Kystlynghei", "Laagurtskog", "Lavskog", "Myr-myrskog", "Or-askeskog", "Smaabregneskog", "Storbregneskog", "Viersumpskog"))
+browse9bro$veitype1 <- as.factor(browse9bro$veitype1)
+browse9bro$veitype1 <- factor(browse9bro$veitype1, levels = c("fylkesveg", "europaogriksveg", "kommuneveg"))
+```
+
+```{r}
+save(browse9bro, file = "browse9bro.rda")
+```
+
+
+
+
+# For browse9bro_dist
+
+##### Data structure -> factor levels
+```{r}
+
+ggplot(data = browse9bro_dist, aes(landsdel)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9bro_dist, aes(skogkategori)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9bro_dist, aes(kant)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9bro_dist, aes(treartgruppe)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9bro_dist, aes(hohkatb)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9bro_dist, aes(region)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9bro_dist, aes(vegetasjon)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9bro_dist, aes(veitype1)) +
+  geom_bar()+
+  theme_classic()
+
+```
+
+```{r}
+browse9bro_dist$landsdel <- as.factor(browse9bro_dist$landsdel)
+browse9bro_dist$hohkatb <- as.factor(browse9bro_dist$hohkatb)
+browse9bro_dist$landsdel <- factor(browse9bro_dist$landsdel, levels = c("Vestlandet", "Sørlandet", "Østlandet-Øst", "Midt-Norge", "Nord-Norge", "Østlandet-vest"))
+browse9bro_dist$skogkategori <- factor(browse9bro_dist$skogkategori, levels = c("Lavproduktiv_eldreskog", "Høyproduktiv_eldreskog", "Høyproduktiv_ungskog",  "Lavproduktiv_ungskog", "Uproduktiv_skog"))
+browse9bro_dist$kant <- factor(browse9bro_dist$kant, levels = c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant")) 
+browse9bro_dist$treartgruppe <- factor(browse9bro_dist$treartgruppe, levels = c("LAUV", "BJORK", "FURU", "ROS"))
+browse9bro_dist$hohkatb <- factor(browse9bro_dist$hohkatb, levels = c("100", "0", "200", "300", "400", "500", "600", "700", "800"))
+browse9bro_dist$region <- factor(browse9bro_dist$region, levels = c("Agder", "Buskerud", "Hordaland", "Hedmark", "More og Romsdal", "Nord-Trondelag", "Nordland", "Oppland", "Ostfold-Akershus", "Rogaland", "Sogn og Fjordane", "Sor-Trondelag", "Troms", "Vestfold-Telemark"))
+browse9bro_dist$vegetasjon <- as.factor(browse9bro_dist$vegetasjon)
+browse9bro_dist$vegetasjon <- factor(browse9bro_dist$vegetasjon, levels = c("Blaabaerskog", "Alm-lindeskog", "Baerlyngskog", "Berg-grus",  "Blokkebaerskog", "Flommarkskog", "Graaorskog", "Hagemarkskog", "Hogstaudeskog", "Kystlynghei", "Laagurtskog", "Lavskog", "Myr-myrskog", "Or-askeskog", "Smaabregneskog", "Storbregneskog", "Viersumpskog"))
+browse9bro_dist$veitype1 <- as.factor(browse9bro_dist$veitype1)
+browse9bro_dist$veitype1 <- factor(browse9bro_dist$veitype1, levels = c("fylkesveg", "europaogriksveg", "kommuneveg"))
+```
+
+```{r}
+save(browse9bro_dist, file = "browse9bro_dist.rda")
+```
 
 
 
 
 
+
+
+## For browse9tree ------------------>  NB! not run yet!!!
+
+##### Explore NAs 
+```{r}
+
+nrow(browse9tree)
+nrow(na.omit(browse9tree))
+
+head(browse9tree, n = 10)
+tail(browse9tree, n = 10)
+# unique(unlist(lapply(browse9tree, function (x) which(is.na(x)))))
+# fdata1[102, ]
+
+# browse9tree$distvei1[is.na(browse9tree$distvei1)] <- 10000
+# browse9tree$distvei2[is.na(browse9tree$distvei2)] <- 10000
+# browse9tree$distvei3[is.na(browse9tree$distvei3)] <- 10000
+
+browse9tree <- na.omit(browse9tree)
+
+save(browse9tree, file = "browse9tree.rda")
+load("browse9tree.rda")
+
+```
+
+##### Data structure -> factor levels
+```{r}
+
+ggplot(data = browse9tree, aes(landsdel)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9tree, aes(skogkategori)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9tree, aes(kant)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9tree, aes(treartgruppe)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9tree, aes(hohkatb)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9tree, aes(region)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9tree, aes(vegetasjon)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9tree, aes(veitype1)) +
+  geom_bar()+
+  theme_classic()
+
+```
+
+
+
+```{r}
+browse9tree$beitetrykkr <- round(browse9tree$beitetrykk)
+```
+
+```{r}
+browse9tree$landsdel <- as.factor(browse9tree$landsdel)
+browse9tree$hohkatb <- as.factor(browse9tree$hohkatb)
+browse9tree$landsdel <- factor(browse9tree$landsdel, levels = c("Vestlandet", "Sørlandet", "Østlandet-Øst", "Midt-Norge", "Nord-Norge", "Østlandet-vest"))
+browse9tree$skogkategori <- factor(browse9tree$skogkategori, levels = c("Lavproduktiv_eldreskog", "Høyproduktiv_eldreskog", "Høyproduktiv_ungskog",  "Lavproduktiv_ungskog", "Uproduktiv_skog"))
+browse9tree$kant <- factor(browse9tree$kant, levels = c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant")) 
+browse9tree$treartgruppe <- factor(browse9tree$treartgruppe, levels = c("LAUV", "BJORK", "FURU", "ROS"))
+browse9tree$hohkatb <- factor(browse9tree$hohkatb, levels = c("100", "0", "200", "300", "400", "500", "600", "700", "800"))
+browse9tree$region <- factor(browse9tree$region, levels = c("Agder", "Buskerud", "Hordaland", "Hedmark", "More og Romsdal", "Nord-Trondelag", "Nordland", "Oppland", "Ostfold-Akershus", "Rogaland", "Sogn og Fjordane", "Sor-Trondelag", "Troms", "Vestfold-Telemark"))
+browse9tree$vegetasjon <- as.factor(browse9tree$vegetasjon)
+browse9tree$vegetasjon <- factor(browse9tree$vegetasjon, levels = c("Blaabaerskog", "Alm-lindeskog", "Baerlyngskog", "Berg-grus",  "Blokkebaerskog", "Flommarkskog", "Graaorskog", "Hagemarkskog", "Hogstaudeskog", "Kystlynghei", "Laagurtskog", "Lavskog", "Myr-myrskog", "Or-askeskog", "Smaabregneskog", "Storbregneskog", "Viersumpskog"))
+browse9tree$veitype1 <- as.factor(browse9tree$veitype1)
+browse9tree$veitype1 <- factor(browse9tree$veitype1, levels = c("fylkesveg", "europaogriksveg", "kommuneveg"))
+```
+
+```{r}
+save(browse9tree, file = "browse9tree.rda")
+```
 
 
 
