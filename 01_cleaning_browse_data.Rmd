@@ -360,6 +360,10 @@ ggplot(data = browse9bro_dist, aes(veitype1)) +
   geom_bar()+
   theme_classic()
 
+ggplot(data = browse9bro_dist, aes(helling)) +
+  geom_bar()+
+  theme_classic()
+
 ```
 
 ```{r}
@@ -375,6 +379,7 @@ browse9bro_dist$vegetasjon <- as.factor(browse9bro_dist$vegetasjon)
 browse9bro_dist$vegetasjon <- factor(browse9bro_dist$vegetasjon, levels = c("Blaabaerskog", "Alm-lindeskog", "Baerlyngskog", "Berg-grus",  "Blokkebaerskog", "Flommarkskog", "Graaorskog", "Hagemarkskog", "Hogstaudeskog", "Kystlynghei", "Laagurtskog", "Lavskog", "Myr-myrskog", "Or-askeskog", "Smaabregneskog", "Storbregneskog", "Viersumpskog"))
 browse9bro_dist$veitype1 <- as.factor(browse9bro_dist$veitype1)
 browse9bro_dist$veitype1 <- factor(browse9bro_dist$veitype1, levels = c("fylkesveg", "europaogriksveg", "kommuneveg"))
+browse9bro_dist$helling <- as.factor(browse9bro_dist$helling)
 ```
 
 ```{r}
