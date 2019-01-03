@@ -45,6 +45,8 @@ f2 <- formula(beitetrykkr ~ distvei1 + disthus + landsdel + skogkategori + kant 
 
 f3 <- formula(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + + kant + helling + hohkatb + tretetthet + skogkategori*distvei1)
 
+f4 <- formula(beitetrykkr ~ distvei1 + disthus + skogkategori + treartgruppe + region + + kant + helling + hohkatb + tretetthet + skogkategori*distvei1)
+
 
 # hurdle
 H1a <- hurdle(f1, dist = "poisson",  
@@ -72,6 +74,9 @@ H3a <- zeroinfl(f3, dist = "negbin",
 H3b <- zeroinfl(f3, dist = "geometric", 
               data = browse9bro_dist)
 
+H3c <- zeroinfl(f4, dist = "negbin", 
+              data = browse9bro_dist)
+
 
 
 ## These are glms that can be used instead of hurdle, so its possible to use effect plots. But it only works for poisson....
@@ -81,8 +86,11 @@ H3b <- zeroinfl(f3, dist = "geometric",
 
 
 # hurdletest(H2c) ---- I don't get why this is not working
-plot(residuals(H2c) ~ fitted(H2c))
+
+plot(residuals(H2b) ~ fitted(H2b))
 plot(residuals(H3a) ~ fitted(H3a))
+hist(resid(H3a))
+hist(resid(H2b))
 
 summary(H1a)
 summary(H1b)
@@ -95,17 +103,17 @@ summary(H3b)
 
 
 lrtest(H1a, H1b, H2a, H2b, H2c)
-lrtest(H3a, H3b)
+lrtest(H3a, H3c)
 
 AIC(H2b)
 AIC(H3a)
 AICc(H2b)
-AICc(H3a)
+AIC(H3a, H3c)
 
 
 
-plot(factor(beitetrykkr == 0) ~ distvei1, data = browse_9, main = "Zero")
-plot(log(beitetrykkr) ~ distvei1, data = browse_9, subset = beitetrykkr > 0,
+plot(factor(beitetrykkr == 0) ~ distvei1, data = browse9bro_dist, main = "Zero")
+plot(log(beitetrykkr) ~ distvei1, data = browse9bro_dist, subset = beitetrykkr > 0,
   main = "Count")
 
 ```
