@@ -387,6 +387,11 @@ save(browse9bro_dist, file = "browse9bro_dist.rda")
 ```
 
 
+```{r}
+browse9bro_dist$nobro <- 100-browse9bro_dist$beitetrykkr
+browse9bro_dist$nobro <- as.integer(browse9bro_dist$nobro)
+browse9bro_dist$beitetrykkr <- as.integer(browse9bro_dist$beitetrykkr)
+```
 
 
 
