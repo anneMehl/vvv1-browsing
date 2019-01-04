@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 load("processdata/browse_9.rda")
 # load("processdata/browse9pos.rda")
-
+load("processdata/browse9bro_dist.rda")
 ```
 
 
@@ -49,32 +49,35 @@ f4 <- formula(beitetrykkr ~ distvei1 + disthus + skogkategori + treartgruppe + r
 
 
 # hurdle
-H1a <- hurdle(f1, dist = "poisson",  
+h1a <- hurdle(f1, dist = "poisson",  
               data = browse9bro_dist)  
 
-H1b <- hurdle(f1, dist = "negbin", 
+h1b <- hurdle(f1, dist = "negbin", 
               data = browse9bro_dist)  
 
 
-H2a <- hurdle(f2, dist = "negbin", 
+h2a <- hurdle(f2, dist = "negbin", 
               data = browse9bro_dist)
 
-H2b <- hurdle(f3, dist = "negbin", 
+h2b <- hurdle(f3, dist = "negbin", 
               data = browse9bro_dist) 
 
-H2c <- hurdle(f3, dist = "geometric", 
+h2c <- hurdle(f3, dist = "geometric", 
               data = browse9bro_dist)
 
 
 
 # zero inflated
-H3a <- zeroinfl(f3, dist = "negbin", 
+z3a <- zeroinfl(f3, dist = "negbin", 
               data = browse9bro_dist)
 
-H3b <- zeroinfl(f3, dist = "geometric", 
+z3b <- zeroinfl(f3, dist = "geometric", 
               data = browse9bro_dist)
 
-H3c <- zeroinfl(f4, dist = "negbin", 
+z3c <- zeroinfl(f4, dist = "negbin", 
+              data = browse9bro_dist)
+
+z3d <- zeroinfl(f3, dist = "poisson", 
               data = browse9bro_dist)
 
 
