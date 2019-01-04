@@ -614,6 +614,12 @@ m15lm <- lm(beitetrykkr ~ distvei1 + disthus+ skogkategori + treartgruppe + regi
 
 m16lm <- lm(beitetrykkr ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1 + tretetthet*distvei1, data = browse9bro_dist)
 
+m17lm <- lm(beitetrykkr ~ distvei1 + disthus+ skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, data = browse9bro_dist)
+
+
+
+
+
 
 
 m1glm <- glm(beitetrykkr ~ distvei3 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, 
@@ -665,6 +671,23 @@ m9glm <- glm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + kan
 m9aglm <- glm(beitetrykkr ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
             family = "gaussian", 
             data = browse9bro_dist)
+m10aglm <- glm(beitetrykkr ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
+            family = "poisson", 
+            data = browse9bro_dist)
+
+# Binomial logistic regression with two-column integer matrix as response
+m11aglm <- glm(cbind(beitetrykkr, nobro) ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
+            family = "binomial", 
+            weights = nobro,
+            data = browse9bro_dist)
+
+m11bglm <- glm(cbind(beitetrykkr, nobro) ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
+            family = "binomial", 
+            data = browse9bro_dist)
+
+m11cglm <- glm(cbind(beitetrykkr, nobro) ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
+            family = "quasibinomial", 
+            data = browse9bro_dist) # was supposed to help with overdispersion (residual deviance is much higer than residual d.f.), but no change!
 
 
 
@@ -688,12 +711,15 @@ Testing fit and effect plots
 
 AIC(m1lm, m4lm, m5lm, m6lm, m7lm, m7alm, m8lm, m9lm, m10lm, m10alm, m11lm, m12lm, m12alm, m14lm, m15lm, m16lm)
 AIC(m1glm, m2glm, m3glm, m4glm, m5glm, m8glm, m9glm, m9aglm)
+AIC(m10alm, m9aglm, m10aglm)
+AIC(m11aglm, m11bglm, m11cglm)
 
 AIC(m7lm, m7alm)
 AIC(m13lm, m13alm)
 AIC(m10lm, m9glm)
 AICc(m2glm, m8glm)
 AIC(m10lm, m10alm)
+AIC(m9aglm, m11bglm, h2b, z3a)
 
 AIC(m1mix, m2mix, m3mix, m4mix)
 
@@ -718,6 +744,7 @@ plot(allEffects(m4glm))
 plot(allEffects(m7glm))
 plot(allEffects(m9glm))
 plot(allEffects(m9aglm))
+plot(allEffects(m11bglm))
 
 
 
