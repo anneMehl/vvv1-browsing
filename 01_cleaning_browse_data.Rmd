@@ -387,12 +387,24 @@ save(browse9bro_dist, file = "browse9bro_dist.rda")
 ```
 
 
+For binary logistic regression
 ```{r}
 browse9bro_dist$nobro <- 100-browse9bro_dist$beitetrykkr
 browse9bro_dist$nobro <- as.integer(browse9bro_dist$nobro)
 browse9bro_dist$beitetrykkr <- as.integer(browse9bro_dist$beitetrykkr)
 ```
 
+
+For beta regression
+```{r}
+browse9bro_dist$bt100 <- browse9bro_dist$beitetrykkr/100
+# browse9bro_dist$bt100[browse9bro_dist$bt100 > 0.90] <- 1.00
+browse9bro_dist$bt100[browse9bro_dist$bt100 == 0.00] <- 0.01
+
+str(browse9bro_dist$bt100)
+
+
+```
 
 
 
