@@ -71,5 +71,6 @@ split file off.
 ### To test hurdle and zeroinf models
 coeftest() and waldtest() from lmtest, as well as linearHypothesis()
 from car can be used for Wald tests, and lrtest() from lmtest for LR tests of nested model
+Can also use AIC
 
 
