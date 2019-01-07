@@ -43,7 +43,7 @@ f1 <- formula(beitetrykkr ~ distvei1 + disthus + region + skogkategori + kant + 
 
 f2 <- formula(beitetrykkr ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe)
 
-f3 <- formula(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + + kant + helling + hohkatb + tretetthet + skogkategori*distvei1)
+f3 <- formula(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1)
 
 f4 <- formula(beitetrykkr ~ distvei1 + disthus + skogkategori + treartgruppe + region + + kant + helling + hohkatb + tretetthet + skogkategori*distvei1)
 
@@ -82,6 +82,8 @@ z3d <- zeroinfl(f3, dist = "poisson",
 
 
 
+
+
 ## These are glms that can be used instead of hurdle, so its possible to use effect plots. But it only works for poisson....
 # H1btest <- glm(factor(beitetrykkr > 0) ~ distvei3 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse_91,
 #                family = binomial(link = "cloglog"))
@@ -90,28 +92,38 @@ z3d <- zeroinfl(f3, dist = "poisson",
 
 # hurdletest(H2c) ---- I don't get why this is not working
 
-plot(residuals(H2b) ~ fitted(H2b))
-plot(residuals(H3a) ~ fitted(H3a))
-hist(resid(H3a))
-hist(resid(H2b))
+plot(residuals(h2b) ~ fitted(h2b))
+plot(residuals(z3a) ~ fitted(z3a))
+hist(resid(z3a))
+hist(resid(h2b))
 
-summary(H1a)
-summary(H1b)
-summary(H2b) # best
-summary(H2c)
+summary(h1a)
+summary(h1b)
+summary(h2b) # best
+summary(h2c)
 
-summary(H3a) # best
-summary(H3b)
+summary(z3a) # best
+summary(z3b)
 
+f <- fitted(z3a)
+p <- predict(z3a)
+resid <- residuals(z3a, type = "pearson")
+plot(resid ~ f)
+plot(resid ~ browse9bro_dist$distvei1)
+plot(resid ~ browse9bro_dist$disthus)
+plot(resid ~ browse9bro_dist$skogkategori)
+plot(resid ~ browse9bro_dist$treartgruppe)
+plot(resid ~ browse9bro_dist$region)
+plot(resid ~ browse9bro_dist$kant)
+plot(resid(z3a))
 
+lrtest(h1a, h1b, h2a, h2b, h2c)
+lrtest(z3a, z3c)
 
-lrtest(H1a, H1b, H2a, H2b, H2c)
-lrtest(H3a, H3c)
-
-AIC(H2b)
-AIC(H3a)
-AICc(H2b)
-AIC(H3a, H3c)
+AIC(h2b)
+AIC(z3a)
+AICc(h2b)
+AIC(z3a, z3c)
 
 
 
