@@ -146,6 +146,13 @@ summary(m12)
 
 ```
 
+```{r}
+gam13 <- gam(beitetrykkr ~ distvei1 + disthus+ skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet, data = browse9bro_dist)
+
+gam14 <- gam(beitetrykkr ~ distvei1 + disthus+ skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet, data = browse9bro_dist, method = "REML")
+```
+
+
 
 Testing/ selection
 ```{r}
@@ -596,7 +603,8 @@ m9lm <- lm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + kant 
 
 m10lm <- lm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, data = browse9bro_dist)
 m10alm <- lm(beitetrykkr ~ distvei1 + disthus+ skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, data = browse9bro_dist)
-
+m10blm <- lm(log(beitetrykkr+1) ~ distvei1 + disthus+ skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, data = browse9bro_dist)
+m10clm <- lm(sqrt(beitetrykkr) ~ distvei1 + disthus+ skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, data = browse9bro_dist)
 
 m11lm <- lm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + tretetthet*distvei1, data = browse9bro_dist)
 
@@ -661,19 +669,31 @@ m5glm <- glm(beitetrykkr ~ distvei3 + disthus + region + skogkategori + kant + h
 #             weights = tretetthet,
 #             data = browse9bro_dist)
 
-m8glm <- glm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
+m8glm <- glm(beitetrykkr ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
             family = "quasipoisson", 
             data = browse9bro_dist)
 
 m9glm <- glm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
             family = "gaussian", 
             data = browse9bro_dist)
-m9aglm <- glm(beitetrykkr ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
+m9aglm <- glm(log(beitetrykkr+1) ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
             family = "gaussian", 
             data = browse9bro_dist)
+m9bglm <- glm.nb(log(beitetrykkr+1) ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
+            data = browse9bro_dist)
+m9cglm <- glm.nb(log(beitetrykkr+1) ~ distvei1 + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
+            data = browse9bro_dist)
+
 m10aglm <- glm(beitetrykkr ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
             family = "poisson", 
             data = browse9bro_dist)
+
+m11glm <- glm.nb(log(beitetrykkr+1) ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1 + treartgruppe*distvei1, 
+             data = browse9bro_dist)
+
+m11aglm <- glm.nb(log(beitetrykkr+1) ~ distvei1 + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1 + treartgruppe*distvei1, 
+             data = browse9bro_dist)
+
 
 # Binomial logistic regression with two-column integer matrix as response
 m11aglm <- glm(cbind(beitetrykkr, nobro) ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
@@ -690,18 +710,21 @@ m11cglm <- glm(cbind(beitetrykkr, nobro) ~ distvei1 + disthus + skogkategori + t
             data = browse9bro_dist) # was supposed to help with overdispersion (residual deviance is much higer than residual d.f.), but no change!
 
 
+# Beta regression
+library(betareg)
+m1br <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
+            data = browse9bro_dist)
 
-
-
-m1mix <- glmer(beitetrykkr ~ scale(distvei3) + scale(disthus) + skogkategori + kant + scale(helling) + hohkatb + treartgruppe + (1|region), 
-            data = browse9bro_dist,
-            family = poisson())
-
-m2mix <- lmer(beitetrykkr ~ distvei3 + disthus + skogkategori + kant + helling + hohkatb + treartgruppe + (1|region), data = browse9bro_dist)
-
-m3mix <- lmer(beitetrykkr ~ distvei3 + disthus + skogkategori + kant + helling + hohkatb + treartgruppe + (1|landsdel), data = browse9bro_dist)
-
-m4mix <- lmer(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + kant + helling + hohkatb + tretetthet + skogkategori*distvei1 + (1|region), data = browse9bro_dist)
+# 
+# m1mix <- glmer(beitetrykkr ~ scale(distvei3) + scale(disthus) + skogkategori + kant + scale(helling) + hohkatb + treartgruppe + (1|region), 
+#             data = browse9bro_dist,
+#             family = poisson())
+# 
+# m2mix <- lmer(beitetrykkr ~ distvei3 + disthus + skogkategori + kant + helling + hohkatb + treartgruppe + (1|region), data = browse9bro_dist)
+# 
+# m3mix <- lmer(beitetrykkr ~ distvei3 + disthus + skogkategori + kant + helling + hohkatb + treartgruppe + (1|landsdel), data = browse9bro_dist)
+# 
+# m4mix <- lmer(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + kant + helling + hohkatb + tretetthet + skogkategori*distvei1 + (1|region), data = browse9bro_dist)
 
 
 ```
@@ -711,17 +734,22 @@ Testing fit and effect plots
 
 AIC(m1lm, m4lm, m5lm, m6lm, m7lm, m7alm, m8lm, m9lm, m10lm, m10alm, m11lm, m12lm, m12alm, m14lm, m15lm, m16lm)
 AIC(m1glm, m2glm, m3glm, m4glm, m5glm, m8glm, m9glm, m9aglm)
-AIC(m10alm, m9aglm, m10aglm)
 AIC(m11aglm, m11bglm, m11cglm)
+AIC(m9bglm, m9cglm, m11glm)
+
+# candidates
+AIC(m10alm, m10blm, m10clm, m9aglm, m9bglm, m9cglm, m10aglm, m11glm, m11aglm, m8glm, h2b, z3a)
 
 AIC(m7lm, m7alm)
 AIC(m13lm, m13alm)
 AIC(m10lm, m9glm)
 AICc(m2glm, m8glm)
 AIC(m10lm, m10alm)
-AIC(m9aglm, m11bglm, h2b, z3a)
+AIC(m10alm, m10blm, m10clm)
 
-AIC(m1mix, m2mix, m3mix, m4mix)
+AIC(m9aglm, m11bglm, h2b, z3a, gam14)
+BIC(m9aglm, m11bglm, h2b, z3a)
+
 
 
 plot(allEffects(m1lm))
@@ -761,13 +789,24 @@ plot(allEffects(m3mix))
 plot(allEffects(m4mix))
 
 
-plot(m1lm)
-plot(m10lm)
+par(mfrow = c(2, 2))
+plot(m10alm)
+plot(m10blm)
+plot(m12alm)
 
-plot(m2glm) # quasipoisson (accounts for overdispersion)
-plot(m9glm) # gaussian
+plot(m9aglm)
+plot(m9bglm)
+plot(m9cglm)
+
+drop1(m9bglm, test = "Chi")
+drop1(m9cglm, test = "Chi")
 
 
+plot(m8glm) # quasipoisson (accounts for overdispersion)
+plot(m10aglm) # poisson
+
+
+# ------- linear models ------
 summary(m1lm)
 summary(m4lm)
 summary(m5lm)
@@ -778,29 +817,66 @@ summary(m12lm) # 2nd best with 3 points difference
 # summary(m13lm) # best, but logical?
 summary(m14lm)
 
+# ------- generalized linear models --------
 summary(m1glm)
 summary(m2glm)
 summary(m4glm)
 summary(m5glm)
 summary(m6glm)
-summary(m9glm) # best
+summary(m9aglm) 
+summary(m9bglm) # best
+summary(m9cglm) # best (without house)
 
+# summary(m1mix)
+# summary(m2mix)
+# summary(m3mix)
+# summary(m4mix) # best
 
-summary(m1mix)
-summary(m2mix)
-summary(m3mix)
-summary(m4mix) # best
-
-anova(m3mix)
 
 
 hist(resid(m10lm))
-hist(resid(m9glm))
+hist(resid(m10alm))
+hist(resid(m12lm))
+hist(resid(m12alm))
 
-hist(resid(m1mix))
-hist(resid(m2mix))
-hist(resid(m3mix))
-hist(resid(m4mix))
+plot(resid(m10alm))
+plot(resid(m12alm))
+
+plot(resid(m9bglm))
+plot(resid(m9cglm))
+
+
+
+# test for overdispersion
+
+# m10aglm - poisson
+E1 <- resid(m10aglm, type = "pearson")
+Dispersion <- sum(E1^2) / m10aglm$df.residual
+
+dispersiontest(m10aglm, trafo = NULL, alternative = c("greater", "two.sided", "less"))
+
+# m9bglm - glm.nb
+E2 <- resid(m9bglm, type = "pearson")
+Dispersion2 <- sum(E2^2) / m9bglm$df.residual
+
+# m9cglm - glm.nb
+E2a <- resid(m9cglm, type = "pearson")
+Dispersion2a <- sum(E2a^2) / m9cglm$df.residual
+
+# z3a - zeroinfl
+N <- nrow(browse9bro_dist)
+E3 <- resid(z3a, type = "pearson")
+Dispersion3 <- sum(E2^2) / (N - 17) # best
+
+# m11glm - glm.nb
+E4 <- resid(m11glm, type = "pearson")
+Dispersion4 <- sum(E4^2) / m11glm$df.residual
+
+# m11aglm - glm.nb
+E5 <- resid(m11aglm, type = "pearson")
+Dispersion5 <- sum(E5^2) / m11aglm$df.residual
+
+
 
 ```
 
