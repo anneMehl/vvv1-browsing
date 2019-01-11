@@ -1,0 +1,213 @@
+---
+title: "new_approach"
+author: "anne"
+date: "9 januar 2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+load("processdata/browse9bro_dist.rda")
+browse9bro_dist$beitetrykkr <- as.integer(browse9bro_dist$beitetrykkr)
+browse9bro_dist$bt100 <- browse9bro_dist$beitetrykkr/100
+```
+
+
+
+#### Modelling spatial autocorrelation (https://onlinelibrary.wiley.com/doi/full/10.1111/j.2007.0906-7590.05171.x)
+```{r}
+
+library(spdep)
+# ?autocov_dist
+
+# prepare neighbour lists for spatial autocorrelation analysis
+nb.list <- dnearneigh(as.matrix(browse9bro_dist[,c("UTM_OV_33", "UTM_SN_33")]), 0, 6)
+nb.weights <- nb2listw(nb.list)
+
+# Make a matrix of coordinates
+coords <- as.matrix(cbind(browse9bro_dist$UTM_OV_33, browse9bro_dist$UTM_SN_33))
+# compute the autocovariate based on the above distance and weight
+ac <- autocov_dist(browse9bro_dist$bt100, coords, nbs = 10000, type="inverse", zero.policy = TRUE)
+browse9bro_dist$ac <- ac
+
+
+# now run a linear model with the autocovariate as additional explanatory variable:
+# fm <- lm(snouter1.1 ~ rain + djungle + ac, data=snouter.df)
+# summary(fm)
+
+```
+
+
+
+
+#### First part of a hurdle/ zeroinlf model to account for zero inflation
+```{r}
+m1bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1,
+            family = binomial(link = "cloglog"),
+            data = browse9bro_dist)
+
+m1abin <- glm(factor(bt100 > 0) ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1,
+            family = binomial(link = "cloglog"),
+            data = browse9bro_dist)
+
+m2bin <- glm(factor(beitetrykkr > 0) ~ distvei1,
+            family = binomial(link = "cloglog"),
+            data = browse9bro_dist)
+
+m3bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus,
+            family = binomial(link = "cloglog"),
+            data = browse9bro_dist)
+
+m4bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori,
+            family = binomial(link = "cloglog"),
+            data = browse9bro_dist)
+
+m5bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori + treartgruppe,
+            family = binomial(link = "cloglog"),
+            data = browse9bro_dist)
+
+m6bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori + treartgruppe + region,
+            family = binomial(link = "cloglog"),
+            data = browse9bro_dist)
+
+m7bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant,
+            family = binomial(link = "cloglog"),
+            data = browse9bro_dist)
+
+m8bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling,
+            family = binomial(link = "cloglog"),
+            data = browse9bro_dist)
+
+m9bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb,
+            family = binomial(link = "cloglog"),
+            data = browse9bro_dist)
+
+m10bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet,
+            family = binomial(link = "cloglog"),
+            data = browse9bro_dist)
+
+```
+
+
+```{r}
+AIC(m1bin, m2bin, m3bin, m4bin, m5bin, m6bin, m7bin, m8bin, m9bin, m10bin)
+```
+```{r}
+summary(m1bin)
+
+plot(allEffects(m1bin))
+
+```
+
+
+
+
+#### Instead of having the second part of a hurdle or zeroinfl model, use a beta regression, because we have percentage data (use a subset of the dataset with only response values above 0) - need to account for spatial autocorrelation
+```{r}
+
+m1beta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1,
+            data = browse9bro_dist,
+            subset = beitetrykkr > 0)
+
+m1abeta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + ac + kant + helling + hohkatb + tretetthet + skogkategori*distvei1,
+            data = browse9bro_dist,
+            subset = beitetrykkr > 0)
+
+m2beta <- betareg(bt100 ~ distvei1,
+            data = browse9bro_dist,
+            subset = beitetrykkr > 0)
+
+m3beta <- betareg(bt100 ~ distvei1 + disthus,
+            data = browse9bro_dist,
+            subset = beitetrykkr > 0)
+
+m4beta <- betareg(bt100 ~ distvei1 + disthus + skogkategori,
+            data = browse9bro_dist,
+            subset = beitetrykkr > 0)
+
+m5beta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe,
+            data = browse9bro_dist,
+            subset = beitetrykkr > 0)
+
+m6beta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + region,
+            data = browse9bro_dist,
+            subset = beitetrykkr > 0)
+
+m7beta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant,
+            data = browse9bro_dist,
+            subset = beitetrykkr > 0)
+
+m8beta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling,
+            data = browse9bro_dist,
+            subset = beitetrykkr > 0)
+
+m9beta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb,
+            data = browse9bro_dist,
+            subset = beitetrykkr > 0)
+
+m10beta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet,
+            data = browse9bro_dist,
+            subset = beitetrykkr > 0)
+
+m11beta <- betareg(bt100 ~ distvei1 + disthus + ac,
+            data = browse9bro_dist,
+            subset = beitetrykkr > 0)
+
+
+
+```
+
+
+
+```{r}
+AIC(m1beta, m2beta, m3beta, m4beta, m5beta, m6beta, m7beta, m8beta, m9beta, m10beta, m11beta, m11abeta)
+AIC(m1beta, m1abeta)
+```
+
+
+```{r}
+summary(m2beta) # lowest AIC
+summary(m3beta) # second lowest AIC
+summary(m1beta) # much higer pseudo R2
+summary(m11beta)
+
+
+plot(m3beta)
+
+
+visreg(m1beta, type = c("conditional"), scale = c("response"))
+visreg(m1beta, "distvei1", by = "skogkategori", scale = c("response"))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
