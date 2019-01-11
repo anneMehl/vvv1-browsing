@@ -101,21 +101,22 @@ save(browse_9, file = "browse_9.rda")
 save(browse_10, file = "browse_10.rda")
 
 
-browse_9 <- browse_9[,c(1:8,10:18,26:28,32:39,41:46,48:52,58:61,68:74,79:82)]
+browse_9 <- browse_9[,c(1:8,10:18,26:28,32:39,41:46,48:52,58:61,68:74,79:82,89)]
 
-browse9bro <- browse_9[,c(1:8, 28, 35, 40:54)] # for browsing pressure response
+browse9bro <- browse_9[,c(1:8, 28, 35, 40:55)] # for browsing pressure response
 browse9tree <- browse_9[,c(1:8, 10:12, 28, 32, 35:36, 40:54)] # for tree density/ number response
 
 # browse_9$elgROSprs9 <- NULL
 # browse_9$elgLAUVprs9 <- NULL
 # browse_9$elgFURUprs9 <- NULL
 
+
 ```
 
 Creating subsets for different data
 ```{r}
 
-browse91_dist <- browse_91[which(browse_91$distvei1 < 1501 & browse_91$disthus > 499), ] # longest distance to any road (that is further than 500m from a house) 1500m
+browse9bro_disthus <- browse9bro[which(browse9bro$distvei1 < 1501 & browse9bro$disthus > 499), ] # longest distance to any road (that is further than 500m from a house) 1500m
 
 browse9bro_dist <- browse9bro[browse9bro$distvei1 < 1501, ] # longest distance to any public road 1500m
 
@@ -176,7 +177,7 @@ tail(browse_9, n = 10)
 browse_9 <- na.omit(browse_9)
 
 save(browse_9, file = "browse_9.rda")
-load("browse_9.rda")
+load("processdata/browse_9.rda")
 
 ```
 
@@ -398,14 +399,29 @@ browse9bro_dist$beitetrykkr <- as.integer(browse9bro_dist$beitetrykkr)
 For beta regression
 ```{r}
 browse9bro_dist$bt100 <- browse9bro_dist$beitetrykkr/100
-# browse9bro_dist$bt100[browse9bro_dist$bt100 > 0.90] <- 1.00
-browse9bro_dist$bt100[browse9bro_dist$bt100 == 0.00] <- 0.01
+
+browse9bro_disthus$bt100 <- browse9bro_disthus$beitetrykk/100
+
+
+
+browse9bro_dist$bt100[browse9bro_dist$bt100 == 0.00] <- 0.01   # ---- use this to run a normal beta regression, which cannot handle values of 0.0
 
 str(browse9bro_dist$bt100)
 
 
 ```
 
+
+For binomial
+```{r}
+browse9bro_dist$btbinary <- browse9bro_dist$beitetrykkr
+
+browse9bro_dist$btbinary[browse9bro_dist$btbinary > 0] <- 1
+
+str(browse9bro_dist$btbinary)
+
+
+```
 
 
 
