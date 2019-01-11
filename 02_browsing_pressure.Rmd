@@ -149,7 +149,8 @@ summary(m12)
 ```{r}
 gam13 <- gam(beitetrykkr ~ distvei1 + disthus+ skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet, data = browse9bro_dist)
 
-gam14 <- gam(beitetrykkr ~ distvei1 + disthus+ skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet, data = browse9bro_dist, method = "REML")
+gam14 <- gam(bt100 ~ distvei1 + disthus+ skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet, data = browse9bro_dist, method = "REML")
+
 ```
 
 
@@ -175,9 +176,11 @@ AIC(m1, m1alt3)
 summary(m1)
 plot.gam(m5)
 # summary(m1)$r.sq
+plot.gam(gam14)
 
 # par(mfrow = c(2,2))
-gam.check(m1alt3)
+par(mfrow = c(2,2))
+gam.check(gam14)
 
 par(mfrow=c(1,2))
 visreg(m7, scale = "response",
@@ -605,6 +608,7 @@ m10lm <- lm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + kant
 m10alm <- lm(beitetrykkr ~ distvei1 + disthus+ skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, data = browse9bro_dist)
 m10blm <- lm(log(beitetrykkr+1) ~ distvei1 + disthus+ skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, data = browse9bro_dist)
 m10clm <- lm(sqrt(beitetrykkr) ~ distvei1 + disthus+ skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, data = browse9bro_dist)
+m10dlm <- lm(bt100 ~ distvei1 + disthus+ skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, data = browse9bro_dist)
 
 m11lm <- lm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + tretetthet*distvei1, data = browse9bro_dist)
 
@@ -626,7 +630,7 @@ m17lm <- lm(beitetrykkr ~ distvei1 + disthus+ skogkategori + treartgruppe + regi
 
 
 
-
+# ------------------- glm ----------------
 
 
 
@@ -679,13 +683,21 @@ m9glm <- glm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + kan
 m9aglm <- glm(log(beitetrykkr+1) ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
             family = "gaussian", 
             data = browse9bro_dist)
-m9bglm <- glm.nb(log(beitetrykkr+1) ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
-            data = browse9bro_dist)
-m9cglm <- glm.nb(log(beitetrykkr+1) ~ distvei1 + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
+
+m9dglm <- glm(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
+            family = "gaussian", 
             data = browse9bro_dist)
 
 m10aglm <- glm(beitetrykkr ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
             family = "poisson", 
+            data = browse9bro_dist)
+
+
+
+library(MASS)
+m9bglm <- glm.nb(log(beitetrykkr+1) ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
+            data = browse9bro_dist)
+m9cglm <- glm.nb(log(beitetrykkr+1) ~ distvei1 + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
             data = browse9bro_dist)
 
 m11glm <- glm.nb(log(beitetrykkr+1) ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1 + treartgruppe*distvei1, 
@@ -694,11 +706,15 @@ m11glm <- glm.nb(log(beitetrykkr+1) ~ distvei1 + disthus + skogkategori + treart
 m11aglm <- glm.nb(log(beitetrykkr+1) ~ distvei1 + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1 + treartgruppe*distvei1, 
              data = browse9bro_dist)
 
+m12glm <- glm(btbinary ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
+            family = "binomial", 
+            data = browse9bro_dist)
+
 
 # Binomial logistic regression with two-column integer matrix as response
 m11aglm <- glm(cbind(beitetrykkr, nobro) ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
             family = "binomial", 
-            weights = nobro,
+            weights = tretetthet,
             data = browse9bro_dist)
 
 m11bglm <- glm(cbind(beitetrykkr, nobro) ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
@@ -709,27 +725,84 @@ m11cglm <- glm(cbind(beitetrykkr, nobro) ~ distvei1 + disthus + skogkategori + t
             family = "quasibinomial", 
             data = browse9bro_dist) # was supposed to help with overdispersion (residual deviance is much higer than residual d.f.), but no change!
 
+```
 
-# Beta regression
+
+#### Beta regression
+```{r}
+# ------------------- beta regression ----------------
+
 library(betareg)
+# for the normal betareg to run the response has to be altered to have no 0.0, but e.g. 0.01 instead, which of course makes it wrong
 m1br <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
             data = browse9bro_dist)
 
-# 
-# m1mix <- glmer(beitetrykkr ~ scale(distvei3) + scale(disthus) + skogkategori + kant + scale(helling) + hohkatb + treartgruppe + (1|region), 
-#             data = browse9bro_dist,
-#             family = poisson())
-# 
-# m2mix <- lmer(beitetrykkr ~ distvei3 + disthus + skogkategori + kant + helling + hohkatb + treartgruppe + (1|region), data = browse9bro_dist)
-# 
-# m3mix <- lmer(beitetrykkr ~ distvei3 + disthus + skogkategori + kant + helling + hohkatb + treartgruppe + (1|landsdel), data = browse9bro_dist)
-# 
-# m4mix <- lmer(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + kant + helling + hohkatb + tretetthet + skogkategori*distvei1 + (1|region), data = browse9bro_dist)
 
+
+# zero-or-one inflated beta regression
+# zoib
+starttime <- Sys.time()
+m4zibr <- zoib(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthe|1|distvei1|1, 
+            data = browse9bro_dist,
+            zero.inflation = c(T), one.inflation = c(F))
+endtime <- Sys.time()
+endtime-starttime
+save(m4zibr, file = "m4zibr.rda")
+
+load("output/m2zibr.rda")
+load("output/m3zibr.rda")
+
+summary(m2zibr)
+summary(m3zibr)
+coeff2 <- m2zibr$coeff
+coeff3 <- m3zibr$coeff
+summary(coeff2)
+summary(coeff3)
+xb <- m2zibr$Xb
+x0 <- m2zibr$X0
+x1 <- m2zibr$X1
+yobs <- m2zibr$yobs
+ypred <- m2zibr$ypred
+plot(ypred[[2]])
+plot(yobs)
+
+traceplot(coeff)
+autocorr.plot(coeff)
+check.psrf(coeff)
+
+
+n <- nrow(browse9bro_dist)
+ypred1 <- rbind(m2zibr$ypred[[1]][,1:n], m2zibr$ypred[[2]][,1:n])
+ypred2 <- rbind(m2zibr$ypred[[1]][,(n+1):(2*n)], m2zibr$ypred[[2]][,(n+1):(2*n)])
+post.mean1<- apply(ypred1,2,mean)
+post.mean2 <- apply(ypred2,2,mean)
+plot(browse9bro_dist$y1, post.mean1, xlim=c(0,1),ylim=c(0,1), col='green2', pch=2,xlab='Observed y', ylab='Predicted y', main="")
+points(browse9bro_dist$y2,post.mean2,col='purple')
+abline(0,1,col='red')
+legend(0.1,0.9,col=c('green2','purple'),c("y1","y2"),pch=c(2,1))
+
+
+
+# -----------  gamlss -----------
+# m1gamlss <- gamlss(bt100 ~ distvei1,
+#                    family = BEZI, 
+#                    data = browse9bro_dist)
+# summary(m1gamlss)
+# plot(m1gamlss)
+# 
+# fitted(m1gamlss)[1]
+# summary(m1gamlss)
+# fitted(m1gamlss,"mu")[1]         #fitted mu
+# fitted(m1gamlss,"sigma")[1]      #fitted sigma
+# fitted(m1gamlss,"nu")[1]         #fitted nu
+# meanBEZI(m1gamlss)[1] # expected value of the response
+# plotBEZI(mu = 0.36, sigma = 1.5, nu = 0.3, from = 0, to = 0.99, n = 12680)
 
 ```
 
-Testing fit and effect plots
+
+
+#### Testing fit and effect plots
 ```{r}
 
 AIC(m1lm, m4lm, m5lm, m6lm, m7lm, m7alm, m8lm, m9lm, m10lm, m10alm, m11lm, m12lm, m12alm, m14lm, m15lm, m16lm)
@@ -738,7 +811,9 @@ AIC(m11aglm, m11bglm, m11cglm)
 AIC(m9bglm, m9cglm, m11glm)
 
 # candidates
-AIC(m10alm, m10blm, m10clm, m9aglm, m9bglm, m9cglm, m10aglm, m11glm, m11aglm, m8glm, h2b, z3a)
+AIC(m9aglm, m9bglm, m9cglm, z3a, m1br, m12glm)
+AIC(m9dglm, gam14, m1gamlss)
+
 
 AIC(m7lm, m7alm)
 AIC(m13lm, m13alm)
@@ -746,6 +821,7 @@ AIC(m10lm, m9glm)
 AICc(m2glm, m8glm)
 AIC(m10lm, m10alm)
 AIC(m10alm, m10blm, m10clm)
+AIC(m11aglm, m11bglm)
 
 AIC(m9aglm, m11bglm, h2b, z3a, gam14)
 BIC(m9aglm, m11bglm, h2b, z3a)
@@ -772,7 +848,12 @@ plot(allEffects(m4glm))
 plot(allEffects(m7glm))
 plot(allEffects(m9glm))
 plot(allEffects(m9aglm))
+plot(allEffects(m9dglm))
+plot(allEffects(m10aglm))
 plot(allEffects(m11bglm))
+plot(allEffects(m12glm))
+
+plot(allEffects(m1br))
 
 
 
@@ -797,6 +878,12 @@ plot(m12alm)
 plot(m9aglm)
 plot(m9bglm)
 plot(m9cglm)
+plot(m9dglm)
+plot(m10aglm)
+
+plot(m1br)
+plot(m1gamlss)
+gam.check(gam14)
 
 drop1(m9bglm, test = "Chi")
 drop1(m9cglm, test = "Chi")
@@ -826,6 +913,9 @@ summary(m6glm)
 summary(m9aglm) 
 summary(m9bglm) # best
 summary(m9cglm) # best (without house)
+
+summary(m1br) # best (beta reg)
+
 
 # summary(m1mix)
 # summary(m2mix)
@@ -875,6 +965,15 @@ Dispersion4 <- sum(E4^2) / m11glm$df.residual
 # m11aglm - glm.nb
 E5 <- resid(m11aglm, type = "pearson")
 Dispersion5 <- sum(E5^2) / m11aglm$df.residual
+
+
+# m1br - beta regression
+E6 <- resid(m1br, type = "pearson")
+Dispersion6 <- sum(E6^2) / m1br$df.residual
+
+# m9dglm - glm with bt100 (0,0-1,0)
+E7 <- resid(m9dglm, type = "pearson")
+Dispersion7 <- sum(E7^2) / m9dglm$df.residual
 
 
 
