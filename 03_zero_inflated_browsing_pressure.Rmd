@@ -21,17 +21,6 @@ load("processdata/browse9bro_dist.rda")
 
 
 
-## Christer's approach
-
-```{r}
-m1 <- glm(cbind(bt.binom, beitetrykk) ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe, family = "binomial", data = browse9) # not the right variables in the response, should be: "beitet, totaltundersokt"
-
-summary(m1)
-plot(m1)
-```
-
-
-
 
 ## Hurdle model (Also: two-way model) and two-way model "old school" (Zuur 2009, chapter: Zero-truncated and zero-inflated models for count data)
 For count data, helps with excess zeros and overdispersion
@@ -44,6 +33,7 @@ f1 <- formula(beitetrykkr ~ distvei1 + disthus + region + skogkategori + kant + 
 f2 <- formula(beitetrykkr ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe)
 
 f3 <- formula(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1)
+f3a <- formula(cbind(beitetrykkr, nobro) ~ distvei1 + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1)
 
 f4 <- formula(beitetrykkr ~ distvei1 + disthus + skogkategori + treartgruppe + region + + kant + helling + hohkatb + tretetthet + skogkategori*distvei1)
 
@@ -60,11 +50,25 @@ h2a <- hurdle(f2, dist = "negbin",
               data = browse9bro_dist)
 
 h2b <- hurdle(f3, dist = "negbin", 
-              data = browse9bro_dist) 
-
-h2c <- hurdle(f3, dist = "geometric", 
               data = browse9bro_dist)
 
+h2b2 <- hurdle(f3a, dist = "negbin", 
+              data = browse9bro_dist)
+
+h2c <- hurdle(f3, dist = "poisson", 
+              data = browse9bro_dist)
+
+
+
+hglm0 <- glm(factor(beitetrykkr > 0) ~ distvei1 + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1,
+            family = binomial(link = "cloglog"),
+            data = browse9bro_dist)
+
+# USE BETAREG here! or use the binomial with cbind
+hglm1 <- glm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1,
+             data = browse9bro_dist,
+            family = ztpoisson,
+            subset = beitetrykkr > 0)
 
 
 # zero inflated
@@ -117,6 +121,10 @@ plot(resid ~ browse9bro_dist$region)
 plot(resid ~ browse9bro_dist$kant)
 plot(resid(z3a))
 
+
+plot(allEffects(hglm0))
+plot(allEffects(hglm1))
+
 lrtest(h1a, h1b, h2a, h2b, h2c)
 lrtest(z3a, z3c)
 
@@ -126,7 +134,7 @@ AICc(h2b)
 AIC(z3a, z3c)
 
 
-
+# For zeroinfl - shows real and not real zeros
 plot(factor(beitetrykkr == 0) ~ distvei1, data = browse9bro_dist, main = "Zero")
 plot(log(beitetrykkr) ~ distvei1, data = browse9bro_dist, subset = beitetrykkr > 0,
   main = "Count")
