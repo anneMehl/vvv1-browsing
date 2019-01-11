@@ -30,6 +30,14 @@ ggplot(data = browse9bro_dist, aes(log(beitetrykkr+1))) +
   geom_histogram(bins = 70)+
   theme_classic()
 
+ggplot(data = browse9bro_dist, aes(beitetrykkr)) +
+  geom_histogram(bins = 70)+
+  theme_classic()
+
+ggplot(data = browse9bro_dist, aes(skogkategori, beitetrykkr)) +
+  geom_point()+
+  theme_classic()
+
 ggplot(data = browse9bro_dist, aes(distvei1)) +
   geom_histogram(bins = 70)+
   theme_classic()
@@ -43,9 +51,21 @@ ggplot(data = browse9bro, aes(tretetthet)) +
   theme_classic()
 
 
+ggplot(data = browse9bro_dist, aes(bt100)) +
+  geom_histogram(bins = 70)+
+  theme_classic()
+
+ggplot(data = browse9bro_disthus, aes(bt100)) +
+  geom_histogram(bins = 70)+
+  theme_classic()
+
 ggplot(data = browse9bro_dist, aes(btbinary)) +
   geom_histogram(bins = 70)+
   theme_classic()
+
+
+
+
 
 ```
 
