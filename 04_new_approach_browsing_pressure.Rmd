@@ -17,21 +17,36 @@ browse9bro_dist$bt100 <- browse9bro_dist$beitetrykkr/100
 ```
 
 
-
 #### Modelling spatial autocorrelation (https://onlinelibrary.wiley.com/doi/full/10.1111/j.2007.0906-7590.05171.x)
+Change the projection and make coordinates and a spatial point data frame to make a shapefile
+```{r}
+
+library(sp)
+library(rgdal)
+
+crs <- CRS("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")
+coords <- cbind(browse9bro_dist$UTM_OV_33, browse9bro_dist$UTM_SN_33)
+data_spdf <- SpatialPointsDataFrame(coords, browse9bro_dist, proj4string = crs)
+plot(data_spdf)
+writeOGR(data_spdf, dsn = "output", layer = "spdf", driver = "ESRI Shapefile")
+
+```
+
+
 ```{r}
 
 library(spdep)
 # ?autocov_dist
 
 # prepare neighbour lists for spatial autocorrelation analysis
-nb.list <- dnearneigh(as.matrix(browse9bro_dist[,c("UTM_OV_33", "UTM_SN_33")]), 0, 6)
-nb.weights <- nb2listw(nb.list)
+# nb.list <- dnearneigh(as.matrix(browse9bro_dist[,c("UTM_OV_33", "UTM_SN_33")]), 0, 6)
+# nb.weights <- nb2listw(nb.list)
 
-# Make a matrix of coordinates
-coords <- as.matrix(cbind(browse9bro_dist$UTM_OV_33, browse9bro_dist$UTM_SN_33))
+# Make a matrix of coordinates - use when chunk above was not run
+# coords <- as.matrix(cbind(browse9bro_dist$UTM_OV_33, browse9bro_dist$UTM_SN_33))
+
 # compute the autocovariate based on the above distance and weight
-ac <- autocov_dist(browse9bro_dist$bt100, coords, nbs = 10000, type="inverse", zero.policy = TRUE)
+ac <- autocov_dist(browse9bro_dist$bt100, coords, nbs = 300000, type="inverse", zero.policy = TRUE)
 browse9bro_dist$ac <- ac
 
 
@@ -115,11 +130,39 @@ m1beta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + reg
 
 m1abeta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + ac + kant + helling + hohkatb + tretetthet + skogkategori*distvei1,
             data = browse9bro_dist,
-            subset = beitetrykkr > 0)
+            subset = beitetrykkr > 0) # nbs (in ac) = 10000
+
+m1bbeta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + ac + kant + helling + hohkatb + tretetthet + skogkategori*distvei1,
+            data = browse9bro_dist,
+            subset = beitetrykkr > 0) # nbs (in ac) = 26000
+
+m1cbeta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + ac + kant + helling + hohkatb + tretetthet + skogkategori*distvei1,
+            data = browse9bro_dist,
+            subset = beitetrykkr > 0) # nbs (in ac) = 35000
+
+m1dbeta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + ac + kant + helling + hohkatb + tretetthet + skogkategori*distvei1,
+            data = browse9bro_dist,
+            subset = beitetrykkr > 0) # nbs (in ac) = 55000
+
+m1ebeta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + ac + kant + helling + hohkatb + tretetthet + skogkategori*distvei1,
+            data = browse9bro_dist,
+            subset = beitetrykkr > 0) # nbs (in ac) = 80000
+
+m1fbeta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + ac + kant + helling + hohkatb + tretetthet + skogkategori*distvei1,
+            data = browse9bro_dist,
+            subset = beitetrykkr > 0) # nbs (in ac) = 100000
+
+m1gbeta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + ac + kant + helling + hohkatb + tretetthet + skogkategori*distvei1,
+            data = browse9bro_dist,
+            subset = beitetrykkr > 0) # nbs (in ac) = 150000
+
+m1hbeta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + ac + kant + helling + hohkatb + tretetthet + skogkategori*distvei1,
+            data = browse9bro_dist,
+            subset = beitetrykkr > 0) # nbs (in ac) = 300000
 
 m2beta <- betareg(bt100 ~ distvei1,
             data = browse9bro_dist,
-            subset = beitetrykkr > 0)
+            subset = beitetrykkr > 0) 
 
 m3beta <- betareg(bt100 ~ distvei1 + disthus,
             data = browse9bro_dist,
@@ -165,7 +208,8 @@ m11beta <- betareg(bt100 ~ distvei1 + disthus + ac,
 
 ```{r}
 AIC(m1beta, m2beta, m3beta, m4beta, m5beta, m6beta, m7beta, m8beta, m9beta, m10beta, m11beta, m11abeta)
-AIC(m1beta, m1abeta)
+AIC(m1beta, m1abeta, m1bbeta, m1cbeta, m1dbeta, m1ebeta, m1fbeta, m1gbeta, m1hbeta)
+AIC(m1beta, m1hbeta, m1gbeta) # g (150000) og h (300000) har samme AIC 
 ```
 
 
@@ -175,8 +219,10 @@ summary(m3beta) # second lowest AIC
 summary(m1beta) # much higer pseudo R2
 summary(m11beta)
 
+summary(m1gbeta)
 
-plot(m3beta)
+plot(m1beta)
+plot(m1gbeta)
 
 
 visreg(m1beta, type = c("conditional"), scale = c("response"))
