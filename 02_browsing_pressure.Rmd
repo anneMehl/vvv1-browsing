@@ -742,7 +742,7 @@ m1br <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + regio
 # zero-or-one inflated beta regression
 # zoib
 starttime <- Sys.time()
-m4zibr <- zoib(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthe|1|distvei1|1, 
+m4zibr <- zoib(bt100 ~ distvei1 + disthus + skogkategori|1|distvei1|1, 
             data = browse9bro_dist,
             zero.inflation = c(T), one.inflation = c(F))
 endtime <- Sys.time()
@@ -751,13 +751,17 @@ save(m4zibr, file = "m4zibr.rda")
 
 load("output/m2zibr.rda")
 load("output/m3zibr.rda")
+load("output/m4zibr.rda")
 
 summary(m2zibr)
 summary(m3zibr)
+summary(m4zibr)
 coeff2 <- m2zibr$coeff
 coeff3 <- m3zibr$coeff
+coeff4 <- m4zibr$coeff
 summary(coeff2)
 summary(coeff3)
+summary(coeff4)
 xb <- m2zibr$Xb
 x0 <- m2zibr$X0
 x1 <- m2zibr$X1
@@ -769,6 +773,12 @@ plot(yobs)
 traceplot(coeff)
 autocorr.plot(coeff)
 check.psrf(coeff)
+
+summ1 <- summary(m2zibr)
+summ1 <- cbind(summ1$stat[,1],summ1$quant[,c(1,5)]) # does not work... why?
+paraplot()
+
+dic.samples(m2zibr)
 
 
 n <- nrow(browse9bro_dist)
