@@ -19,6 +19,7 @@ browse9bro_dist$bt100 <- browse9bro_dist$beitetrykkr/100
 
 #### Modelling spatial autocorrelation (https://onlinelibrary.wiley.com/doi/full/10.1111/j.2007.0906-7590.05171.x)
 Change the projection and make coordinates and a spatial point data frame to make a shapefile
+<<<<<<< HEAD
 
 ```{r}
 unite(browse9bro_dist, UTMmerge, c(UTM_OV_33, UTM_SN_33), remove = FALSE)
@@ -26,6 +27,8 @@ duplicated(browse9bro_dist$UTMmerge)
 ```
 
 
+=======
+>>>>>>> 7b5fc0f76fb0ad535f364c49c83ad170e6abc86e
 ```{r}
 
 library(sp)
@@ -53,7 +56,11 @@ library(spdep)
 # coords <- as.matrix(cbind(browse9bro_dist$UTM_OV_33, browse9bro_dist$UTM_SN_33))
 
 # compute the autocovariate based on the above distance and weight
+<<<<<<< HEAD
 ac <- autocov_dist(browse9bro_dist$bt100, coords, nbs = 5000, type="inverse", zero.policy = TRUE)
+=======
+ac <- autocov_dist(browse9bro_dist$bt100, coords, nbs = 300000, type="inverse", zero.policy = TRUE)
+>>>>>>> 7b5fc0f76fb0ad535f364c49c83ad170e6abc86e
 browse9bro_dist$ac <- ac
 
 
@@ -179,9 +186,15 @@ m9beta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + ac 
 
 
 ```{r}
+<<<<<<< HEAD
 AIC(m1beta, m1abeta, m2beta, m3beta, m4beta, m5beta, m6beta, m7beta, m8beta, m9beta)
 AIC(m3beta, m3abeta)
 AIC(m1beta, m1abeta)
+=======
+AIC(m1beta, m2beta, m3beta, m4beta, m5beta, m6beta, m7beta, m8beta, m9beta, m10beta, m11beta, m11abeta)
+AIC(m1beta, m1abeta, m1bbeta, m1cbeta, m1dbeta, m1ebeta, m1fbeta, m1gbeta, m1hbeta)
+AIC(m1beta, m1hbeta, m1gbeta) # g (150000) og h (300000) har samme AIC 
+>>>>>>> 7b5fc0f76fb0ad535f364c49c83ad170e6abc86e
 ```
 
 
@@ -199,6 +212,7 @@ plot(m1abeta)
 visreg(m1abeta)
 
 
+<<<<<<< HEAD
 predbetareg <- cbind(
 predict(m1abeta, type = "response"), # fitted means of response
 predict(m1abeta, type = "link"), # corresponding linear predictor
@@ -208,6 +222,12 @@ predict(m1abeta, type = "quantile", at = c(0.25, 0.5, 0.75)) # r fitted quantile
 colnames(predbetareg) <- c("response", "link", "variance", "qu0.25", "qu0.5", "qu0.75")
 
 head(predbetareg)
+=======
+summary(m1gbeta)
+
+plot(m1beta)
+plot(m1gbeta)
+>>>>>>> 7b5fc0f76fb0ad535f364c49c83ad170e6abc86e
 
 
 
