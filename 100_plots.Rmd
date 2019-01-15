@@ -50,10 +50,12 @@ ggplot(data = browse9bro, aes(tretetthet)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
+test1 <- browse9bro_dist[which(browse9bro_dist$bt100 > 0),]
 
-ggplot(data = browse9bro_dist, aes(bt100)) +
-  geom_histogram(bins = 70)+
+ggplot(data = test1, aes(sqrt(bt100))) +
+  geom_bar()+
   theme_classic()
+
 
 ggplot(data = browse9bro_disthus, aes(bt100)) +
   geom_histogram(bins = 70)+
