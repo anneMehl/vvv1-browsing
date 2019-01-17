@@ -17,6 +17,12 @@ browse9bro_dist$bt100 <- browse9bro_dist$beitetrykkr/100
 ```
 
 
+```{r}
+load("processdata/browse_9.rda")
+browse_9$beitetrykkr <- as.integer(round(browse_9$beitetrykk))
+browse_9$bt100 <- browse_9$beitetrykkr/100
+```
+
 #### Modelling spatial autocorrelation (https://onlinelibrary.wiley.com/doi/full/10.1111/j.2007.0906-7590.05171.x)
 Change the projection and make coordinates and a spatial point data frame to make a shapefile
 
@@ -46,28 +52,28 @@ library(spdep)
 # ?autocov_dist
 
 # prepare neighbour lists for spatial autocorrelation analysis
-nb.list <- dnearneigh(as.matrix(browse9bro_dist[browse9bro_dist$bt100 != 0, c("UTM_OV_33", "UTM_SN_33")]), 0, 5000)
-nb.weights <- nb2listw(nb.list, zero.policy = TRUE)
+# nb.list <- dnearneigh(as.matrix(browse9bro_dist[browse9bro_dist$bt100 != 0, c("UTM_OV_33", "UTM_SN_33")]), 0, 5000)
+# nb.weights <- nb2listw(nb.list, zero.policy = TRUE)
 
 # Make a matrix of coordinates - use when chunk above was not run
-coords <- as.matrix(cbind(browse9bro_dist$UTM_OV_33, browse9bro_dist$UTM_SN_33))
+coords <- as.matrix(cbind(browse_9$UTM_OV_33, browse_9$UTM_SN_33))
 
 # compute the autocovariate based on the above distance and weight
 
-ac <- autocov_dist(browse9bro_dist$bt100, coords, nbs = 5000, type="inverse", zero.policy = TRUE)
-browse9bro_dist$ac <- ac
+ac <- autocov_dist(browse_9$bt100, coords, nbs = 5000, type="inverse", zero.policy = TRUE)
+browse_9$ac <- ac
 
 # moran.plot(resid_m1abeta, nb.weights, zero.policy = TRUE, spChk = NULL, labels = TRUE, xlab = NULL, ylab = NULL, quiet = NULL)
+# 
+# moran.test(resid_m1beta, nb.weights, zero.policy = TRUE, randomisation=TRUE,
+#  alternative="greater", rank = FALSE, na.action=na.fail, spChk=NULL,
+#  adjust.n=TRUE, drop.EI2=FALSE)
+# 
+# moran.test(resid_m1abeta, nb.weights, zero.policy = TRUE, randomisation=TRUE,
+#  alternative="greater", rank = FALSE, na.action=na.fail, spChk=NULL,
+#  adjust.n=TRUE, drop.EI2=FALSE)
 
-moran.test(resid_m1beta, nb.weights, zero.policy = TRUE, randomisation=TRUE, 
- alternative="greater", rank = FALSE, na.action=na.fail, spChk=NULL,
- adjust.n=TRUE, drop.EI2=FALSE)
-
-moran.test(resid_m1abeta, nb.weights, zero.policy = TRUE, randomisation=TRUE, 
- alternative="greater", rank = FALSE, na.action=na.fail, spChk=NULL,
- adjust.n=TRUE, drop.EI2=FALSE)
-
-
+save(browse_9, file = "browse_9.rda")
 
 ```
 
@@ -80,9 +86,15 @@ m1bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori + trear
             family = binomial(link = "cloglog"),
             data = browse9bro_dist)
 
-m1abin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori + treartgruppe + ac + region + kant + helling + HOH + tretetthet + skogkategori*distvei1,
+m1abin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori + treartgruppe + ac + region + kant + helling + HOH + I(HOH^2) + tretetthet + skogkategori*distvei1,
             family = binomial(link = "cloglog"),
-            data = browse9bro_dist)
+            data = browse_9)
+
+browse_9$disthus[browse_9$disthus >= 300] <- 300
+
+m1bbin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori + treartgruppe + ac + region + kant + helling + HOH + I(HOH^2) + tretetthet + skogkategori*distvei1,
+            family = binomial(link = "cloglog"),
+            data = browse_9)
 
 m2bin <- glm(factor(beitetrykkr > 0) ~ distvei1,
             family = binomial(link = "cloglog"),
@@ -151,8 +163,8 @@ AIC(m1abin, m11bin, m12bin, m13bin, m14bin, m15bin)
 ```{r}
 summary(m13bin)
 
-plot(allEffects(m11bin))
-plot_model(m11bin)
+plot(allEffects(m1bbin))
+
 
 ```
 
@@ -276,8 +288,18 @@ colnames(predbetareg) <- c("response", "link", "variance", "qu0.25", "qu0.5", "q
 
 head(predbetareg)
 
-# variocloud <- variogram(resid_m1beta ~ 1, data = browse9bro_dist, cloud = TRUE)
-# plot(variocloud)
+broom::tidy(m1bbeta)
+broom::augment(m1bbeta)
+
+browse9bro_dist_sub <- browse9bro_dist[browse9bro_dist$bt100 != 0, ]
+
+browse9bro_dist_sub$model <- predict(m1bbeta)
+ggplot(data = browse9bro_dist_sub, aes(x = model, y = bt100)) + 
+   geom_point() + geom_abline(slope = 1)
+
+plot_model(model = m1bbeta, type = "eff", terms = c("distvei1", "disthus"))
+get_model_data(m1bbeta)
+ggpredict(m1bbeta, terms = "distvei1")
 
 ```
 
