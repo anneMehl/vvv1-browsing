@@ -4,7 +4,7 @@ author: "anne"
 date: "3 desember 2018"
 output: word_document
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -181,7 +181,7 @@ sum(browse9$beitetrykk < 1, na.rm = TRUE)  # observed number of 0's
 
 ```{r}
 
-cor((as.matrix(browse9[browse9$beitetrykk,c("distvei1", "disthus", "helling")])),
+cor((as.matrix(browse9bro_dist[browse9bro_dist$beitetrykkr, c("distvei1", "disthus", "helling", "HOH")])),
       use = "complete")
 ```
 
