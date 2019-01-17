@@ -4,7 +4,7 @@ author: "anne"
 date: "2 november 2018"
 output: word_document
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -38,7 +38,7 @@ ggplot(data = browse9bro_dist, aes(skogkategori, beitetrykkr)) +
   geom_point()+
   theme_classic()
 
-ggplot(data = browse9bro_dist, aes(distvei1)) +
+ggplot(data = browse_9, aes(disthus500)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
