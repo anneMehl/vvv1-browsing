@@ -30,17 +30,17 @@ For count data, helps with excess zeros and overdispersion
 
 f1 <- formula(beitetrykkr ~ distvei1 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe)
 
-f2 <- formula(beitetrykkr ~ distvei1 + disthus + landsdel + skogkategori + kant + helling + hohkatb + treartgruppe)
+f2 <- formula(beitetrykkr ~ distvei1 + disthus + region + skogkategori + kant + helling + HOH + treartgruppe + skogkategori*distvei1)
 
-f3 <- formula(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1)
+f3 <- formula(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + kant + helling + HOH + tretetthet + skogkategori*distvei1)
 f3a <- formula(cbind(beitetrykkr, nobro) ~ distvei1 + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1)
 
 f4 <- formula(beitetrykkr ~ distvei1 + disthus + skogkategori + treartgruppe + region + + kant + helling + hohkatb + tretetthet + skogkategori*distvei1)
 
 
 # hurdle
-h1a <- hurdle(f1, dist = "poisson",  
-              data = browse9bro_dist)  
+h1a <- hurdle(f2, dist = "poisson",  
+              data = browse_9)  
 
 h1b <- hurdle(f1, dist = "negbin", 
               data = browse9bro_dist)  
@@ -96,10 +96,10 @@ z3d <- zeroinfl(f3, dist = "poisson",
 
 # hurdletest(H2c) ---- I don't get why this is not working
 
-plot(residuals(h2b) ~ fitted(h2b))
+plot(residuals(h1a) ~ fitted(h1a))
 plot(residuals(z3a) ~ fitted(z3a))
 hist(resid(z3a))
-hist(resid(h2b))
+hist(resid(h1a))
 
 summary(h1a)
 summary(h1b)
