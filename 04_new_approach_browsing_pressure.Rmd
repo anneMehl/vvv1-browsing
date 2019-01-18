@@ -16,11 +16,17 @@ browse9bro_dist$beitetrykkr <- as.integer(browse9bro_dist$beitetrykkr)
 browse9bro_dist$bt100 <- browse9bro_dist$beitetrykkr/100
 ```
 
-
 ```{r}
 load("processdata/browse_9.rda")
 browse_9$beitetrykkr <- as.integer(round(browse_9$beitetrykk))
 browse_9$bt100 <- browse_9$beitetrykkr/100
+```
+
+
+```{r}
+load("processdata/browse_9_dist.rda")
+browse_9_dist$beitetrykkr <- as.integer(round(browse_9_dist$beitetrykk))
+browse_9_dist$bt100 <- browse_9_dist$beitetrykkr/100
 ```
 
 #### Modelling spatial autocorrelation (https://onlinelibrary.wiley.com/doi/full/10.1111/j.2007.0906-7590.05171.x)
@@ -56,12 +62,12 @@ library(spdep)
 # nb.weights <- nb2listw(nb.list, zero.policy = TRUE)
 
 # Make a matrix of coordinates - use when chunk above was not run
-coords <- as.matrix(cbind(browse_9$UTM_OV_33, browse_9$UTM_SN_33))
+coords <- as.matrix(cbind(browse_9_dist$UTM_OV_33, browse_9_dist$UTM_SN_33))
 
 # compute the autocovariate based on the above distance and weight
 
-ac <- autocov_dist(browse_9$bt100, coords, nbs = 5000, type="inverse", zero.policy = TRUE)
-browse_9$ac <- ac
+ac <- autocov_dist(browse_9_dist$bt100, coords, nbs = 5000, type="inverse", zero.policy = TRUE)
+browse_9_dist$ac <- ac
 
 # moran.plot(resid_m1abeta, nb.weights, zero.policy = TRUE, spChk = NULL, labels = TRUE, xlab = NULL, ylab = NULL, quiet = NULL)
 # 
@@ -73,7 +79,7 @@ browse_9$ac <- ac
 #  alternative="greater", rank = FALSE, na.action=na.fail, spChk=NULL,
 #  adjust.n=TRUE, drop.EI2=FALSE)
 
-save(browse_9, file = "browse_9.rda")
+save(browse_9_dist, file = "browse_9_dist.rda")
 
 ```
 
@@ -82,89 +88,106 @@ save(browse_9, file = "browse_9.rda")
 
 #### First part of a hurdle/ zeroinlf model to account for zero inflation
 ```{r}
-m1bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori + treartgruppe + ac + kant + helling + HOH + tretetthet + skogkategori*distvei1,
+m1bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori + treartgruppe + ac + region + kant + helling + HOH + I(HOH^2) + tretetthet + skogkategori*distvei1,
             family = binomial(link = "cloglog"),
-            data = browse9bro_dist)
-
-m1abin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori + treartgruppe + ac + region + kant + helling + HOH + I(HOH^2) + tretetthet + skogkategori*distvei1,
-            family = binomial(link = "cloglog"),
-            data = browse_9)
-
-browse_9$disthus[browse_9$disthus >= 300] <- 300
-
-m1bbin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori + treartgruppe + ac + region + kant + helling + HOH + I(HOH^2) + tretetthet + skogkategori*distvei1,
-            family = binomial(link = "cloglog"),
-            data = browse_9)
+            data = browse_9_dist)
 
 m2bin <- glm(factor(beitetrykkr > 0) ~ distvei1,
             family = binomial(link = "cloglog"),
-            data = browse9bro_dist)
+            data = browse_9_dist)
 
 m3bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus,
             family = binomial(link = "cloglog"),
-            data = browse9bro_dist)
+            data = browse_9_dist)
 
 m4bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori,
             family = binomial(link = "cloglog"),
-            data = browse9bro_dist)
+            data = browse_9_dist)
 
 m5bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori + treartgruppe,
             family = binomial(link = "cloglog"),
-            data = browse9bro_dist)
+            data = browse_9_dist)
 
 m6bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori + treartgruppe + ac,
             family = binomial(link = "cloglog"),
-            data = browse9bro_dist)
+            data = browse_9_dist)
 
 m7bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori + treartgruppe + ac + kant,
             family = binomial(link = "cloglog"),
-            data = browse9bro_dist)
+            data = browse_9_dist)
 
 m8bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori + treartgruppe + ac + kant + helling,
             family = binomial(link = "cloglog"),
-            data = browse9bro_dist)
+            data = browse_9_dist)
 
 m9bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori + treartgruppe + ac + kant + helling + HOH,
             family = binomial(link = "cloglog"),
-            data = browse9bro_dist)
+            data = browse_9_dist)
 
 m10bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori + treartgruppe + ac + kant + helling + HOH + tretetthet,
             family = binomial(link = "cloglog"),
-            data = browse9bro_dist)
+            data = browse_9_dist)
 
 m11bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + skogkategori + treartgruppe + ac + region + kant + helling + HOH + tretetthet + skogkategori*distvei1,
             family = binomial(link = "cloglog"),
-            data = browse9bro_dist)
+            data = browse_9_dist)
 
-m12bin <- glm(factor(beitetrykkr > 0) ~ skogkategori + treartgruppe + ac + region + kant + helling + HOH + tretetthet + skogkategori*distvei1,
+m12bin <- glm(factor(beitetrykkr > 0) ~ skogkategori + treartgruppe + ac + region + kant + helling + HOH +  + I(HOH^2) + tretetthet + skogkategori*distvei1,
             family = binomial(link = "cloglog"),
-            data = browse9bro_dist)
+            data = browse_9_dist)
 
 m13bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + treartgruppe + ac + region + kant + helling + HOH + tretetthet + skogkategori*distvei1,
             family = binomial(link = "cloglog"),
-            data = browse9bro_dist)
+            data = browse_9_dist)
 
-m14bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + treartgruppe + ac + region + kant + helling + HOH + tretetthet,
+m14bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + treartgruppe + ac + region + kant + helling + HOH + I(HOH^2) + tretetthet,
             family = binomial(link = "cloglog"),
-            data = browse9bro_dist)
+            data = browse_9_dist)
 
-m15bin <- glm(factor(beitetrykkr > 0) ~ disthus + treartgruppe + ac + region + kant + helling + HOH + tretetthet + skogkategori*distvei1,
+m15bin <- glm(factor(beitetrykkr > 0) ~ disthus + treartgruppe + ac + region + kant + helling + HOH + I(HOH^2) + tretetthet + skogkategori*distvei1,
             family = binomial(link = "cloglog"),
-            data = browse9bro_dist)
+            data = browse_9_dist)
 
+m15abin <- glm(factor(beitetrykkr > 0) ~ disthus + treartgruppe + ac + KOMNR + kant + helling + HOH + I(HOH^2) + tretetthet + skogkategori*distvei1,
+            family = binomial(link = "cloglog"),
+            data = browse_9_dist)
+
+m16bin <- glm(factor(beitetrykkr > 0) ~ disthus + treartgruppe + ac + region + kant + helling + HOH + I(HOH^2) + tretetthet,
+            family = binomial(link = "cloglog"),
+            data = browse_9_dist)
+
+m17bin <- glm(factor(beitetrykkr > 0) ~ disthus + distvei1 + treartgruppe + ac + region + kant + helling + HOH + I(HOH^2) + tretetthet + skogkategori*distvei1,
+            family = binomial(link = "cloglog"),
+            data = browse_9_dist)
+
+m18bin <- glm(factor(beitetrykkr > 0) ~ disthus + skogkategori + treartgruppe + ac + region + kant + helling + HOH + I(HOH^2) + tretetthet + skogkategori*distvei1,
+            family = binomial(link = "cloglog"),
+            data = browse_9_dist)
+
+```
+```{r}
+m1glmm <- glmer(factor(beitetrykkr > 0) ~ disthus + treartgruppe + ac + kant + helling + HOH + I(HOH^2) + tretetthet + skogkategori*distvei1 + (1|KOMNR),
+            family = binomial(link = "cloglog"),
+            data = browse_9_dist)
 ```
 
 
 ```{r}
-AIC(m1bin, m1abin, m2bin, m3bin, m4bin, m5bin, m6bin, m7bin, m8bin, m9bin, m10bin)
-# lowest AIC m11bin, m12bin, m13bin (m1abin has one point difference)
-AIC(m1abin, m11bin, m12bin, m13bin, m14bin, m15bin)
+AIC(m1bin, m2bin, m3bin, m4bin, m5bin, m6bin, m7bin, m8bin, m9bin, m10bin, m11bin, m12bin, m13bin, m14bin, m15bin)
+# lowest AIC m1bin and 15, 15 is the more parsimonious 
+AIC(m15bin, m16bin, m17bin, m18bin) # still 15 then
+AIC(m15bin, m15abin)
 ```
 ```{r}
-summary(m13bin)
+summary(m15bin)
+summary(m15abin)
 
-plot(allEffects(m1bbin))
-
+plot(allEffects(m15abin))
+plot(Effect("region", m1bbin))
+plot(Effect("disthus", m1bbin))
+plot(Effect("distvei1", m1bbin))
+browse_9_dist$KOMNR <- as.factor(browse_9_dist$KOMNR)
+plot(Effect("KOMNR", m15abin))
 
 ```
 
@@ -175,76 +198,76 @@ plot(allEffects(m1bbin))
 ```{r}
 
 m1beta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + HOH + tretetthet + skogkategori*distvei1,
-            data = browse9bro_dist,
+            data = browse_9_dist,
             subset = beitetrykkr > 0)
 
 m1abeta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + ac + kant + helling + HOH + tretetthet + skogkategori*distvei1,
-            data = browse9bro_dist,
+            data = browse_9_dist,
             subset = beitetrykkr > 0) # nbs (in ac) = 5000
 
 m1bbeta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + ac + region + kant + helling + HOH + tretetthet + skogkategori*distvei1,
-            data = browse9bro_dist,
+            data = browse_9_dist,
             subset = beitetrykkr > 0)
 
 m2beta <- betareg(bt100 ~ distvei1 + ac,
-            data = browse9bro_dist,
+            data = browse_9_dist,
             subset = beitetrykkr > 0) 
 
 m3beta <- betareg(bt100 ~ distvei1 + disthus+ ac,
-            data = browse9bro_dist,
+            data = browse_9_dist,
             subset = beitetrykkr > 0)
 
 m3abeta <- betareg(bt100 ~ disthus+ ac,
-            data = browse9bro_dist,
+            data = browse_9_dist,
             subset = beitetrykkr > 0)
 
 m4beta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + ac,
-            data = browse9bro_dist,
+            data = browse_9_dist,
             subset = beitetrykkr > 0)
 
 m5beta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + ac,
-            data = browse9bro_dist,
+            data = browse_9_dist,
             subset = beitetrykkr > 0)
 
 m6beta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + ac + kant,
-            data = browse9bro_dist,
+            data = browse_9_dist,
             subset = beitetrykkr > 0)
 
 m7beta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + ac + kant + helling,
-            data = browse9bro_dist,
+            data = browse_9_dist,
             subset = beitetrykkr > 0)
 
 m8beta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + ac + kant + helling + HOH,
-            data = browse9bro_dist,
+            data = browse_9_dist,
             subset = beitetrykkr > 0)
 
 m9beta <- betareg(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + ac + kant + helling + HOH + tretetthet,
-            data = browse9bro_dist,
+            data = browse_9_dist,
             subset = beitetrykkr > 0)
 
 
 m10beta <- betareg(bt100 ~ distvei1 + skogkategori + treartgruppe + ac + region + kant + helling + HOH + tretetthet + skogkategori*distvei1,
-            data = browse9bro_dist,
+            data = browse_9_dist,
             subset = beitetrykkr > 0)
 
 m11beta <- betareg(bt100 ~ disthus + skogkategori + treartgruppe + ac + region + kant + helling + HOH + tretetthet + skogkategori*distvei1,
-            data = browse9bro_dist,
+            data = browse_9_dist,
             subset = beitetrykkr > 0)
 
 m12beta <- betareg(bt100 ~ skogkategori + treartgruppe + ac + region + kant + helling + HOH + tretetthet + skogkategori*distvei1,
-            data = browse9bro_dist,
+            data = browse_9_dist,
             subset = beitetrykkr > 0)
 
 m13beta <- betareg(bt100 ~ distvei1 + disthus + treartgruppe + ac + region + kant + helling + HOH + tretetthet + skogkategori*distvei1,
-            data = browse9bro_dist,
+            data = browse_9_dist,
             subset = beitetrykkr > 0)
 
 m14beta <- betareg(bt100 ~ treartgruppe + ac + region + kant + helling + HOH + tretetthet + skogkategori*distvei1,
-            data = browse9bro_dist,
+            data = browse_9_dist,
             subset = beitetrykkr > 0)
 
 m15beta <- betareg(bt100 ~ distvei1 + disthus + treartgruppe + ac + kant + helling + HOH + tretetthet + skogkategori*distvei1,
-            data = browse9bro_dist,
+            data = browse_9_dist,
             subset = beitetrykkr > 0)
 
 
@@ -303,6 +326,23 @@ ggpredict(m1bbeta, terms = "distvei1")
 
 ```
 
+
+## New package glmmTMB, for glmm and extentions (zero-inlfated with random effects, hurdle...)
+- zeroinflated ist just one-way (meaning, no response, only for predictors), so I cannot use that for everything
+- But, I can use it for the seconf part, to make a beta with random factor
+```{r}
+m1ziglmm <- glmmTMB(bt100 ~ disthus + (1|KOMNR),
+                    data = browse_9_dist,
+                    subset(), # make a datasubset...
+                    ziformula = ~ 0,
+                    family = beta_family())
+
+glmmhurdle <- glmmTMB(bt100 ~ disthus + treartgruppe + ac + KOMNR + kant + helling + HOH + I(HOH^2) + tretetthet + skogkategori*distvei1,
+                      ziformula = ~.,
+            family = beta_family(),
+            data = browse_9_dist)
+
+```
 
 
 
