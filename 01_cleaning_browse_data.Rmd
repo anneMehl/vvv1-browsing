@@ -211,17 +211,19 @@ ggplot(data = browse_9, aes(region)) +
 ```
 
 ```{r}
-browse_9$beitetrykkr <- round(browse_9$beitetrykk)
+
+browse_9$beitetrykkr <- as.integer(round(browse_9$beitetrykk))
+browse_9$bt100 <- browse_9$beitetrykkr/100
 ```
 
 ```{r}
-browse_9$landsdel <- as.factor(browse_9$landsdel)
-browse_9$hohkatb <- as.factor(browse_9$hohkatb)
-browse_9$landsdel <- factor(browse_9$landsdel, levels = c("Sørlandet", "Østlandet-Øst", "Midt-Norge", "Nord-Norge", "Vestlandet", "Østlandet-vest"))
+# browse_9$landsdel <- as.factor(browse_9$landsdel)
+# browse_9$hohkatb <- as.factor(browse_9$hohkatb)
+# browse_9$landsdel <- factor(browse_9$landsdel, levels = c("Sørlandet", "Østlandet-Øst", "Midt-Norge", "Nord-Norge", "Vestlandet", "Østlandet-vest"))
 browse_9$skogkategori <- factor(browse_9$skogkategori, levels = c("Lavproduktiv_eldreskog", "Høyproduktiv_eldreskog", "Høyproduktiv_ungskog",  "Lavproduktiv_ungskog", "Uproduktiv_skog"))
 browse_9$kant <- factor(browse_9$kant, levels = c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant")) 
 browse_9$treartgruppe <- factor(browse_9$treartgruppe, levels = c("LAUV", "BJORK", "FURU", "ROS"))
-browse_9$hohkatb <- factor(browse_9$hohkatb, levels = c("100", "0", "200", "300", "400", "500", "600", "700", "800"))
+# browse_9$hohkatb <- factor(browse_9$hohkatb, levels = c("100", "0", "200", "300", "400", "500", "600", "700", "800"))
 browse_9$region <- factor(browse_9$region, levels = c("Agder", "Buskerud", "Hordaland", "Hedmark", "More og Romsdal", "Nord-Trondelag", "Nordland", "Oppland", "Ostfold-Akershus", "Rogaland", "Sogn og Fjordane", "Sor-Trondelag", "Troms", "Vestfold-Telemark"))
 
 ```
@@ -230,6 +232,17 @@ browse_9$region <- factor(browse_9$region, levels = c("Agder", "Buskerud", "Hord
 save(browse_9, file = "browse_9.rda")
 ```
 
+
+##### Subset
+```{r}
+
+# browse_9_dist <- browse_9[which(browse_9$distvei1 < 1501 & browse_9$disthus > 499), ] # longest distance to any road (that is further than 500m from a house) 1500m
+
+browse_9_dist <- browse_9[browse_9$distvei1 > 350, ] # longest distance to any public road 1500m
+head(browse_9_dist)
+save(browse_9_dist, file = "browse_9_dist.rda")
+
+```
 
 
 
