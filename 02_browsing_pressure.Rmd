@@ -4,7 +4,7 @@ author: "anne"
 date: "13 november 2018"
 output: word_document
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -24,8 +24,6 @@ load("processdata/browse_9.rda")
 # load("processdata/browse_10.rda")
 # load("processdata/broadhouse9.rda")
 # load("processdata/broadhouse10.rda")
-
-browse_9$beitetrykkr <- round(browse_9$beitetrykk)
 
 ```
 
@@ -53,6 +51,7 @@ browse_9$disthus[browse_9$disthus >= 350] <- 350
 browse_9$disthus[browse_9$disthus >= 325] <- 325
 browse_9$disthus[browse_9$disthus >= 310] <- 310
 browse_9$disthus[browse_9$disthus >= 300] <- 300
+browse_9$disthus[browse_9$disthus >= 280] <- 280
 
 
 
@@ -65,6 +64,10 @@ gam1 <- gam(beitetrykk ~ s(distvei1) + s(disthus) + skogkategori + treartgruppe 
 
 gam2 <- gam(beitetrykk ~ s(distvei1) + s(disthus) + skogkategori + treartgruppe + region + kant + s(helling) + s(HOH) + s(tretetthet),
              data = browse_9,
+             method = "REML") 
+
+gam3 <- gam(beitetrykk ~ s(distvei1) + s(disthus) + skogkategori + treartgruppe + region + kant + s(helling) + s(HOH) + s(tretetthet),
+             data = browse_9_dist,
              method = "REML") 
 
 
@@ -93,6 +96,7 @@ plot.gam(gam2)
 
 par(mfrow = c(2,2))
 gam.check(gam2)
+gam.check(gam3)
 
 ```
 
