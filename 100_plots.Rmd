@@ -26,48 +26,37 @@ theme_set(theme_pubr())
 
 ```{r}
 
-ggplot(data = browse9bro_dist, aes(log(beitetrykkr+1))) +
+ggplot(data = browse_9, aes(beitetrykk)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-ggplot(data = browse9bro_dist, aes(beitetrykkr)) +
+ggplot(data = browse_9_dist, aes(beitetrykkr)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-ggplot(data = browse9bro_dist, aes(skogkategori, beitetrykkr)) +
-  geom_point()+
-  theme_classic()
-
-ggplot(data = browse_9, aes(disthus500)) +
+ggplot(data = browse_9, aes(distvei1)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-ggplot(data = browse9bro, aes(disthus)) +
+ggplot(data = browse_9_dist, aes(disthus)) +
+  geom_histogram()+
+  theme_classic()
+
+ggplot(data = browse_9, aes(helling)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-ggplot(data = browse9bro, aes(tretetthet)) +
+ggplot(data = browse_9, aes(HOH^2)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-test1 <- browse9bro_dist[which(browse9bro_dist$bt100 > 0),]
-
-ggplot(data = test1, aes(sqrt(bt100))) +
-  geom_bar()+
-  theme_classic()
-
-
-ggplot(data = browse9bro_disthus, aes(bt100)) +
+ggplot(data = browse_9, aes(tretetthet)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-ggplot(data = browse9bro_dist, aes(btbinary)) +
-  geom_histogram(bins = 70)+
+ggplot(data = browse_9_dist, aes(KOMNR, beitetrykkr)) +
+  geom_boxplot()+
   theme_classic()
-
-
-
-
 
 ```
 
