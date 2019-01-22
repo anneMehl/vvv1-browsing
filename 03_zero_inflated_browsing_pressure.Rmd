@@ -40,10 +40,10 @@ f4 <- formula(beitetrykkr ~ distvei1 + disthus + skogkategori + treartgruppe + r
 
 # hurdle
 h1a <- hurdle(f2, dist = "poisson",  
-              data = browse_9)  
+              data = browse_9_dist)  
 
-h1b <- hurdle(f1, dist = "negbin", 
-              data = browse9bro_dist)  
+h1b <- hurdle(f2, dist = "negbin", 
+              data = browse_9_dist)  
 
 
 h2a <- hurdle(f2, dist = "negbin", 
@@ -97,7 +97,7 @@ z3d <- zeroinfl(f3, dist = "poisson",
 # hurdletest(H2c) ---- I don't get why this is not working
 
 plot(residuals(h1a) ~ fitted(h1a))
-plot(residuals(z3a) ~ fitted(z3a))
+plot(residuals(h1b) ~ fitted(h1b))
 hist(resid(z3a))
 hist(resid(h1a))
 
