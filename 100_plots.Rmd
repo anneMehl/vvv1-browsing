@@ -34,6 +34,10 @@ ggplot(data = browse_9_dist, aes(beitetrykkr)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
+ggplot(data = browse_9_distsub, aes(beitetrykkr)) +
+  geom_histogram(bins = 70)+
+  theme_classic()
+
 ggplot(data = browse_9, aes(distvei1)) +
   geom_histogram(bins = 70)+
   theme_classic()
