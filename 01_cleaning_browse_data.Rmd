@@ -236,9 +236,9 @@ save(browse_9, file = "browse_9.rda")
 ##### Subset
 ```{r}
 
-# browse_9_dist <- browse_9[which(browse_9$distvei1 < 1501 & browse_9$disthus > 499), ] # longest distance to any road (that is further than 500m from a house) 1500m
+browse_9$disthus_cut210 <- ifelse(browse_9$disthus >= 210, 210, browse_9$disthus)
 
-browse_9_dist <- browse_9[browse_9$distvei1 > 350, ] # longest distance to any public road 1500m
+browse_9_dist <- browse_9[browse_9$distvei1 > 210, ] # longest distance to any public road 1500m
 head(browse_9_dist)
 save(browse_9_dist, file = "browse_9_dist.rda")
 
@@ -435,6 +435,78 @@ str(browse9bro_dist$btbinary)
 
 
 ```
+
+
+## For browse_9_dist
+
+##### Data structure -> factor levels
+```{r}
+
+ggplot(data = browse_9_dist, aes(skogkategori)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse_9_dist, aes(kant)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse_9_dist, aes(treartgruppe)) +
+  geom_bar()+
+  theme_classic()
+
+
+ggplot(data = browse_9_dist, aes(region)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse_9_dist, aes(KOMNR)) +
+  geom_bar()+
+  theme_classic()
+
+
+
+```
+
+```{r}
+str(browse_9_dist$skogkategori)
+str(browse_9_dist$kant)
+str(browse_9_dist$treartgruppe)
+str(browse_9_dist$region)
+
+```
+
+```{r}
+browse_9_dist$skogkategori <- as.factor(browse_9_dist$skogkategori)
+levels(browse_9_dist$skogkategori)
+browse_9_dist$skogkategori <- factor(browse_9_dist$skogkategori, levels = c("Lavproduktiv_eldreskog", "Høyproduktiv_eldreskog", "Høyproduktiv_ungskog",  "Lavproduktiv_ungskog", "Uproduktiv_skog"))
+levels(browse_9_dist$skogkategori)
+
+browse_9_dist$kant <- as.factor(browse_9_dist$kant)
+levels(browse_9_dist$kant)
+browse_9_dist$kant <- factor(browse_9_dist$kant, levels = c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant")) 
+levels(browse_9_dist$kant)
+
+browse_9_dist$treartgruppe <- as.factor(browse_9_dist$treartgruppe)
+levels(browse_9_dist$treartgruppe)
+browse_9_dist$treartgruppe <- factor(browse_9_dist$treartgruppe, levels = c("LAUV", "FURU", "ROS")) 
+levels(browse_9_dist$treartgruppe)
+
+browse_9_dist$region <- as.factor(browse_9_dist$region)
+levels(browse_9_dist$region)
+
+browse_9_dist$KOMNR <- as.factor(browse_9_dist$KOMNR)
+levels(browse_9_dist$KOMNR)
+
+```
+
+
+
+
+
+
+
+
+
 
 
 

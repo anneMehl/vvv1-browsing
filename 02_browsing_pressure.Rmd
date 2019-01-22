@@ -24,6 +24,7 @@ load("processdata/browse_9.rda")
 # load("processdata/browse_10.rda")
 # load("processdata/broadhouse9.rda")
 # load("processdata/broadhouse10.rda")
+load("processdata/browse_9_dist.rda")
 
 ```
 
@@ -45,13 +46,21 @@ ggplot(browse_9, aes(x = disthus, y = beitetrykk)) +
 
 
 ```{r}
-browse_9$disthus[browse_9$disthus >= 500] <- 500
-browse_9$disthus[browse_9$disthus >= 375] <- 375
-browse_9$disthus[browse_9$disthus >= 350] <- 350
-browse_9$disthus[browse_9$disthus >= 325] <- 325
-browse_9$disthus[browse_9$disthus >= 310] <- 310
-browse_9$disthus[browse_9$disthus >= 300] <- 300
-browse_9$disthus[browse_9$disthus >= 280] <- 280
+browse_9$disthus_cut500 <- ifelse(browse_9$disthus >= 500, 500, browse_9$disthus)
+browse_9$disthus_cut550 <- ifelse(browse_9$disthus >= 550, 550, browse_9$disthus)
+browse_9$disthus_cut450 <- ifelse(browse_9$disthus >= 450, 450, browse_9$disthus)
+browse_9$disthus_cut400 <- ifelse(browse_9$disthus >= 400, 400, browse_9$disthus)
+browse_9$disthus_cut350 <- ifelse(browse_9$disthus >= 350, 350, browse_9$disthus)
+browse_9$disthus_cut300 <- ifelse(browse_9$disthus >= 300, 300, browse_9$disthus)
+browse_9$disthus_cut250 <- ifelse(browse_9$disthus >= 250, 250, browse_9$disthus)
+browse_9$disthus_cut200 <- ifelse(browse_9$disthus >= 200, 200, browse_9$disthus)
+browse_9$disthus_cut150 <- ifelse(browse_9$disthus >= 150, 150, browse_9$disthus)
+browse_9$disthus_cut180 <- ifelse(browse_9$disthus >= 180, 180, browse_9$disthus)
+browse_9$disthus_cut210 <- ifelse(browse_9$disthus >= 210, 210, browse_9$disthus)
+browse_9$disthus_cut220 <- ifelse(browse_9$disthus >= 220, 220, browse_9$disthus)
+
+# 210 is the thing! (the threshold)
+
 
 
 
@@ -62,13 +71,53 @@ gam1 <- gam(beitetrykk ~ s(distvei1) + s(disthus) + skogkategori + treartgruppe 
              data = browse_9,
              method = "REML")
 
-gam2 <- gam(beitetrykk ~ s(distvei1) + s(disthus) + skogkategori + treartgruppe + region + kant + s(helling) + s(HOH) + s(tretetthet),
+gam2 <- gam(beitetrykk ~ s(distvei1) + disthus_cut550 + skogkategori + treartgruppe + region + kant + s(helling) + s(HOH) + s(tretetthet),
              data = browse_9,
              method = "REML") 
 
-gam3 <- gam(beitetrykk ~ s(distvei1) + s(disthus) + skogkategori + treartgruppe + region + kant + s(helling) + s(HOH) + s(tretetthet),
-             data = browse_9_dist,
-             method = "REML") 
+gam3 <- gam(beitetrykk ~ s(distvei1) + disthus_cut500 + skogkategori + treartgruppe + region + kant + s(helling) + s(HOH) + s(tretetthet),
+             data = browse_9,
+             method = "REML")
+
+gam4 <- gam(beitetrykk ~ s(distvei1) + disthus_cut450 + skogkategori + treartgruppe + region + kant + s(helling) + s(HOH) + s(tretetthet),
+             data = browse_9,
+             method = "REML")
+
+gam5 <- gam(beitetrykk ~ s(distvei1) + disthus_cut400 + skogkategori + treartgruppe + region + kant + s(helling) + s(HOH) + s(tretetthet),
+             data = browse_9,
+             method = "REML")
+
+gam6 <- gam(beitetrykk ~ s(distvei1) + disthus_cut350 + skogkategori + treartgruppe + region + kant + s(helling) + s(HOH) + s(tretetthet),
+             data = browse_9,
+             method = "REML")
+
+gam7 <- gam(beitetrykk ~ s(distvei1) + disthus_cut300 + skogkategori + treartgruppe + region + kant + s(helling) + s(HOH) + s(tretetthet),
+             data = browse_9,
+             method = "REML")
+
+gam8 <- gam(beitetrykk ~ s(distvei1) + disthus_cut250 + skogkategori + treartgruppe + region + kant + s(helling) + s(HOH) + s(tretetthet),
+             data = browse_9,
+             method = "REML")
+
+gam9 <- gam(beitetrykk ~ s(distvei1) + disthus_cut200 + skogkategori + treartgruppe + region + kant + s(helling) + s(HOH) + s(tretetthet),
+             data = browse_9,
+             method = "REML")
+
+gam10 <- gam(beitetrykk ~ s(distvei1) + disthus_cut150 + skogkategori + treartgruppe + region + kant + s(helling) + s(HOH) + s(tretetthet),
+             data = browse_9,
+             method = "REML")
+
+gam11 <- gam(beitetrykk ~ s(distvei1) + disthus_cut180 + skogkategori + treartgruppe + region + kant + s(helling) + s(HOH) + s(tretetthet),
+             data = browse_9,
+             method = "REML")
+
+gam12 <- gam(beitetrykk ~ s(distvei1) + disthus_cut210 + skogkategori + treartgruppe + region + kant + s(helling) + s(HOH) + s(tretetthet),
+             data = browse_9,
+             method = "REML")
+
+gam13 <- gam(beitetrykk ~ s(distvei1) + disthus_cut220 + skogkategori + treartgruppe + region + kant + s(helling) + s(HOH) + s(tretetthet),
+             data = browse_9,
+             method = "REML")
 
 
 ```
@@ -82,7 +131,7 @@ Testing/ selection
 anova.gam()
 
 
-AIC(gam1, gam2)
+AIC(gam2, gam3, gam4, gam5, gam6, gam7, gam8, gam9, gam10, gam11, gam12, gam13)
 
 ```
 
@@ -91,7 +140,7 @@ AIC(gam1, gam2)
 ```{r}
 summary(gam1)
 plot.gam(gam1)
-plot.gam(gam2)
+plot.gam(gam2, all.terms = TRUE)
 
 
 par(mfrow = c(2,2))
@@ -597,15 +646,29 @@ m9dglm <- glm(bt100 ~ distvei1 + disthus + skogkategori + treartgruppe + region 
             family = "gaussian", 
             data = browse9bro_dist)
 
-m10aglm <- glm(beitetrykkr ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
+m10aglm <- glm(beitetrykkr ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + HOH + tretetthet + skogkategori*distvei1, 
             family = "poisson", 
-            data = browse9bro_dist)
+            data = browse_9_dist)
+
+
+m11glm <- glm(beitetrykkr ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + HOH + tretetthet + skogkategori*distvei1, 
+            family = "poisson", 
+            data = browse_9_dist)
+
+m12glm <- glm(beitetrykkr ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + HOH + tretetthet + skogkategori*distvei1, 
+            family = "negbin", 
+            data = browse_9_dist)
+
+plot(m11glm)
 
 
 
 library(MASS)
-m9bglm <- glm.nb(log(beitetrykkr+1) ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
-            data = browse9bro_dist)
+m9bglm <- glm.nb(beitetrykkr ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + HOH + tretetthet + skogkategori*distvei1, 
+            data = browse_9_dist)
+
+plot(m9bglm)
+
 m9cglm <- glm.nb(log(beitetrykkr+1) ~ distvei1 + skogkategori + treartgruppe + region + kant + helling + hohkatb + tretetthet + skogkategori*distvei1, 
             data = browse9bro_dist)
 
