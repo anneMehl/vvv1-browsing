@@ -74,3 +74,26 @@ from car can be used for Wald tests, and lrtest() from lmtest for LR tests of ne
 Can also use AIC
 
 
+
+### to plot stuff from the glmmTMB
+```{r}
+
+# Alternatively, you can use an experimental version that has the glue
+# needed for the effects package.
+
+devtools::install_github("glmmTMB/glmmTMB/glmmTMB",ref="effects")
+library(glmmTMB)
+source(system.file("other_methods","effectsglmmTMB.R",package="glmmTMB"))
+allEffects(m1)
+
+# 
+#   Caveats:
+# 
+#    - this will only work at present for families known to base-R
+# (poisson, gaussian, binomial, Gamma, etc.) - not for nbinom2 etc.
+#    - it makes lots of assumptions. In particular, for zero-inflated
+# models it ignores the zero-inflation part completely and gives
+# predictions etc etc only for the conditional model
+
+```
+
