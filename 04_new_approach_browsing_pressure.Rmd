@@ -3,6 +3,8 @@ title: "new_approach"
 author: "anne"
 date: "9 januar 2019"
 output: word_document
+editor_options: 
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -81,12 +83,14 @@ browse_9_dist$ac <- ac
 
 save(browse_9_dist, file = "browse_9_dist.rda")
 
+
 ```
 
 
 
 
 #### First part of a hurdle/ zeroinlf model to account for zero inflation
+##### glm
 ```{r}
 m1bin <- glm(factor(beitetrykkr > 0) ~ distvei1 + disthus + skogkategori + treartgruppe + ac + region + kant + helling + HOH + I(HOH^2) + tretetthet + skogkategori*distvei1,
             family = binomial(link = "cloglog"),
@@ -165,12 +169,6 @@ m18bin <- glm(factor(beitetrykkr > 0) ~ disthus + skogkategori + treartgruppe + 
             data = browse_9_dist)
 
 ```
-```{r}
-m1glmm <- glmer(factor(beitetrykkr > 0) ~ disthus + treartgruppe + ac + kant + helling + HOH + I(HOH^2) + tretetthet + skogkategori*distvei1 + (1|KOMNR),
-            family = binomial(link = "cloglog"),
-            data = browse_9_dist)
-```
-
 
 ```{r}
 AIC(m1bin, m2bin, m3bin, m4bin, m5bin, m6bin, m7bin, m8bin, m9bin, m10bin, m11bin, m12bin, m13bin, m14bin, m15bin)
@@ -178,6 +176,8 @@ AIC(m1bin, m2bin, m3bin, m4bin, m5bin, m6bin, m7bin, m8bin, m9bin, m10bin, m11bi
 AIC(m15bin, m16bin, m17bin, m18bin) # still 15 then
 AIC(m15bin, m15abin)
 ```
+
+
 ```{r}
 summary(m15bin)
 summary(m15abin)
@@ -191,6 +191,97 @@ plot(Effect("KOMNR", m15abin))
 
 ```
 
+
+
+#### glmm bin
+```{r}
+browse_9_dist$HOH_scale = scale(browse_9_dist$HOH)
+browse_9_dist$tretetthet_scale = scale(browse_9_dist$tretetthet)
+browse_9_dist$helling_scale = scale(browse_9_dist$helling)
+browse_9_dist$disthus_cut210_scale = scale(browse_9_dist$disthus_cut210)
+browse_9_dist$distvei1_scale = scale(browse_9_dist$distvei1)
+browse_9_dist$ac_scale = scale(browse_9_dist$ac)
+
+browse_9_dist$bt_bin <- ifelse(browse_9_dist$beitetrykkr == 0, 0, 1)
+
+
+m1glmm <- glmer(bt_bin ~ disthus_cut210_scale + treartgruppe + ac + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|region),
+            family = binomial(link = "cloglog"),
+            data = browse_9_dist)
+
+m2glmm <- glmer(bt_bin ~ disthus_cut210_scale + treartgruppe + ac + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|region),
+            family = binomial(),
+            data = browse_9_dist)
+
+m3glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + treartgruppe + ac + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|region),
+            family = binomial(),
+            data = browse_9_dist)
+# m2 and m3 bring same results in the summary ("different" response)
+
+m4glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse_9_dist,
+            control = glmerControl(check.conv.grad = .makeCC("warning", tol = 3e-3, relTol = NULL)))
+
+m5glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + treartgruppe + ac + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            family = binomial(link = "cloglog"),
+            data = browse_9_dist)
+
+m6glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale + ac + (1|KOMNR),
+            family = binomial(),
+            data = browse_9_dist)
+
+m7glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + ac + (1|KOMNR),
+            family = binomial(),
+            data = browse_9_dist)
+
+m8glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale + treartgruppe + ac + (1|KOMNR),
+            family = binomial(),
+            data = browse_9_dist)
+
+m9glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale + treartgruppe + kant + ac + (1|KOMNR),
+            family = binomial(),
+            data = browse_9_dist)
+
+m9glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale + treartgruppe + kant + ac + (1|KOMNR),
+            family = binomial(),
+            data = browse_9_dist)
+
+m10glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + treartgruppe + ac + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse_9_dist)
+
+m11glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale + treartgruppe + ac + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse_9_dist)
+
+m12glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori + (1|KOMNR),
+            family = binomial(),
+            data = browse_9_dist,
+            control = glmerControl(check.conv.grad = .makeCC("warning", tol = 4e-2, relTol = NULL)))
+
+
+```
+
+```{r}
+AIC(m4glmm, m5glmm) # m4 lower
+AIC(m4glmm, m6glmm, m7glmm, m8glmm, m9glmm, m10glmm, m11glmm, m12glmm)
+AIC(m4glmm, m12glmm) 
+```
+
+```{r}
+plot(allEffects(m4glmm))
+plot_model(m4glmm, type = "eff")
+```
+
+```{r}
+# CHeck singularity (in case of model failed to converge)
+tt <- getME(m4glmm,"theta")
+ll <- getME(m4glmm,"lower")
+min(tt[ll==0])
+
+allFit(m4glmm)
+```
 
 
 
@@ -270,7 +361,28 @@ m15beta <- betareg(bt100 ~ distvei1 + disthus + treartgruppe + ac + kant + helli
             data = browse_9_dist,
             subset = beitetrykkr > 0)
 
+m16beta <- betareg(bt100 ~ treartgruppe + ac + KOMNR + kant + helling + HOH + tretetthet + skogkategori*distvei1,
+            data = browse_9_dist,
+            subset = beitetrykkr > 0)
 
+```
+
+
+```{r}
+browse_9_distsub <- browse_9_dist[browse_9_dist$bt100 > 0, ]
+
+m1glmmbeta <- glmmTMB(bt100 ~ treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+                    data = browse_9_distsub,
+                    family = beta_family())
+
+m2glmmbeta <- glmmTMB(bt100 ~ disthus_cut210_scale + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^1) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+                      data = browse_9_distsub,
+                      family = beta_family())
+
+m3glmmbeta <- glmmTMB(bt100 ~ treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + (1|KOMNR),
+                    data = browse_9_distsub,
+                    family = beta_family())
+# Do full model selection...
 
 ```
 
@@ -281,6 +393,8 @@ m15beta <- betareg(bt100 ~ distvei1 + disthus + treartgruppe + ac + kant + helli
 AIC(m1beta, m1abeta, m1bbeta, m2beta, m3beta, m4beta, m5beta, m6beta, m7beta, m8beta, m9beta)
 # m1bbeta and m13beta lowest AIC, but also m14 is really the same...
 AIC(m1bbeta, m13beta, m14beta, m15beta)
+
+AIC(m1glmmbeta, m2glmmbeta, m3glmmbeta)
 
 ```
 
@@ -328,8 +442,7 @@ ggpredict(m1bbeta, terms = "distvei1")
 
 
 ## New package glmmTMB, for glmm and extentions (zero-inlfated with random effects, hurdle...)
-- zeroinflated ist just one-way (meaning, no response, only for predictors), so I cannot use that for everything
-- But, I can use it for the seconf part, to make a beta with random factor
+- hurdle model does not work with beta family... But he says in his FAQ doc: "If you think that zero values are generated by a separate process, the simplest solution is to fit a Bernoulli model to the zero/non-zero data, then a conditional continuous model for the non-zero values; this is effectively a hurdle model."
 ```{r}
 m1ziglmm <- glmmTMB(bt100 ~ disthus + (1|KOMNR),
                     data = browse_9_dist,
@@ -337,10 +450,25 @@ m1ziglmm <- glmmTMB(bt100 ~ disthus + (1|KOMNR),
                     ziformula = ~ 0,
                     family = beta_family())
 
-glmmhurdle <- glmmTMB(bt100 ~ disthus + treartgruppe + ac + KOMNR + kant + helling + HOH + I(HOH^2) + tretetthet + skogkategori*distvei1,
-                      ziformula = ~.,
-            family = beta_family(),
-            data = browse_9_dist)
+
+
+# Hurdle Poisson model
+glmmTMBhurdle1 <- glmmTMB(beitetrykkr ~ treartgruppe + ac + kant + helling + HOH + tretetthet + skogkategori*distvei1 + (1|KOMNR),
+                          zi = ~ disthus + treartgruppe + ac + kant + helling + HOH + I(HOH^2) + tretetthet + skogkategori*distvei1,
+                          family = truncated_poisson, 
+                          data = browse_9_dist)
+# NA/NaN function evaluationModel convergence problem; non-positive-definite Hessian matrix. See vignette('troubleshooting')Model convergence problem; function evaluation limit reached without convergence (9). See vignette('troubleshooting')
+
+glmmTMBhurdle2 <- glmmTMB(beitetrykkr ~ distvei1 + disthus_cut210 + (1|KOMNR),
+                          zi = ~ distvei1 + disthus_cut210,
+                          family = truncated_poisson, 
+                          data = browse_9_dist) # works
+
+
+glmmTMBhurdle2a <- glmmTMB(beitetrykkr ~ distvei1 + disthus_cut210 + (1|KOMNR),
+                          zi = ~ distvei1 + disthus_cut210,
+                          family = beta_family(), 
+                          data = browse_9_dist) # doesn't work: Error in eval(family$initialize) : y values must be 0 < y < 1
 
 ```
 
