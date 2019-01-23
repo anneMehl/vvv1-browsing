@@ -241,9 +241,9 @@ m4aglmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + treartgruppe +
             family = binomial(),
             data = browse_9_dist)
 
-m5glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
-            family = binomial(link = "cloglog"),
-            data = browse_9_dist)
+# m5glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+#             family = binomial(link = "cloglog"),
+#             data = browse_9_dist)
 
 m6glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale + ac_scale + (1|KOMNR),
             family = binomial(),
@@ -306,19 +306,8 @@ allFit(m4glmm)
 ```
 
 
-Testing for normality of errors (Although I don't know if this works for binomial)
 ```{r}
-plot(m4glmm)
-hist(resid(m4glmm))
-
-resid.m4glmm <- resid(m4glmm)
-plot(resid.m4glmm ~ disthus_cut210_scale, data = browse_9_dist)
-plot(resid.m4glmm ~ year, data = browse_9_dist)
-
-```
-
-
-```{r}
+library(AICcmodavg)
 
 Candmods_bin <- list(m4glmm, m4aglmm, m6glmm, m7glmm, m8glmm, m9glmm, m10glmm, m11glmm, m12glmm)
 
@@ -329,10 +318,21 @@ glmmbin_tab <- aictab(Candmods_bin, modnames = NULL,
 
 ```
 
+Testing for normality of errors (Although I don't know if this works for binomial)
+```{r}
+plot(m4glmm)
+hist(resid(m4glmm))
+
+resid.m4glmm <- resid(m4glmm)
+plot(resid.m4glmm ~ disthus_cut210_scale, data = browse_9_dist)
+
+
+```
+
 
 ```{r}
-tab_model(m4glmm, transform, 
-          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = NULL,
+tab_model(m4glmm, transform = NULL, 
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE,
           show.std = NULL, show.p = TRUE, 
           show.stat = FALSE, show.df = FALSE, show.zeroinf = TRUE, show.r2 = TRUE, 
           show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, 
@@ -347,12 +347,25 @@ tab_model(m4glmm, transform,
           case = "parsed", auto.label = TRUE, prefix.labels = c("none", "varname", "label"), bpe = "median", CSS = css_theme("regression"), file = NULL, use.viewer = TRUE)
 
 
-# calculating marginal and conditional r2 (marginal represents variance explained by fixed factors,
-# and condictional shows variance explained by both fixed and random facors) after:
-# Nakagawa, S, Schielzeth, H. (2013). A general and simple method for obtaining R² from 
-# Generalized Linear Mixed-effects Models. Methods in Ecology and Evolution 4: 133–142
-library("MuMIn", lib.loc="~/R/win-library/3.4")
-r.squaredGLMM(glmem10f)
+```
+
+```{r}
+plot_model(model, type = c("est", "re", "eff", "pred", "int", "std",
+  "std2", "slope", "resid", "diag"), transform, terms = NULL,
+  sort.est = NULL, rm.terms = NULL, group.terms = NULL,
+  order.terms = NULL, pred.type = c("fe", "re"),
+  mdrt.values = c("minmax", "meansd", "zeromax", "quart", "all"),
+  ri.nr = NULL, title = NULL, axis.title = NULL,
+  axis.labels = NULL, legend.title = NULL, wrap.title = 50,
+  wrap.labels = 25, axis.lim = NULL, grid.breaks = NULL,
+  ci.lvl = NULL, se = NULL, colors = "Set1",
+  show.intercept = FALSE, show.values = FALSE, show.p = TRUE,
+  show.data = FALSE, show.legend = TRUE, show.zeroinf = TRUE,
+  value.offset = NULL, value.size, jitter = NULL, digits = 2,
+  dot.size = NULL, line.size = NULL, vline.color = NULL,
+  p.threshold = c(0.05, 0.01, 0.001), grid, case, auto.label = TRUE,
+  prefix.labels = c("none", "varname", "label"), bpe = "median",
+  bpe.style = "line", bpe.color = "white", ...)
 ```
 
 
