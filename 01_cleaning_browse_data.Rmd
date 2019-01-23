@@ -500,6 +500,9 @@ levels(browse_9_dist$KOMNR)
 ```
 
 
+```{r}
+save(browse_9_dist, file = "browse_9_dist.rda")
+```
 
 
 

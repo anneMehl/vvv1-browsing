@@ -34,7 +34,7 @@ library("mgcv", lib.loc="C:/Programs/R/R-3.5.1/library")
 # library("AICcmodavg", lib.loc="C:/Programs/R/R-3.5.1/library")
 library("visreg", lib.loc="C:/Programs/R/R-3.5.1/library")
 library("lattice", lib.loc="C:/Programs/R/R-3.5.1/library")
-library("latticeExtra", lib.loc="C:/Programs/R/R-3.5.1/library")
+# library("latticeExtra", lib.loc="C:/Programs/R/R-3.5.1/library")
 library("car", lib.loc="C:/Programs/R/R-3.5.1/library")
 # library("pscl", lib.loc="C:/Programs/R/R-3.5.1/library")
 library("effects", lib.loc="C:/Programs/R/R-3.5.1/library")
@@ -42,6 +42,7 @@ library("effects", lib.loc="C:/Programs/R/R-3.5.1/library")
 library("dplyr", lib.loc="C:/Programs/R/R-3.5.1/library")
 library("lmtest", lib.loc="C:/Programs/R/R-3.5.1/library")
 library("betareg", lib.loc="C:/Programs/R/R-3.5.1/library")
+library("glmmTMB", lib.loc="C:/Programs/R/R-3.5.1/library")
 
 
 ```
