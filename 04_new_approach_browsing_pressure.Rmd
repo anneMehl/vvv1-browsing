@@ -168,6 +168,10 @@ m18bin <- glm(factor(beitetrykkr > 0) ~ disthus + skogkategori + treartgruppe + 
             family = binomial(link = "cloglog"),
             data = browse_9_dist)
 
+m19bin <- glm(factor(beitetrykkr > 0) ~ disthus_cut210_scale + treartgruppe + ac_scale + KOMNR + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale,
+            family = binomial(),
+            data = browse_9_dist)
+
 ```
 
 ```{r}
@@ -175,6 +179,7 @@ AIC(m1bin, m2bin, m3bin, m4bin, m5bin, m6bin, m7bin, m8bin, m9bin, m10bin, m11bi
 # lowest AIC m1bin and 15, 15 is the more parsimonious 
 AIC(m15bin, m16bin, m17bin, m18bin) # still 15 then
 AIC(m15bin, m15abin)
+AIC(m15bin, m19bin)
 ```
 
 
@@ -188,6 +193,15 @@ plot(Effect("disthus", m1bbin))
 plot(Effect("distvei1", m1bbin))
 browse_9_dist$KOMNR <- as.factor(browse_9_dist$KOMNR)
 plot(Effect("KOMNR", m15abin))
+
+coef19 <- coef(m19bin)
+coef4 <- fixef(m4glmm)
+coef4a <- fixef(m4aglmm)
+
+plot(coef4a[-1], coef19[!grepl("KOMNR", names(coef19))][-1])
+plot(coef4, coef4a)
+abline(0,1)
+cbind(coef4a, coef19[!grepl("KOMNR", names(coef19))])
 
 ```
 
@@ -223,37 +237,39 @@ m4glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + treartgruppe + 
             data = browse_9_dist,
             control = glmerControl(check.conv.grad = .makeCC("warning", tol = 3e-3, relTol = NULL)))
 
-m5glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + treartgruppe + ac + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+m4aglmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|region),
+            family = binomial(),
+            data = browse_9_dist)
+
+m5glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
             family = binomial(link = "cloglog"),
             data = browse_9_dist)
 
-m6glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale + ac + (1|KOMNR),
+m6glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale + ac_scale + (1|KOMNR),
             family = binomial(),
             data = browse_9_dist)
 
-m7glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + ac + (1|KOMNR),
+m7glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + ac_scale + (1|KOMNR),
             family = binomial(),
             data = browse_9_dist)
 
-m8glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale + treartgruppe + ac + (1|KOMNR),
+m8glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale + treartgruppe + ac_scale + (1|KOMNR),
             family = binomial(),
             data = browse_9_dist)
 
-m9glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale + treartgruppe + kant + ac + (1|KOMNR),
+m9glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale + treartgruppe + kant + ac_scale + (1|KOMNR),
             family = binomial(),
             data = browse_9_dist)
 
-m9glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale + treartgruppe + kant + ac + (1|KOMNR),
+m10glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + (1|KOMNR),
             family = binomial(),
-            data = browse_9_dist)
+            data = browse_9_dist,
+            control = glmerControl(check.conv.grad = .makeCC("warning", tol = 3e-3, relTol = NULL)))
 
-m10glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + treartgruppe + ac + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + (1|KOMNR),
+m11glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + (1|KOMNR),
             family = binomial(),
-            data = browse_9_dist)
-
-m11glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale + treartgruppe + ac + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + (1|KOMNR),
-            family = binomial(),
-            data = browse_9_dist)
+            data = browse_9_dist,
+            control = glmerControl(check.conv.grad = .makeCC("warning", tol = 3e-3, relTol = NULL)))
 
 m12glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori + (1|KOMNR),
             family = binomial(),
@@ -266,22 +282,80 @@ m12glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale
 ```{r}
 AIC(m4glmm, m5glmm) # m4 lower
 AIC(m4glmm, m6glmm, m7glmm, m8glmm, m9glmm, m10glmm, m11glmm, m12glmm)
-AIC(m4glmm, m12glmm) 
+
+AIC(m4glmm, m12glmm) # m4 lower
+AIC(m4glmm, m4aglmm)
 ```
 
 ```{r}
+summary(m4glmm)
+
 plot(allEffects(m4glmm))
 plot_model(m4glmm, type = "eff")
 ```
 
+
+Checking which optimizers do not converge (if that is the case for a model)
 ```{r}
-# CHeck singularity (in case of model failed to converge)
+# Check singularity (in case of model failed to converge)
 tt <- getME(m4glmm,"theta")
 ll <- getME(m4glmm,"lower")
 min(tt[ll==0])
-
+# Check which optimizer doesn't converge
 allFit(m4glmm)
 ```
+
+
+Testing for normality of errors (Although I don't know if this works for binomial)
+```{r}
+plot(m4glmm)
+hist(resid(m4glmm))
+
+resid.m4glmm <- resid(m4glmm)
+plot(resid.m4glmm ~ disthus_cut210_scale, data = browse_9_dist)
+plot(resid.m4glmm ~ year, data = browse_9_dist)
+
+```
+
+
+```{r}
+
+Candmods_bin <- list(m4glmm, m4aglmm, m6glmm, m7glmm, m8glmm, m9glmm, m10glmm, m11glmm, m12glmm)
+
+
+glmmbin_tab <- aictab(Candmods_bin, modnames = NULL,
+                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+
+
+```
+
+
+```{r}
+tab_model(m4glmm, transform, 
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = NULL,
+          show.std = NULL, show.p = TRUE, 
+          show.stat = FALSE, show.df = FALSE, show.zeroinf = TRUE, show.r2 = TRUE, 
+          show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, 
+          show.dev = FALSE, show.obs = TRUE, 
+          terms = NULL, rm.terms = NULL, group.terms = TRUE, order.terms = NULL, 
+          title = NULL, pred.labels = NULL, dv.labels = NULL, wrap.labels = 25, 
+          string.pred = "Predictors", string.std = "std. Beta", string.ci = "CI", string.se = "std. Error", string.p = "p", string.df = "df", string.stat = "Statistic", ci.hyphen = " – ", minus.sign = "-",
+          collapse.ci = FALSE, collapse.se = FALSE, linebreak = TRUE,
+          col.order = c("est", "se", "std.est", "std.se", "ci", "std.ci", "hdi.inner", "hdi.outer", "stat", "p", "df", "response.level"), 
+          digits = 2, digits.p = 3, 
+          emph.p = TRUE, p.val = c("wald"), p.style = c("asterisk"), p.threshold = c(0.05, 0.01, 0.001), 
+          case = "parsed", auto.label = TRUE, prefix.labels = c("none", "varname", "label"), bpe = "median", CSS = css_theme("regression"), file = NULL, use.viewer = TRUE)
+
+
+# calculating marginal and conditional r2 (marginal represents variance explained by fixed factors,
+# and condictional shows variance explained by both fixed and random facors) after:
+# Nakagawa, S, Schielzeth, H. (2013). A general and simple method for obtaining R² from 
+# Generalized Linear Mixed-effects Models. Methods in Ecology and Evolution 4: 133–142
+library("MuMIn", lib.loc="~/R/win-library/3.4")
+r.squaredGLMM(glmem10f)
+```
+
+
 
 
 
