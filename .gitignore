@@ -6,7 +6,7 @@
 .RData
 processdata/
 rawdata/
-figs/
+figs_tabs/
 output/
 .rda
 .csv
