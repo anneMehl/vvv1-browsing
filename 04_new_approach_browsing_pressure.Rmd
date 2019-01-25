@@ -242,7 +242,7 @@ m2glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale 
             family = binomial(),
             data = browse_9_dist)
 
-m4glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+m4glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + distvei1_scale*skogkategori + (1|KOMNR),
             family = binomial(),
             data = browse_9_dist)
 
@@ -288,12 +288,6 @@ AIC(m1glmm, m2glmm, m4glmm, m4aglmm, m5glmm, m6glmm, m7glmm, m8glmm, m9glmm, m10
 
 ```
 
-```{r}
-summary(m4glmm)
-
-plot(allEffects(m4glmm))
-plot_model(m4glmm, type = "eff")
-```
 
 
 Checking which optimizers do not converge (if that is the case for a model)
@@ -321,29 +315,25 @@ glmmbin_tab <- aictab(Candmods_bin, modnames = NULL,
 
 Testing for normality of errors (Although I don't know if this works for binomial)
 ```{r}
+summary(m4glmm)
+
 plot(m4glmm)
 hist(resid(m4glmm))
 
 resid.m4glmm <- resid(m4glmm)
+plot(resid.m4glmm)
+
+par(mfrow = c(2,3))
 plot(resid.m4glmm ~ disthus_cut210_scale, data = browse_9_dist)
+plot(resid.m4glmm ~ treartgruppe, data = browse_9_dist)
+plot(resid.m4glmm ~ kant, data = browse_9_dist)
+plot(resid.m4glmm ~ helling_scale, data = browse_9_dist)
+plot(resid.m4glmm ~ HOH_scale, data = browse_9_dist)
+plot(resid.m4glmm ~ tretetthet_scale, data = browse_9_dist)
 
-plot_model(m4glmm, type = c("diag"), transform, terms = NULL,
-  sort.est = NULL, rm.terms = NULL, group.terms = NULL,
-  order.terms = NULL, pred.type = c("fe", "re"),
-  mdrt.values = c("minmax", "meansd", "zeromax", "quart", "all"),
-  ri.nr = NULL, title = NULL, axis.title = NULL,
-  axis.labels = NULL, legend.title = NULL, wrap.title = 50,
-  wrap.labels = 25, axis.lim = NULL, grid.breaks = NULL,
-  ci.lvl = NULL, se = NULL, colors = "Set1",
-  show.intercept = FALSE, show.values = FALSE, show.p = TRUE,
-  show.data = FALSE, show.legend = TRUE, show.zeroinf = TRUE,
-  value.offset = NULL, value.size, jitter = NULL, digits = 2,
-  dot.size = NULL, line.size = NULL, vline.color = NULL,
-  p.threshold = c(0.05, 0.01, 0.001), grid, case, auto.label = TRUE,
-  prefix.labels = c("none", "varname", "label"), bpe = "median",
-  bpe.style = "line", bpe.color = "white")
-
-
+plot_model(m4glmm, type = c("diag"), transform, terms = NULL)
+plot_model(m4glmm, type = c("resid"), transform, terms = NULL)
+#  treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + distvei1_scale*skogkategori 
 
 ```
 
@@ -355,15 +345,7 @@ tab_model(m4glmm, transform = NULL,
           show.std = NULL, show.p = TRUE, 
           show.stat = FALSE, show.df = FALSE, show.zeroinf = TRUE, show.r2 = TRUE, 
           show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, 
-          show.dev = FALSE, show.obs = TRUE, 
-          terms = NULL, rm.terms = NULL, group.terms = TRUE, order.terms = NULL, 
-          title = NULL, pred.labels = NULL, dv.labels = NULL, wrap.labels = 25, 
-          string.pred = "Predictors", string.std = "std. Beta", string.ci = "CI", string.se = "std. Error", string.p = "p", string.df = "df", string.stat = "Statistic", ci.hyphen = " – ", minus.sign = "-",
-          collapse.ci = FALSE, collapse.se = FALSE, linebreak = TRUE,
-          col.order = c("est", "se", "std.est", "std.se", "ci", "std.ci", "hdi.inner", "hdi.outer", "stat", "p", "df", "response.level"), 
-          digits = 2, digits.p = 3, 
-          emph.p = TRUE, p.val = c("wald"), p.style = c("asterisk"), p.threshold = c(0.05, 0.01, 0.001), 
-          case = "parsed", auto.label = TRUE, prefix.labels = c("none", "varname", "label"), bpe = "median", CSS = css_theme("regression"), file = NULL, use.viewer = TRUE)
+          show.dev = FALSE, show.obs = TRUE)
 
 
 ```
@@ -377,29 +359,33 @@ p1 + theme_sjplot() + font_size(axis_title.x = 15)
 ```
 
 ```{r}
-# par(mfrow = c(2,2))
+
 p2 <- plot_model(m4glmm, type = c("eff"), transform = NULL, terms = c("disthus_cut210_scale [all]"),
            grid = TRUE)
-p2 + theme_sjplot()
+# p2 + theme_sjplot()
 
 p3 <- plot_model(m4glmm, type = c("eff"), transform = NULL, terms = c("treartgruppe"),
            grid = TRUE)
-p3 + theme_sjplot()
+# p3 + theme_sjplot()
 
 p4 <- plot_model(m4glmm, type = c("eff"), transform = NULL, terms = c("kant"))
-p4 + theme_sjplot()
+# p4 + theme_sjplot()
 
 p5 <- plot_model(m4glmm, type = c("eff"), transform = NULL, terms = c("helling_scale [all]"))
-p5 + theme_sjplot()
+# p5 + theme_sjplot()
 
 p6 <- plot_model(m4glmm, type = c("eff"), transform = NULL, terms = c("HOH_scale [all]"))
-p6 + theme_sjplot()
+# p6 + theme_sjplot()
 
 p7 <- plot_model(m4glmm, type = c("eff"), transform = NULL, terms = c("tretetthet_scale [all]"))
-p7 + theme_sjplot()
+# p7 + theme_sjplot()
+
+p8 <- plot_model(m4glmm, type = c("eff"), transform = NULL, terms = c("distvei1_scale [all]", "skogkategori"))
+# p8 + theme_sjplot()
+
 
 library(gridExtra)
-plot_grid(list(p2, p3, p4, p5, p6, p7))
+plot_grid(list(p2, p3, p4, p5, p6, p7, p8))
 
 
 # library(effects)
@@ -525,7 +511,12 @@ m2glmmbeta <- glmmTMB(bt100 ~ disthus_cut210_scale + distvei1_scale + skogkatego
                     data = browse_9_distsub,
                     family = beta_family())
 
-m3glmmbeta <- glmmTMB(bt100 ~ disthus_cut210_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+m3glmmbeta <- glmmTMB(bt100 ~ disthus_cut210_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + distvei1_scale*skogkategori + (1|KOMNR),
+                    data = browse_9_distsub,
+                    family = beta_family())
+
+
+m4glmmbeta <- glmmTMB(bt100 ~ disthus_cut210_scale + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + distvei1_scale*skogkategori + (1|KOMNR),
                     data = browse_9_distsub,
                     family = beta_family())
 
@@ -542,46 +533,77 @@ AIC(m1beta, m1abeta, m1bbeta, m2beta, m3beta, m4beta, m5beta, m6beta, m7beta, m8
 # m1bbeta and m13beta lowest AIC, but also m14 is really the same...
 AIC(m1bbeta, m13beta, m14beta, m15beta)
 
-AIC(m1glmmbeta, m2glmmbeta, m3glmmbeta)
+AIC(m1glmmbeta, m2glmmbeta, m3glmmbeta, m4glmmbeta) # m4
 
+```
+
+```{r}
+resid_m4glmmbeta <- resid(m4glmmbeta, type = "pearson")
+plot(resid_m4glmmbeta)
+
+overdisp_fun <- function(model) {
+    rdf <- df.residual(model)
+    rp <- residuals(model,type="pearson")
+    Pearson.chisq <- sum(rp^2)
+    prat <- Pearson.chisq/rdf
+    pval <- pchisq(Pearson.chisq, df=rdf, lower.tail=FALSE)
+    c(chisq=Pearson.chisq,ratio=prat,rdf=rdf,p=pval)
+}
+
+overdisp_fun(m4glmmbeta)
+# Have overdispersion, but he (Ben Bolker) says: "Remember that (1) overdispersion is irrelevant for models that estimate a scale parameter (i.e. almost anything but Poisson or binomial: Gaussian, Gamma, negative binomial …) and (2) overdispersion is not estimable (and hence practically irrelevant) for Bernoulli models (= binary data = binomial with N=1)."
 ```
 
 
 ```{r}
-# library(AICcmodavg)
+library(sjPlot)
 
-Candmods_bin <- list(m1glmmbeta, m2glmmbeta, m3glmmbeta)
+tab_model(m4glmmbeta, transform = NULL, 
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE)
 
 
-glmmbin_tab <- aictab(Candmods_bin, modnames = NULL,
-                       second.ord = FALSE, nobs = NULL, sort = TRUE)
-
-# AIC/ coef table?? -> try sjPlot!!!!
 ```
 
 ```{r}
-pb1 <- plot_model(m3glmmbeta, type = c("eff"), transform = NULL, terms = c("disthus_cut210_scale [all]"))
+p1_est <- plot_model(m4glmmbeta, type = c("est"), transform = NULL, show.values = TRUE, value.offset = 0.5, 
+                 vline.color = "grey", colors = c("#004949", "#009292"),
+                 axis.title = "Estimates")
+p1_est + theme_sjplot() + font_size(axis_title.x = 15)
+# whiskers are ci, possible to show se instead; Colourbling friendly colours "#004949","#009292",
+```
+
+
+
+```{r}
+pb1 <- plot_model(m4glmmbeta, type = c("eff"), transform = NULL, terms = c("disthus_cut210_scale [all]"))
 pb1 + theme_sjplot()
 
-pb2 <- plot_model(m3glmmbeta, type = c("eff"), transform = NULL, terms = c("skogkategori"))
+pb2 <- plot_model(m4glmmbeta, type = c("eff"), transform = NULL, terms = c("skogkategori"))
 pb2 + theme_sjplot()
 
-pb3 <- plot_model(m3glmmbeta, type = c("eff"), transform = NULL, terms = c("treartgruppe"))
+pb3 <- plot_model(m4glmmbeta, type = c("eff"), transform = NULL, terms = c("treartgruppe"))
 pb3 + theme_sjplot()
 
-pb4 <- plot_model(m3glmmbeta, type = c("eff"), transform = NULL, terms = c("kant"))
+pb4 <- plot_model(m4glmmbeta, type = c("eff"), transform = NULL, terms = c("kant"))
 pb4 + theme_sjplot()
 
-pb5 <- plot_model(m3glmmbeta, type = c("eff"), transform = NULL, terms = c("helling_scale [all]"))
+pb5 <- plot_model(m4glmmbeta, type = c("eff"), transform = NULL, terms = c("helling_scale [all]"))
 pb5 + theme_sjplot()
 
-pb6 <- plot_model(m3glmmbeta, type = c("eff"), transform = NULL, terms = c("HOH_scale [all]"))
+pb6 <- plot_model(m4glmmbeta, type = c("eff"), transform = NULL, terms = c("HOH_scale [all]"))
 pb6 + theme_sjplot()
 
-pb7 <- plot_model(m3glmmbeta, type = c("eff"), transform = NULL, terms = c("tretetthet_scale [all]"))
+pb7 <- plot_model(m4glmmbeta, type = c("eff"), transform = NULL, terms = c("tretetthet_scale [all]"))
 pb7 + theme_sjplot()
 
-plot_grid(list(pb1, pb2, pb3, pb4, pb5, pb6, pb7))
+pb8 <- plot_model(m4glmmbeta, type = c("int"), transform = NULL)
+pb8 + theme_sjplot()
+
+plot_grid(list(pb1, pb2, pb3, pb4, pb5, pb6, pb7, pb8))
+
+
+# type = "pred" = Predicted values (marginal effects) for specific model terms. See ggpredict for details.
+# type = "eff" = Similar to type = "pred", however, discrete predictors are held constant at their proportions (not reference level). See ggeffect for details. ggeffect() computes marginal effects by internally calling Effect. Effect constructs an "eff" object for a term (usually a high-order term), absorbing the lower-order terms marginal to the term in question, and averaging over other terms in the model.
 
 ```
 
@@ -595,43 +617,43 @@ plot_grid(list(pb1, pb2, pb3, pb4, pb5, pb6, pb7))
 
 
 ```{r}
-summary(m1beta)
-summary(m1bbeta)
-vcov(m1abeta)
-
-lrtest(m1beta, m1abeta)
-
-plot(m1beta)
-plot(m1abeta)
-
-visreg(m1abeta, type = "conditional", scale = "response")
-visreg(m1abeta, type = "contrast", scale = "response")
-
-resid_m1beta <- resid(m1beta, type = "pearson")
-resid_m1abeta <- resid(m1abeta, type = "pearson")
-
-predbetareg <- cbind(
-predict(m1abeta, type = "response"), # fitted means of response
-predict(m1abeta, type = "link"), # corresponding linear predictor
-predict(m1abeta, type = "variance"), # fitted variances of response
-predict(m1abeta, type = "quantile", at = c(0.25, 0.5, 0.75)) # r fitted quantile(s) of the response distribution
-)
-colnames(predbetareg) <- c("response", "link", "variance", "qu0.25", "qu0.5", "qu0.75")
-
-head(predbetareg)
-
-broom::tidy(m1bbeta)
-broom::augment(m1bbeta)
-
-browse9bro_dist_sub <- browse9bro_dist[browse9bro_dist$bt100 != 0, ]
-
-browse9bro_dist_sub$model <- predict(m1bbeta)
-ggplot(data = browse9bro_dist_sub, aes(x = model, y = bt100)) + 
-   geom_point() + geom_abline(slope = 1)
-
-plot_model(model = m1bbeta, type = "eff", terms = c("distvei1", "disthus"))
-get_model_data(m1bbeta)
-ggpredict(m1bbeta, terms = "distvei1")
+# summary(m1beta)
+# summary(m1bbeta)
+# vcov(m1abeta)
+# 
+# lrtest(m1beta, m1abeta)
+# 
+# plot(m1beta)
+# plot(m1abeta)
+# 
+# visreg(m1abeta, type = "conditional", scale = "response")
+# visreg(m1abeta, type = "contrast", scale = "response")
+# 
+# resid_m1beta <- resid(m1beta, type = "pearson")
+# resid_m1abeta <- resid(m1abeta, type = "pearson")
+# 
+# predbetareg <- cbind(
+# predict(m1abeta, type = "response"), # fitted means of response
+# predict(m1abeta, type = "link"), # corresponding linear predictor
+# predict(m1abeta, type = "variance"), # fitted variances of response
+# predict(m1abeta, type = "quantile", at = c(0.25, 0.5, 0.75)) # r fitted quantile(s) of the response distribution
+# )
+# colnames(predbetareg) <- c("response", "link", "variance", "qu0.25", "qu0.5", "qu0.75")
+# 
+# head(predbetareg)
+# 
+# broom::tidy(m1bbeta)
+# broom::augment(m1bbeta)
+# 
+# browse9bro_dist_sub <- browse9bro_dist[browse9bro_dist$bt100 != 0, ]
+# 
+# browse9bro_dist_sub$model <- predict(m1bbeta)
+# ggplot(data = browse9bro_dist_sub, aes(x = model, y = bt100)) + 
+#    geom_point() + geom_abline(slope = 1)
+# 
+# plot_model(model = m1bbeta, type = "eff", terms = c("distvei1", "disthus"))
+# get_model_data(m1bbeta)
+# ggpredict(m1bbeta, terms = "distvei1")
 
 ```
 
