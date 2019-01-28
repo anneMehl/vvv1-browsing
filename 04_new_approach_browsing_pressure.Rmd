@@ -576,30 +576,31 @@ p1_est + theme_sjplot() + font_size(axis_title.x = 15)
 
 ```{r}
 pb1 <- plot_model(m4glmmbeta, type = c("eff"), transform = NULL, terms = c("disthus_cut210_scale [all]"))
-pb1 + theme_sjplot()
+# pb1 + theme_sjplot()
 
-pb2 <- plot_model(m4glmmbeta, type = c("eff"), transform = NULL, terms = c("skogkategori"))
-pb2 + theme_sjplot()
+# pb2 <- plot_model(m4glmmbeta, type = c("eff"), transform = NULL, terms = c("skogkategori"))
+# pb2 + theme_sjplot()
 
-pb3 <- plot_model(m4glmmbeta, type = c("eff"), transform = NULL, terms = c("treartgruppe"))
+pb3 <- plot_model(m4glmmbeta, type = c("eff"), transform = NULL, terms = c("treartgruppe"),
+                  show.p = TRUE)
 pb3 + theme_sjplot()
 
 pb4 <- plot_model(m4glmmbeta, type = c("eff"), transform = NULL, terms = c("kant"))
-pb4 + theme_sjplot()
+# pb4 + theme_sjplot()
 
 pb5 <- plot_model(m4glmmbeta, type = c("eff"), transform = NULL, terms = c("helling_scale [all]"))
-pb5 + theme_sjplot()
+# pb5 + theme_sjplot()
 
 pb6 <- plot_model(m4glmmbeta, type = c("eff"), transform = NULL, terms = c("HOH_scale [all]"))
-pb6 + theme_sjplot()
+# pb6 + theme_sjplot()
 
 pb7 <- plot_model(m4glmmbeta, type = c("eff"), transform = NULL, terms = c("tretetthet_scale [all]"))
-pb7 + theme_sjplot()
+# pb7 + theme_sjplot()
 
 pb8 <- plot_model(m4glmmbeta, type = c("int"), transform = NULL)
-pb8 + theme_sjplot()
+# pb8 + theme_sjplot()
 
-plot_grid(list(pb1, pb2, pb3, pb4, pb5, pb6, pb7, pb8))
+plot_grid(list(pb1, pb3, pb4, pb5, pb6, pb7, pb8))
 
 
 # type = "pred" = Predicted values (marginal effects) for specific model terms. See ggpredict for details.
