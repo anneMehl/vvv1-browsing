@@ -31,6 +31,12 @@ load("processdata/browse_9_dist.rda")
 # browse_9_dist$bt100 <- browse_9_dist$beitetrykkr/100
 ```
 
+```{r}
+load("processdata/browse_9.rda")
+```
+
+
+
 #### Modelling spatial autocorrelation (https://onlinelibrary.wiley.com/doi/full/10.1111/j.2007.0906-7590.05171.x)
 Change the projection and make coordinates and a spatial point data frame to make a shapefile
 
@@ -208,6 +214,71 @@ cbind(coef4a, coef19[!grepl("KOMNR", names(coef19))])
 
 
 #### glmm bin
+
+Checking for the cut for disthus
+```{r}
+m1aglmm <- glmer(factor(beitetrykkr > 0) ~ disthus_scale + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse_9)
+
+m1bglmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut500 + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse_9)
+
+m1cglmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut450 + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse_9)
+
+m1dglmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut400 + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse_9)
+
+m1eglmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut350 + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse_9)
+
+m1fglmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut300 + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse_9)
+
+m1gglmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut250 + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse_9) #7
+
+m1hglmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut200 + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse_9) #8
+
+m1iglmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut150 + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse_9) #9
+
+m1jglmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut220 + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse_9) #10
+
+m1kglmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210 + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse_9)#11
+```
+
+```{r}
+AIC(m1aglmm, m1bglmm, m1cglmm, m1dglmm, m1eglmm, m1fglmm, m1gglmm, m1hglmm, m1iglmm)
+
+
+
+library(AICcmodavg)
+
+Candmods_bin <- list(m1aglmm, m1bglmm, m1cglmm, m1dglmm, m1eglmm, m1fglmm, m1gglmm, m1hglmm, m1iglmm, m1jglmm, m1kglmm)
+
+
+glmmbin_tab <- aictab(Candmods_bin, modnames = NULL,
+                       second.ord = FALSE, nobs = NULL, sort = TRUE)
+
+# disthus_cut200 is the thing!
+
+```
+
 ```{r}
 browse_9_dist$HOH_scale = scale(browse_9_dist$HOH)
 browse_9_dist$tretetthet_scale = scale(browse_9_dist$tretetthet)
@@ -216,7 +287,39 @@ browse_9_dist$disthus_cut210_scale = scale(browse_9_dist$disthus_cut210)
 browse_9_dist$distvei1_scale = scale(browse_9_dist$distvei1)
 browse_9_dist$ac_scale = scale(browse_9_dist$ac)
 
-browse_9_dist$bt_bin <- ifelse(browse_9_dist$beitetrykkr == 0, 0, 1)
+browse_9_distbin$HOH_scale = scale(browse_9_distbin$HOH)
+browse_9_distbin$tretetthet_scale = scale(browse_9_distbin$tretetthet)
+browse_9_distbin$helling_scale = scale(browse_9_distbin$helling)
+browse_9_distbin$disthus_cut200_scale = scale(browse_9_distbin$disthus_cut200)
+browse_9_distbin$distvei1_scale = scale(browse_9_distbin$distvei1)
+browse_9_distbin$ac_scale = scale(browse_9_distbin$ac)
+
+browse_9_distbeta$HOH_scale = scale(browse_9_distbeta$HOH)
+browse_9_distbeta$tretetthet_scale = scale(browse_9_distbeta$tretetthet)
+browse_9_distbeta$helling_scale = scale(browse_9_distbeta$helling)
+browse_9_distbeta$disthus_cut210_scale = scale(browse_9_distbeta$disthus_cut210)
+browse_9_distbeta$distvei1_scale = scale(browse_9_distbeta$distvei1)
+browse_9_distbeta$ac_scale = scale(browse_9_distbeta$ac)
+
+browse_9$HOH_scale = scale(browse_9$HOH)
+browse_9$tretetthet_scale = scale(browse_9$tretetthet)
+browse_9$helling_scale = scale(browse_9$helling)
+browse_9$disthus__scale = scale(browse_9$disthus)
+browse_9$distvei1_scale = scale(browse_9$distvei1)
+browse_9$ac_scale = scale(browse_9$ac)
+browse_9$disthus_cut200_scale = scale(browse_9$disthus_cut200)
+browse_9$disthus_cut210_scale = scale(browse_9$disthus_cut210)
+
+save(browse_9, file = "browse_9.rda")
+save(browse_9_distbin, file = "browse_9_distbin.rda")
+save(browse_9_distbeta, file = "browse_9_distbeta.rda")
+
+```
+
+
+```{r}
+
+load("processdata/browse_9_distbin.rda")
 
 
 # m1glmm <- glmer(bt_bin ~ disthus_cut210_scale + treartgruppe + ac + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|region),
@@ -234,49 +337,54 @@ browse_9_dist$bt_bin <- ifelse(browse_9_dist$beitetrykkr == 0, 0, 1)
 
 library(lme4)
 
-m1glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+m1glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut200_scale + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + (1|KOMNR),
             family = binomial(),
-            data = browse_9_dist)
+            data = browse_9)
 
-m2glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + (1|KOMNR),
+
+m1aglmm <- glmer(factor(beitetrykkr > 0) ~ disthus_scale + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + (1|KOMNR),
             family = binomial(),
-            data = browse_9_dist)
+            data = browse_9_distbin)
 
-m4glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + distvei1_scale*skogkategori + (1|KOMNR),
+m2glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut200_scale + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + (1|KOMNR),
             family = binomial(),
-            data = browse_9_dist)
+            data = browse_9)
 
-m4aglmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|region),
+m4glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut200_scale + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + distvei1_scale*skogkategori + (1|KOMNR),
             family = binomial(),
-            data = browse_9_dist)
+            data = browse_9)
 
-m5glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+m4aglmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut200_scale + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|region),
+            family = binomial(),
+            data = browse_9)
+
+m5glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut200_scale + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
             family = binomial(link = "cloglog"),
-            data = browse_9_dist)
+            data = browse_9)
 
-m6glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + (1|KOMNR),
+m6glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut200_scale + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + (1|KOMNR),
             family = binomial(),
-            data = browse_9_dist)
+            data = browse_9)
 
-m7glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale +  treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + (1|KOMNR),
+m7glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut200_scale + distvei1_scale +  treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + (1|KOMNR),
             family = binomial(),
-            data = browse_9_dist)
+            data = browse_9)
 
-m8glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + treartgruppe*tretetthet_scale + (1|KOMNR),
+m8glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut200_scale + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + treartgruppe*tretetthet_scale + (1|KOMNR),
             family = binomial(),
-            data = browse_9_dist)
+            data = browse_9)
 
-m9glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + treartgruppe*tretetthet_scale + (1|KOMNR),
+m9glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut200_scale + distvei1_scale + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + treartgruppe*tretetthet_scale + (1|KOMNR),
             family = binomial(),
-            data = browse_9_dist)
+            data = browse_9)
 
-m10glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + distvei1_scale + skogkategori + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + treartgruppe*tretetthet_scale + (1|KOMNR),
+m10glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut200_scale + distvei1_scale + skogkategori + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + treartgruppe*tretetthet_scale + (1|KOMNR),
             family = binomial(),
-            data = browse_9_dist)
+            data = browse_9)
 
-m11glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut210_scale + treartgruppe + skogkategori + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + distvei1_scale*tretetthet_scale + (1|KOMNR),
+m11glmm <- glmer(factor(beitetrykkr > 0) ~ disthus_cut200_scale + treartgruppe + skogkategori + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + distvei1_scale*tretetthet_scale + (1|KOMNR),
             family = binomial(),
-            data = browse_9_dist)
+            data = browse_9)
 
 
 ```
@@ -377,11 +485,14 @@ p5 <- plot_model(m4glmm, type = c("eff"), transform = NULL, terms = c("helling_s
 p6 <- plot_model(m4glmm, type = c("eff"), transform = NULL, terms = c("HOH_scale [all]"))
 # p6 + theme_sjplot()
 
+# p6a <- plot_model(m4glmm, type = c("eff"), transform = NULL, terms = c("HOH_scale^2 [all]"))
+# p6a + theme_sjplot()
+
 p7 <- plot_model(m4glmm, type = c("eff"), transform = NULL, terms = c("tretetthet_scale [all]"))
-# p7 + theme_sjplot()
+p7 + theme_sjplot()
 
 p8 <- plot_model(m4glmm, type = c("eff"), transform = NULL, terms = c("distvei1_scale [all]", "skogkategori"))
-# p8 + theme_sjplot()
+p8 + theme_sjplot()
 
 
 library(gridExtra)
@@ -498,6 +609,64 @@ m16beta <- betareg(bt100 ~ treartgruppe + ac + KOMNR + kant + helling + HOH + tr
 ```
 
 
+Checking for the cut for disthus
+```{r}
+
+browse_9_sub <- browse_9[browse_9$bt100 > 0, ]
+
+m1aglmmbeta <- glmmTMB(bt100 ~ disthus_scale + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            data = browse_9_sub,
+            family = beta_family())
+
+m1bglmmbeta <- glmmTMB(bt100 ~ disthus_cut500 + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            data = browse_9_sub,
+            family = beta_family())
+
+m1cglmmbeta <- glmmTMB(bt100 ~ disthus_cut450 + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            data = browse_9_sub,
+            family = beta_family())
+
+m1dglmmbeta <- glmmTMB(bt100 ~ disthus_cut400 + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            data = browse_9_sub,
+            family = beta_family())
+
+m1eglmmbeta <- glmmTMB(bt100 ~ disthus_cut350 + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            data = browse_9_sub,
+            family = beta_family())
+
+m1fglmmbeta <- glmmTMB(bt100 ~ disthus_cut300 + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            data = browse_9_sub,
+            family = beta_family())
+
+m1gglmmbeta <- glmmTMB(bt100 ~ disthus_cut250 + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            data = browse_9_sub,
+            family = beta_family()) #7
+
+m1hglmmbeta <- glmmTMB(bt100 ~ disthus_cut200 + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            data = browse_9_sub,
+            family = beta_family()) #8
+
+m1iglmmbeta <- glmmTMB(bt100 ~ disthus_cut150 + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            data = browse_9_sub,
+            family = beta_family()) #9
+
+m1jglmmbeta <- glmmTMB(bt100 ~ disthus_cut220 + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            data = browse_9_sub,
+            family = beta_family()) #10
+
+m1kglmmbeta <- glmmTMB(bt100 ~ disthus_cut210 + distvei1_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet_scale + skogkategori*distvei1_scale + (1|KOMNR),
+            data = browse_9_sub,
+            family = beta_family())#11
+```
+
+```{r}
+AIC(m1aglmmbeta, m1bglmmbeta, m1cglmmbeta, m1dglmmbeta, m1eglmmbeta, m1fglmmbeta, m1gglmmbeta, m1hglmmbeta, m1iglmmbeta, m1jglmmbeta, m1kglmmbeta)
+
+
+# disthus_cut210 is the thing!
+
+```
+
 ```{r}
 browse_9_distsub <- browse_9_dist[browse_9_dist$bt100 > 0, ]
 
@@ -598,7 +767,7 @@ pb7 <- plot_model(m4glmmbeta, type = c("eff"), transform = NULL, terms = c("tret
 # pb7 + theme_sjplot()
 
 pb8 <- plot_model(m4glmmbeta, type = c("int"), transform = NULL)
-# pb8 + theme_sjplot()
+pb8 + theme_sjplot()
 
 plot_grid(list(pb1, pb3, pb4, pb5, pb6, pb7, pb8))
 
