@@ -230,6 +230,7 @@ browse_9$region <- factor(browse_9$region, levels = c("Agder", "Buskerud", "Hord
 
 ```{r}
 save(browse_9, file = "browse_9.rda")
+load("processdata/browse_9.rda")
 ```
 
 
@@ -241,6 +242,12 @@ browse_9$disthus_cut210 <- ifelse(browse_9$disthus >= 210, 210, browse_9$disthus
 browse_9_dist <- browse_9[browse_9$distvei1 > 210, ] # longest distance to any public road 1500m
 head(browse_9_dist)
 save(browse_9_dist, file = "browse_9_dist.rda")
+
+browse_9_distbin <- browse_9[browse_9$disthus > 200, ] 
+browse_9_distbeta <- browse_9[browse_9$disthus > 210, ] 
+# head(browse_9_dist)
+save(browse_9_distbin, file = "browse_9_distbin.rda")
+save(browse_9_distbeta, file = "browse_9_distbeta.rda")
 
 ```
 
