@@ -25,6 +25,7 @@ theme_set(theme_pubr())
 ### Frequency plots
 
 ```{r}
+library(ggplot2)
 
 ggplot(data = browse_9, aes(beitetrykk)) +
   geom_histogram(bins = 70)+
@@ -42,11 +43,37 @@ ggplot(data = browse_9, aes(distvei1)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-ggplot(data = browse_9_distbin, aes(disthus_cut200)) +
-  geom_histogram()+
+ggplot(data = browse_9, aes(disthus)) +
+  geom_histogram(bins = 70)+
   theme_classic()
 
-plot(browse_9_distbin$disthus_cut200)
+ggplot(data = browse_9, aes(log(disthus+1))) +
+  geom_histogram(bins = 70)+
+  theme_classic()
+
+ggplot(data = browse_9, aes(disthus^2)) +
+  geom_histogram(bins = 70)+
+  theme_classic()
+
+ggplot(data = browse_9_dist, aes(disthus_cut200)) +
+  geom_histogram(bins = 70)+
+  theme_classic()
+
+ggplot(data = browse_9_distbin, aes(disthus)) +
+  geom_histogram(bins = 70)+
+  theme_classic()
+
+ggplot(data = browse_9, aes(distvei1)) +
+  geom_histogram(bins = 70)+
+  theme_classic()
+
+ggplot(data = browse_9_dist, aes(distvei1)) +
+  geom_histogram(bins = 70)+
+  theme_classic()
+
+ggplot(data = browse_9_distbin, aes(distvei1)) +
+  geom_histogram(bins = 70)+
+  theme_classic()
 
 ggplot(data = browse_9, aes(helling)) +
   geom_histogram(bins = 70)+
