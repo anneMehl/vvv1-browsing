@@ -33,14 +33,13 @@ load("processdata/browse_9_dist.rda")
 # gam
 
 ```{r}
-ggplot(browse_9, aes(x = disthus, y = beitetrykk)) +
+ggplot(browse_9, aes(x = log(disthus), y = beitetrykk)) +
     geom_point() +
     stat_smooth(method = "glm", color = "green") +
   stat_smooth(color = "blue")
 
- # +
- #  xlim(0, 1500) +
- #  scale_x_continuous(breaks=c(100,150, 200, 250, 300, 400, 500, 1000, 1500))
+# +
+#   scale_x_continuous(breaks=c(100,150, 200, 250, 300, 400, 500, 1000, 1500, 2000, 3000))
 
 ```
 
@@ -67,7 +66,12 @@ browse_9$disthus_cut220 <- ifelse(browse_9$disthus >= 220, 220, browse_9$disthus
 ```
 
 ```{r}
-gam1 <- gam(beitetrykk ~ s(distvei1) + s(disthus) + skogkategori + treartgruppe + region + kant + s(helling) + s(HOH) + s(tretetthet),
+library(mgcv)
+gam1 <- gam(beitetrykk ~ distvei1 + disthus + skogkategori + treartgruppe + region + kant + helling + HOH + tretetthet,
+             data = browse_9,
+             method = "REML")
+
+gam1a <- gam(beitetrykk ~ log(distvei1 + 1) + disthus + skogkategori + treartgruppe + region + kant + helling + HOH + tretetthet,
              data = browse_9,
              method = "REML")
 
@@ -140,8 +144,8 @@ AIC(gam2, gam3, gam4, gam5, gam6, gam7, gam8, gam9, gam10, gam11, gam12, gam13)
 ```{r}
 summary(gam1)
 plot.gam(gam1)
-plot.gam(gam2, all.terms = TRUE)
-
+plot.gam(gam1, all.terms = TRUE)
+plot.gam(gam1a, all.terms = TRUE)
 
 par(mfrow = c(2,2))
 gam.check(gam2)
