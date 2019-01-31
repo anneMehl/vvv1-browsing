@@ -79,11 +79,11 @@ ggplot(data = browse_9, aes(helling)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-ggplot(data = browse_9, aes(HOH^2)) +
+ggplot(data = browse_9, aes(HOH)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-ggplot(data = browse_9, aes(tretetthet)) +
+ggplot(data = browse_9, aes(log(tretetthet))) +
   geom_histogram(bins = 70)+
   theme_classic()
 
