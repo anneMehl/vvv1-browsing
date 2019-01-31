@@ -19,7 +19,10 @@ browse <- as.data.frame(browse)
 
 browse <- read.csv2("rawdata/Beitetrykk og forstyrrelse i 9 og 10 takst pa artsgruppeniva.csv", sep = ";", dec = ",")
 
-save(browse, file = "browse.rda")
+
+browse0.1 <- read.csv2("rawdata/Beitetrykk_og_forstyrrelse _i_9_og_10_takst_pa_artsgruppeniva_2019-01-31.csv", sep = ";", dec = ",")
+
+save(browse0.1, file = "browse0.1.rda")
 
 ```
 
