@@ -170,7 +170,7 @@ tail(browse_9, n = 10)
 # unique(unlist(lapply(browse_9, function (x) which(is.na(x)))))
 # fdata1[102, ]
 
-# browse_9$distvei1[is.na(browse_9$distvei1)] <- 10000
+browse_9$distvei1[is.na(browse_9$distvei1)] <- 10000
 # browse_9$distvei2[is.na(browse_9$distvei2)] <- 10000
 # browse_9$distvei3[is.na(browse_9$distvei3)] <- 10000
 
@@ -518,9 +518,15 @@ save(browse_9_dist, file = "browse_9_dist.rda")
 
 
 
-# For browse9.1
+# For browse9.2 (for brwosing pressure response)
 
 ##### Data structure -> factor levels
+
+```{r}
+load("processdata/browse9.1.rda")
+load("processdata/browse9.2.rda")
+```
+
 
 ```{r}
 
@@ -536,58 +542,176 @@ browse0.1_910 <- split(browse0.1, browse0.1$takst)
 
 browse9.1 <- browse0.1_910[['9']]
 # browse10.1 <- browse0.1_910[['10']]
-
+summary(browse9.1)
 
 save(browse9.1, file = "browse9.1.rda")
 # save(browse_10, file = "browse_10.rda")
 
 
-browse9.1 <- browse9.1[,c(1:5,7:9,)]
+browse9.1 <- browse9.1[,c(1:5,7:9,15:24,34:36,40:45,58,62:67,74,76:79,88:90,99:105,112:115)]
+browse9.2 <- browse9.1
+browse9.2 <- subset(browse9.2, select = -c(9:34))
+browse9.2 <- subset(browse9.2, select = -c(10:13))
+# browse9.2$x <- NULL
+summary(browse9.2)
 
-summary(browse9.1)
+```
+
+
+##### Explore NAs 
+```{r}
+
+nrow(browse9.2)
+nrow(na.omit(browse9.2))
+
+head(browse_9, n = 10)
+tail(browse_9, n = 10)
+# unique(unlist(lapply(browse_9, function (x) which(is.na(x)))))
+# fdata1[102, ]
+
+sum(is.na(browse9.1$beitetrykk9))
+
+browse9.2$distvei1[is.na(browse9.2$distvei1)] <- 10000
+browse9.2$distvei2[is.na(browse9.2$distvei2)] <- 10000
+browse9.2$distvei3[is.na(browse9.2$distvei3)] <- 10000
+browse9.2$disthus[is.na(browse9.2$disthus)] <- 10000
+
+browse9.2 <- na.omit(browse9.2)
+
+save(browse9.2, file = "browse9.2.rda")
+load("processdata/browse9.2.rda")
+
 
 ```
 
 
 ```{r}
 
-ggplot(data = browse9bro_dist, aes(landsdel)) +
+# ggplot(data = browse9bro_dist, aes(landsdel)) +
+#   geom_bar()+
+#   theme_classic()
+
+ggplot(data = browse9.2, aes(skogkategori)) +
   geom_bar()+
   theme_classic()
 
-ggplot(data = browse9bro_dist, aes(skogkategori)) +
+ggplot(data = browse9.2, aes(kant)) +
   geom_bar()+
   theme_classic()
 
-ggplot(data = browse9bro_dist, aes(kant)) +
+ggplot(data = browse9.2, aes(treartgruppe9)) +
   geom_bar()+
   theme_classic()
 
-ggplot(data = browse9bro_dist, aes(treartgruppe)) +
+# ggplot(data = browse9.2, aes(treartgruppe)) +
+#   geom_bar()+
+#   theme_classic()
+
+# ggplot(data = browse9bro_dist, aes(hohkatb)) +
+#   geom_bar()+
+#   theme_classic()
+
+ggplot(data = browse9.2, aes(region)) +
   geom_bar()+
   theme_classic()
 
-ggplot(data = browse9bro_dist, aes(hohkatb)) +
-  geom_bar()+
-  theme_classic()
+# ggplot(data = browse9bro_dist, aes(vegetasjon)) +
+#   geom_bar()+
+#   theme_classic()
 
-ggplot(data = browse9bro_dist, aes(region)) +
-  geom_bar()+
-  theme_classic()
+# ggplot(data = browse9bro_dist, aes(veitype1)) +
+#   geom_bar()+
+#   theme_classic()
 
-ggplot(data = browse9bro_dist, aes(vegetasjon)) +
-  geom_bar()+
-  theme_classic()
 
-ggplot(data = browse9bro_dist, aes(veitype1)) +
-  geom_bar()+
-  theme_classic()
 
-ggplot(data = browse9bro_dist, aes(helling)) +
-  geom_bar()+
-  theme_classic()
+
+```
+
+```{r}
+
+browse9.2$beitetrykkr <- as.integer(round(browse9.2$beitetrykk9))
+browse9.2$bt100 <- browse9.2$beitetrykkr/100
+```
+
+```{r}
+# browse9.2$landsdel <- as.factor(browse9.2$landsdel)
+# browse9.2$hohkatb <- as.factor(browse9.2$hohkatb)
+# browse9.2$landsdel <- factor(browse9.2$landsdel, levels = c("Sørlandet", "Østlandet-Øst", "Midt-Norge", "Nord-Norge", "Vestlandet", "Østlandet-vest"))
+browse9.2$skogkategori <- factor(browse9.2$skogkategori, levels = c("Lavproduktiv_eldreskog", "Høyproduktiv_eldreskog", "Høyproduktiv_ungskog",  "Lavproduktiv_ungskog", "Uproduktiv_skog"))
+browse9.2$kant <- factor(browse9.2$kant, levels = c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant")) 
+browse9.2$treartgruppe <- factor(browse9.2$treartgruppe9, levels = c("LAUV", "FURU", "ROS"))
+# browse9.2$hohkatb <- factor(browse9.2$hohkatb, levels = c("100", "0", "200", "300", "400", "500", "600", "700", "800"))
+browse9.2$region <- factor(browse9.2$region, levels = c("Hedmark", "Agder", "Buskerud", "Hordaland",  "More og Romsdal", "Nord-Trondelag", "Nordland", "Oppland", "Ostfold-Akershus", "Rogaland", "Sogn og Fjordane", "Sor-Trondelag", "Troms", "Vestfold-Telemark"))
+
+```
+
+```{r}
+save(browse9.2, file = "browse9.2.rda")
+load("processdata/browse9.2.rda")
+```
+
+
+##### Subset
+```{r}
+
+# subset on disthus and distvei2 > 3000
+browse9.3 <- browse9.2[ which(browse9.2$disthus < 3000 & browse9.2$distvei2 < 3000),]
+save(browse9.3, file = "browse9.3.rda")
+
+browse_9$disthus_cut210 <- ifelse(browse_9$disthus >= 210, 210, browse_9$disthus)
+
+browse_9_dist <- browse_9[browse_9$distvei1 > 200, ] # longest distance to any public road 1500m
+head(browse_9_dist)
+save(browse_9_dist, file = "browse_9_dist.rda")
+
+browse_9_distbin <- browse_9[browse_9$disthus > 200, ] 
+browse_9_distbeta <- browse_9[browse_9$disthus > 210, ] 
+# head(browse_9_dist)
+save(browse_9_distbin, file = "browse_9_distbin.rda")
+save(browse_9_distbeta, file = "browse_9_distbeta.rda")
+
+```
+
+##### threshold cuts disthus
+```{r}
+browse9.3$disthus_cut1000 <- ifelse(browse9.3$disthus >= 1000, 1000, browse9.3$disthus)
+browse9.3$disthus_cut950 <- ifelse(browse9.3$disthus >= 950, 950, browse9.3$disthus)
+browse9.3$disthus_cut900 <- ifelse(browse9.3$disthus >= 900, 900, browse9.3$disthus)
+browse9.3$disthus_cut850 <- ifelse(browse9.3$disthus >= 850, 850, browse9.3$disthus)
+browse9.3$disthus_cut800 <- ifelse(browse9.3$disthus >= 800, 800, browse9.3$disthus)
+browse9.3$disthus_cut750 <- ifelse(browse9.3$disthus >= 750, 750, browse9.3$disthus)
+browse9.3$disthus_cut700 <- ifelse(browse9.3$disthus >= 700, 700, browse9.3$disthus)
+browse9.3$disthus_cut650 <- ifelse(browse9.3$disthus >= 650, 650, browse9.3$disthus)
+
+
+# 210 is the thing! (the threshold)
+
+save(browse9.3, file = "browse9.3.rda")
+
 
 ```
 
 
+
+##### Scale variables
+```{r}
+
+browse9.3$HOH_scale = scale(browse9.3$HOH)
+browse9.3$tretetthet9_scale = scale(browse9.3$tretetthet9)
+browse9.3$helling_scale = scale(browse9.3$helling)
+browse9.3$disthus_scale = scale(browse9.3$disthus)
+browse9.3$distvei2_scale = scale(browse9.3$distvei2)
+browse9.3$ac_scale = scale(browse9.3$ac)
+browse9.3$disthus_cut1000_scale = scale(browse9.3$disthus_cut1000)
+browse9.3$disthus_cut950_scale = scale(browse9.3$disthus_cut950)
+browse9.3$disthus_cut900_scale = scale(browse9.3$disthus_cut900)
+browse9.3$disthus_cut850_scale = scale(browse9.3$disthus_cut850)
+browse9.3$disthus_cut800_scale = scale(browse9.3$disthus_cut800)
+browse9.3$disthus_cut750_scale = scale(browse9.3$disthus_cut750)
+browse9.3$disthus_cut700_scale = scale(browse9.3$disthus_cut700)
+browse9.3$disthus_cut650_scale = scale(browse9.3$disthus_cut650)
+
+save(browse9.3, file = "browse9.3.rda")
+```
 
