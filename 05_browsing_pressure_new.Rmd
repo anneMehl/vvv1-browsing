@@ -1,0 +1,177 @@
+---
+title: "05_browsing_pressure_new"
+author: "anne"
+date: "1 februar 2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+
+load("processdata/browse9.3.rda")
+
+```
+
+
+
+
+#### Modelling spatial autocorrelation (https://onlinelibrary.wiley.com/doi/full/10.1111/j.2007.0906-7590.05171.x)
+Change the projection and make coordinates and a spatial point data frame to make a shapefile
+
+```{r}
+library(tidyr)
+unite(browse9.3, UTMmerge, c(UTM_OV_33, UTM_SN_33), remove = FALSE)
+duplicated(browse9.3$UTMmerge)
+```
+
+
+```{r}
+
+library(sp)
+library(rgdal)
+
+crs <- CRS("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")
+coords <- cbind(browse9.3$UTM_OV_33, browse9.3$UTM_SN_33)
+data_spdf <- SpatialPointsDataFrame(coords, browse9.3, proj4string = crs)
+# plot(data_spdf)
+writeOGR(data_spdf, dsn = "output", layer = "spac", driver = "ESRI Shapefile")
+
+```
+
+
+```{r}
+
+library(spdep)
+library(ape)
+
+# spdep package:
+
+# prepare neighbour lists for spatial autocorrelation analysis
+# nb.list <- dnearneigh(as.matrix(browse9.3[browse9.3$beitetrykkr, c("UTM_OV_33", "UTM_SN_33")]), 0, 5000)
+# nb.weights <- nb2listw(nb.list, zero.policy = TRUE)
+# 
+# moran.plot(resid_m1abin, nb.weights, zero.policy = TRUE, spChk = NULL, labels = TRUE, xlab = NULL, ylab = NULL, quiet = NULL)
+# 
+# resid_m1abin <- resid(m1abin, type = "pearson")
+# resid_m1bbin <- resid(m1bbin, type = "pearson")
+# 
+# moran.test(browse9.3$beitetrykkr, nb.weights, zero.policy = TRUE, randomisation=TRUE,
+#  alternative="greater", rank = FALSE, na.action=na.fail, spChk=NULL,
+#  adjust.n=TRUE, drop.EI2=FALSE)
+# 
+# moran.test(resid_m1bbin, nb.weights, zero.policy = TRUE, randomisation=TRUE,
+#  alternative="greater", rank = FALSE, na.action=na.fail, spChk=NULL,
+#  adjust.n=TRUE, drop.EI2=FALSE)
+
+
+# Make a matrix of coordinates - use when chunk above was not run
+coords <- as.matrix(cbind(browse9.3$UTM_OV_33, browse9.3$UTM_SN_33))
+
+# compute the autocovariate based on the above distance and weight
+ac <- autocov_dist(browse9.3$beitetrykkr, coords, nbs = 5000, type="inverse", zero.policy = TRUE)
+browse9.3$ac <- ac
+
+
+save(browse9.3, file = "browse9.3.rda")
+
+
+```
+
+
+
+
+# gam
+
+```{r}
+ggplot(browse9.3, aes(x = disthus, y = beitetrykkr)) +
+    geom_point() +
+    stat_smooth(method = "glm", color = "green") +
+  stat_smooth(color = "blue")
+
+# +
+#   scale_x_continuous(breaks=c(100,150, 200, 250, 300, 400, 500, 1000, 1500, 2000, 3000))
+
+```
+
+```{r}
+library(mgcv)
+gam1 <- gam(beitetrykkr ~ distvei2 + disthus + skogkategori + treartgruppe + region + kant + helling + HOH + tretetthet9,
+             data = browse9.3,
+             method = "REML")
+
+gam2 <- gam(beitetrykkr ~ s(distvei2) + s(disthus) + skogkategori + treartgruppe + region + kant + helling + HOH + tretetthet9,
+             data = browse9.3,
+             method = "REML")
+
+```
+
+```{r}
+plot.gam(gam1, all.terms = TRUE)
+plot.gam(gam2, all.terms = TRUE)
+# threshold: disthus ~700/900m, distvei2 ~200/300m
+```
+
+
+
+
+
+#### First part of a hurdle model to account for zero inflation
+
+#### bin bin
+
+##### Checking for the cut for disthus
+```{r}
+library(lme4)
+m1abin <- glmer(factor(beitetrykkr > 0) ~ disthus_scale + distvei2_scale + skogkategori + treartgruppe + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_scale + skogkategori*distvei2_scale + ac_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.3)
+
+m1bbin <- glmer(factor(beitetrykkr > 0) ~ disthus_cut1000_scale + distvei2_scale + skogkategori + treartgruppe + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_scale + skogkategori*distvei2_scale + ac_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.3)
+
+m1cbin <- glmer(factor(beitetrykkr > 0) ~ disthus_cut950_scale + distvei2_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_scale + skogkategori*distvei2_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.3)
+
+m1dbin <- glmer(factor(beitetrykkr > 0) ~ disthus_cut900_scale + distvei2_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_scale + skogkategori*distvei2_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.3)
+
+m1ebin <- glmer(factor(beitetrykkr > 0) ~ disthus_cut850_scale + distvei2_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_scale + skogkategori*distvei2_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.3)
+
+m1fbin <- glmer(factor(beitetrykkr > 0) ~ disthus_cut800_scale + distvei2_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_scale + skogkategori*distvei2_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.3)
+
+m1gbin <- glmer(factor(beitetrykkr > 0) ~ disthus_cut750_scale + distvei2_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_scale + skogkategori*distvei2_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.3) #7
+
+m1hbin <- glmer(factor(beitetrykkr > 0) ~ disthus_cut700_scale + distvei2_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_scale + skogkategori*distvei2_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.3) #8
+
+m1ibin <- glmer(factor(beitetrykkr > 0) ~ disthus_cut650_scale + distvei2_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_scale + skogkategori*distvei2_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.3) #9
+
+```
+
+```{r}
+library(AICcmodavg)
+
+Candmods_bin <- list(m1abin, m1bbin, m1cbin, m1dbin, m1ebin, m1fbin, m1gbin, m1hbin, m1ibin)
+
+
+glmmbin_tab <- aictab(Candmods_bin, modnames = NULL,
+                       second.ord = FALSE, nobs = NULL, sort = TRUE)
+```
+
