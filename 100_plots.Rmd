@@ -4,7 +4,7 @@ author: "anne"
 date: "2 november 2018"
 output: word_document
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -27,69 +27,68 @@ theme_set(theme_pubr())
 ```{r}
 library(ggplot2)
 
-ggplot(data = browse_9, aes(beitetrykk)) +
+fp1 <- ggplot(data = browse9.3, aes(beitetrykkr)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-ggplot(data = browse_9_dist, aes(beitetrykkr)) +
+fp2 <- ggplot(data = browse9.3, aes(disthus)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-ggplot(data = browse_9_distsub, aes(beitetrykkr)) +
+fp3 <- ggplot(data = browse9.3, aes(distvei1)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-ggplot(data = browse_9, aes(distvei1)) +
+fp4 <- ggplot(data = browse9.3, aes(distvei2)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-ggplot(data = browse_9, aes(disthus)) +
+fp5 <- ggplot(data = browse9.3, aes(distvei3)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-ggplot(data = browse_9, aes(log(disthus+1))) +
+fp6 <- ggplot(data = browse9.3, aes(skogkategori)) +
+  geom_bar()+
+  theme_classic()
+
+fp7 <- ggplot(data = browse9.3, aes(kant)) +
+  geom_bar()+
+  theme_classic()
+
+fp8 <- ggplot(data = browse9.3, aes(treartgruppe)) +
+  geom_bar()+
+  theme_classic()
+
+fp9 <- ggplot(data = browse9.3, aes(helling)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-ggplot(data = browse_9, aes(disthus^2)) +
+fp10 <- ggplot(data = browse9.3, aes(HOH)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-ggplot(data = browse_9_dist, aes(disthus_cut200)) +
+ggplot(data = browse9.3, aes(HOH^2)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-ggplot(data = browse_9_distbin, aes(disthus)) +
-  geom_histogram(bins = 70)+
+fp11 <- ggplot(data = browse9.3, aes(region)) +
+  geom_bar()+
   theme_classic()
 
-ggplot(data = browse_9, aes(distvei1)) +
-  geom_histogram(bins = 70)+
+fp12 <- ggplot(data = browse9.3, aes(tretetthet9)) +
+  geom_bar()+
   theme_classic()
 
-ggplot(data = browse_9_dist, aes(distvei1)) +
-  geom_histogram(bins = 70)+
+ggplot(data = browse9.3, aes(log(tretetthet9))) +
+  geom_bar()+
   theme_classic()
 
-ggplot(data = browse_9_distbin, aes(distvei1)) +
-  geom_histogram(bins = 70)+
+ggplot(data = browse9.3, aes(tretetthet9^2)) +
+  geom_bar()+
   theme_classic()
 
-ggplot(data = browse_9, aes(helling)) +
-  geom_histogram(bins = 70)+
-  theme_classic()
-
-ggplot(data = browse_9, aes(HOH)) +
-  geom_histogram(bins = 70)+
-  theme_classic()
-
-ggplot(data = browse_9, aes(log(tretetthet))) +
-  geom_histogram(bins = 70)+
-  theme_classic()
-
-ggplot(data = browse_9_dist, aes(KOMNR, beitetrykkr)) +
-  geom_boxplot()+
-  theme_classic()
+library(gridExtra)
+grid.arrange(fp1, fp2, fp3, fp4, fp5, fp6, fp7, fp8, fp9, fp10, fp11, fp12, nrow = 6)
 
 ```
 
