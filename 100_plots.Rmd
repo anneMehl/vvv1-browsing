@@ -27,72 +27,138 @@ theme_set(theme_pubr())
 ```{r}
 library(ggplot2)
 
-fp1 <- ggplot(data = browse9.3, aes(beitetrykkr)) +
+fp1 <- ggplot(data = browse9.2_dist, aes(beitetrykkr)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-fp2 <- ggplot(data = browse9.3, aes(disthus)) +
+fp2 <- ggplot(data = browse9.2_dist, aes(disthus_trunc)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-fp3 <- ggplot(data = browse9.3, aes(distvei1)) +
+# fp3 <- ggplot(data = browse9.2_dist, aes(distvei1)) +
+#   geom_histogram(bins = 70)+
+#   theme_classic()
+
+fp4 <- ggplot(data = browse9.2_dist, aes(distvei2_trunc)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-fp4 <- ggplot(data = browse9.3, aes(distvei2)) +
-  geom_histogram(bins = 70)+
-  theme_classic()
+# fp5 <- ggplot(data = browse9.2_dist, aes(distvei3)) +
+#   geom_histogram(bins = 70)+
+#   theme_classic()
 
-fp5 <- ggplot(data = browse9.3, aes(distvei3)) +
-  geom_histogram(bins = 70)+
-  theme_classic()
-
-fp6 <- ggplot(data = browse9.3, aes(skogkategori)) +
+fp6 <- ggplot(data = browse9.2_dist, aes(skogkategori)) +
   geom_bar()+
   theme_classic()
 
-fp7 <- ggplot(data = browse9.3, aes(kant)) +
+fp7 <- ggplot(data = browse9.2_dist, aes(kant)) +
   geom_bar()+
   theme_classic()
 
-fp8 <- ggplot(data = browse9.3, aes(treartgruppe)) +
+fp8 <- ggplot(data = browse9.2_dist, aes(treartgruppe)) +
   geom_bar()+
   theme_classic()
 
-fp9 <- ggplot(data = browse9.3, aes(helling)) +
+fp9 <- ggplot(data = browse9.2_dist, aes(helling)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-fp10 <- ggplot(data = browse9.3, aes(HOH)) +
+fp10 <- ggplot(data = browse9.2_dist, aes(HOH)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-ggplot(data = browse9.3, aes(HOH^2)) +
-  geom_histogram(bins = 70)+
-  theme_classic()
+# ggplot(data = browse9.2_dist, aes(HOH^2)) +
+#   geom_histogram(bins = 70)+
+#   theme_classic()
+# 
+# fp11 <- ggplot(data = browse9.2_dist, aes(region)) +
+#   geom_bar()+
+#   theme_classic()
 
-fp11 <- ggplot(data = browse9.3, aes(region)) +
+fp12 <- ggplot(data = browse9.2_dist, aes(tretetthet9_trunc)) +
   geom_bar()+
   theme_classic()
 
-fp12 <- ggplot(data = browse9.3, aes(tretetthet9)) +
-  geom_bar()+
-  theme_classic()
+# ggplot(data = browse9.2_dist, aes(log(tretetthet9))) +
+#   geom_bar()+
+#   theme_classic()
 
-ggplot(data = browse9.3, aes(log(tretetthet9))) +
-  geom_bar()+
-  theme_classic()
 
-ggplot(data = browse9.3, aes(tretetthet9^2)) +
-  geom_bar()+
-  theme_classic()
 
 library(gridExtra)
-grid.arrange(fp1, fp2, fp3, fp4, fp5, fp6, fp7, fp8, fp9, fp10, fp11, fp12, nrow = 6)
+grid.arrange(fp1, fp2, fp4, fp6, fp7, fp8, fp9, fp10, fp12, nrow = 3)
+
+
 
 ```
 
+```{r}
+library(ggplot2)
 
+fpb1 <- ggplot(data = browse9.2pos_dist, aes(beitetrykkr)) +
+  geom_histogram(bins = 70)+
+  theme_classic()
+
+fpb2 <- ggplot(data = browse9.2pos_dist, aes(disthus)) +
+  geom_histogram(bins = 70)+
+  theme_classic()
+
+# fpb3 <- ggplot(data = browse9.2pos_dist, aes(distvei1)) +
+#   geom_histogram(bins = 70)+
+#   theme_classic()
+
+fpb4 <- ggplot(data = browse9.2pos_dist, aes(distvei2)) +
+  geom_histogram(bins = 70)+
+  theme_classic()
+
+# fpb5 <- ggplot(data = browse9.2pos_dist, aes(distvei3)) +
+#   geom_histogram(bins = 70)+
+#   theme_classic()
+
+fpb6 <- ggplot(data = browse9.2pos_dist, aes(skogkategori)) +
+  geom_bar()+
+  theme_classic()
+
+fpb7 <- ggplot(data = browse9.2pos_dist, aes(kant)) +
+  geom_bar()+
+  theme_classic()
+
+fpb8 <- ggplot(data = browse9.2pos_dist, aes(treartgruppe)) +
+  geom_bar()+
+  theme_classic()
+
+fpb9 <- ggplot(data = browse9.2pos_dist, aes(helling)) +
+  geom_histogram(bins = 70)+
+  theme_classic()
+
+fpb10 <- ggplot(data = browse9.2pos_dist, aes(HOH)) +
+  geom_histogram(bins = 70)+
+  theme_classic()
+
+# ggplot(data = browse9.2pos_dist, aes(HOH^2)) +
+#   geom_histogram(bins = 70)+
+#   theme_classic()
+# 
+# fpb11 <- ggplot(data = browse9.2pos_dist, aes(region)) +
+#   geom_bar()+
+#   theme_classic()
+
+fpb12 <- ggplot(data = browse9.2pos_dist, aes(tretetthet9_trunc)) +
+  geom_bar()+
+  theme_classic()
+
+# ggplot(data = browse9.2pos_dist, aes(log(tretetthet9))) +
+#   geom_bar()+
+#   theme_classic()
+
+
+
+library(gridExtra)
+grid.arrange(fpb1, fpb2, fpb4, fpb6, fpb7, fpb8, fpb9, fpb10, fpb12, nrow = 3)
+
+
+
+```
 
 
 
