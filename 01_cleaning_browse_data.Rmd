@@ -671,10 +671,59 @@ browse_9_distbeta <- browse_9[browse_9$disthus > 210, ]
 save(browse_9_distbin, file = "browse_9_distbin.rda")
 save(browse_9_distbeta, file = "browse_9_distbeta.rda")
 
+
+browse9.2$disthus_trunc <- ifelse(browse9.2$disthus >= 3000, 3000, browse9.2$disthus)
+
+browse9.2$distvei2_trunc <- ifelse(browse9.2$distvei2 >= 3000, 3000, browse9.2$distvei2)
+
+browse9.2$tretetthet9_trunc <- ifelse(browse9.2$tretetthet9 >= 3960, 3960, browse9.2$tretetthet9)
+
+browse9.2_dist <- browse9.2[ which(browse9.2$disthus > 200), ]
+head(browse9.2_dist)
+
+browse9.2_dist$disthus_trunc <- ifelse(browse9.2_dist$disthus >= 3000, 3000, browse9.2_dist$disthus)
+
+browse9.2_dist$distvei2_trunc <- ifelse(browse9.2_dist$distvei2 >= 3000, 3000, browse9.2_dist$distvei2)
+
+browse9.2_dist$tretetthet9_trunc <- ifelse(browse9.2_dist$tretetthet9 >= 3960, 3960, browse9.2_dist$tretetthet9)
+
+save(browse9.2_dist, file = "browse9.2_dist.rda")
+
 ```
 
 ##### threshold cuts disthus
 ```{r}
+browse9.2$disthus_cut1000 <- ifelse(browse9.2$disthus >= 1000, 1000, browse9.2$disthus)
+browse9.2$disthus_cut950 <- ifelse(browse9.2$disthus >= 950, 950, browse9.2$disthus)
+browse9.2$disthus_cut900 <- ifelse(browse9.2$disthus >= 900, 900, browse9.2$disthus)
+browse9.2$disthus_cut850 <- ifelse(browse9.2$disthus >= 850, 850, browse9.2$disthus)
+browse9.2$disthus_cut800 <- ifelse(browse9.2$disthus >= 800, 800, browse9.2$disthus)
+browse9.2$disthus_cut750 <- ifelse(browse9.2$disthus >= 750, 750, browse9.2$disthus)
+browse9.2$disthus_cut700 <- ifelse(browse9.2$disthus >= 700, 700, browse9.2$disthus)
+browse9.2$disthus_cut650 <- ifelse(browse9.2$disthus >= 650, 650, browse9.2$disthus)
+browse9.2$disthus_cut600 <- ifelse(browse9.2$disthus >= 600, 600, browse9.2$disthus)
+browse9.2$disthus_cut500 <- ifelse(browse9.2$disthus >= 500, 500, browse9.2$disthus)
+browse9.2$disthus_cut400 <- ifelse(browse9.2$disthus >= 400, 400, browse9.2$disthus)
+browse9.2$disthus_cut300 <- ifelse(browse9.2$disthus >= 300, 300, browse9.2$disthus)
+browse9.2$disthus_cut200 <- ifelse(browse9.2$disthus >= 200, 200, browse9.2$disthus)
+browse9.2$disthus_cut150 <- ifelse(browse9.2$disthus >= 150, 150, browse9.2$disthus)
+browse9.2$disthus_cut175 <- ifelse(browse9.2$disthus >= 175, 175, browse9.2$disthus)
+browse9.2$disthus_cut160 <- ifelse(browse9.2$disthus >= 160, 160, browse9.2$disthus)
+browse9.2$disthus_cut190 <- ifelse(browse9.2$disthus >= 190, 190, browse9.2$disthus)
+browse9.2$disthus_trunc_cut1000 <- ifelse(browse9.2$disthus_trunc >= 1000, 1000, browse9.2$disthus_trunc)
+browse9.2$disthus_trunc_cut900 <- ifelse(browse9.2$disthus_trunc >= 900, 900, browse9.2$disthus_trunc)
+browse9.2$disthus_trunc_cut800 <- ifelse(browse9.2$disthus_trunc >= 800, 800, browse9.2$disthus_trunc)
+browse9.2$disthus_trunc_cut700 <- ifelse(browse9.2$disthus_trunc >= 700, 700, browse9.2$disthus_trunc)
+browse9.2$disthus_trunc_cut600 <- ifelse(browse9.2$disthus_trunc >= 600, 600, browse9.2$disthus_trunc)
+browse9.2$disthus_trunc_cut500 <- ifelse(browse9.2$disthus_trunc >= 500, 500, browse9.2$disthus_trunc)
+browse9.2$disthus_trunc_cut400 <- ifelse(browse9.2$disthus_trunc >= 400, 400, browse9.2$disthus_trunc)
+browse9.2$disthus_trunc_cut300 <- ifelse(browse9.2$disthus_trunc >= 300, 300, browse9.2$disthus_trunc)
+browse9.2$disthus_trunc_cut200 <- ifelse(browse9.2$disthus_trunc >= 200, 200, browse9.2$disthus_trunc)
+browse9.2$disthus_trunc_cut150 <- ifelse(browse9.2$disthus_trunc >= 150, 150, browse9.2$disthus_trunc)
+browse9.2$disthus_trunc_cut175 <- ifelse(browse9.2$disthus_trunc >= 175, 175, browse9.2$disthus_trunc)
+browse9.2$disthus_trunc_cut160 <- ifelse(browse9.2$disthus_trunc >= 160, 160, browse9.2$disthus_trunc)
+browse9.2$disthus_trunc_cut190 <- ifelse(browse9.2$disthus_trunc >= 190, 190, browse9.2$disthus_trunc)
+
 browse9.3$disthus_cut1000 <- ifelse(browse9.3$disthus >= 1000, 1000, browse9.3$disthus)
 browse9.3$disthus_cut950 <- ifelse(browse9.3$disthus >= 950, 950, browse9.3$disthus)
 browse9.3$disthus_cut900 <- ifelse(browse9.3$disthus >= 900, 900, browse9.3$disthus)
@@ -685,7 +734,7 @@ browse9.3$disthus_cut700 <- ifelse(browse9.3$disthus >= 700, 700, browse9.3$dist
 browse9.3$disthus_cut650 <- ifelse(browse9.3$disthus >= 650, 650, browse9.3$disthus)
 
 
-# 210 is the thing! (the threshold)
+
 
 save(browse9.3, file = "browse9.3.rda")
 
@@ -696,6 +745,46 @@ save(browse9.3, file = "browse9.3.rda")
 
 ##### Scale variables
 ```{r}
+
+browse9.2$HOH_scale = scale(browse9.2$HOH)
+browse9.2$tretetthet9_scale = scale(browse9.2$tretetthet9)
+browse9.2$helling_scale = scale(browse9.2$helling)
+browse9.2$disthus_scale = scale(browse9.2$disthus)
+browse9.2$distvei2_scale = scale(browse9.2$distvei2)
+browse9.2$ac_scale = scale(browse9.2$ac)
+browse9.2$disthus_cut1000_scale = scale(browse9.2$disthus_cut1000)
+browse9.2$disthus_cut900_scale = scale(browse9.2$disthus_cut900)
+browse9.2$disthus_cut800_scale = scale(browse9.2$disthus_cut800)
+browse9.2$disthus_cut700_scale = scale(browse9.2$disthus_cut700)
+browse9.2$disthus_cut600_scale = scale(browse9.2$disthus_cut600)
+browse9.2$disthus_cut500_scale = scale(browse9.2$disthus_cut500)
+browse9.2$disthus_cut400_scale = scale(browse9.2$disthus_cut400)
+browse9.2$disthus_cut300_scale = scale(browse9.2$disthus_cut300)
+browse9.2$disthus_cut200_scale = scale(browse9.2$disthus_cut200)
+browse9.2$disthus_cut150_scale = scale(browse9.2$disthus_cut150)
+browse9.2$disthus_cut175_scale = scale(browse9.2$disthus_cut175)
+browse9.2$disthus_cut160_scale = scale(browse9.2$disthus_cut160)
+browse9.2$disthus_cut190_scale = scale(browse9.2$disthus_cut190)
+browse9.2$disthus_trunc_cut1000_scale = scale(browse9.2$disthus_trunc_cut1000)
+browse9.2$disthus_trunc_cut900_scale = scale(browse9.2$disthus_trunc_cut900)
+browse9.2$disthus_trunc_cut800_scale = scale(browse9.2$disthus_trunc_cut800)
+browse9.2$disthus_trunc_cut700_scale = scale(browse9.2$disthus_trunc_cut700)
+browse9.2$disthus_trunc_cut600_scale = scale(browse9.2$disthus_trunc_cut600)
+browse9.2$disthus_trunc_cut500_scale = scale(browse9.2$disthus_trunc_cut500)
+browse9.2$disthus_trunc_cut400_scale = scale(browse9.2$disthus_trunc_cut400)
+browse9.2$disthus_trunc_cut300_scale = scale(browse9.2$disthus_trunc_cut300)
+browse9.2$disthus_trunc_cut200_scale = scale(browse9.2$disthus_trunc_cut200)
+browse9.2$disthus_trunc_cut150_scale = scale(browse9.2$disthus_trunc_cut150)
+browse9.2$disthus_trunc_cut175_scale = scale(browse9.2$disthus_trunc_cut175)
+browse9.2$disthus_trunc_cut160_scale = scale(browse9.2$disthus_trunc_cut160)
+browse9.2$disthus_trunc_cut190_scale = scale(browse9.2$disthus_trunc_cut190)
+browse9.2$tretetthet9_trunc_scale = scale(browse9.2$tretetthet9_trunc)
+browse9.2$distvei2_trunc_scale = scale(browse9.2$distvei2_trunc)
+browse9.2$disthus_trunc_scale = scale(browse9.2$disthus_trunc)
+
+browse9.2_dist$tretetthet9_trunc_scale = scale(browse9.2_dist$tretetthet9_trunc)
+browse9.2_dist$distvei2_trunc_scale = scale(browse9.2_dist$distvei2_trunc)
+browse9.2_dist$disthus_trunc_scale = scale(browse9.2_dist$disthus_trunc)
 
 browse9.3$HOH_scale = scale(browse9.3$HOH)
 browse9.3$tretetthet9_scale = scale(browse9.3$tretetthet9)
@@ -712,6 +801,8 @@ browse9.3$disthus_cut750_scale = scale(browse9.3$disthus_cut750)
 browse9.3$disthus_cut700_scale = scale(browse9.3$disthus_cut700)
 browse9.3$disthus_cut650_scale = scale(browse9.3$disthus_cut650)
 
-save(browse9.3, file = "browse9.3.rda")
+save(browse9.2, file = "browse9.2.rda")
+save(browse9.2_dist, file = "browse9.2_dist.rda")
+
 ```
 

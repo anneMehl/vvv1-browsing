@@ -3,6 +3,8 @@ title: "05_browsing_pressure_new"
 author: "anne"
 date: "1 februar 2019"
 output: word_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -13,8 +15,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 
-load("processdata/browse9.3.rda")
-
+# load("processdata/browse9.2.rda")
+load("processdata/browse9.2_dist.rda")
+load("processdata/browse9.2pos_dist.rda")
 ```
 
 
@@ -70,14 +73,14 @@ library(ape)
 
 
 # Make a matrix of coordinates - use when chunk above was not run
-coords <- as.matrix(cbind(browse9.3$UTM_OV_33, browse9.3$UTM_SN_33))
+coords <- as.matrix(cbind(browse9.2$UTM_OV_33, browse9.2$UTM_SN_33))
 
 # compute the autocovariate based on the above distance and weight
-ac <- autocov_dist(browse9.3$beitetrykkr, coords, nbs = 5000, type="inverse", zero.policy = TRUE)
-browse9.3$ac <- ac
+ac <- autocov_dist(browse9.2$beitetrykkr, coords, nbs = 5000, type="inverse", zero.policy = TRUE)
+browse9.2$ac <- ac
 
 
-save(browse9.3, file = "browse9.3.rda")
+save(browse9.2, file = "browse9.2.rda")
 
 
 ```
@@ -85,10 +88,11 @@ save(browse9.3, file = "browse9.3.rda")
 
 
 
-# gam
+#### gam
 
 ```{r}
-ggplot(browse9.3, aes(x = disthus, y = beitetrykkr)) +
+library(ggplot2)
+ggplot(browse9.2, aes(x = disthus, y = beitetrykkr)) +
     geom_point() +
     stat_smooth(method = "glm", color = "green") +
   stat_smooth(color = "blue")
@@ -101,11 +105,11 @@ ggplot(browse9.3, aes(x = disthus, y = beitetrykkr)) +
 ```{r}
 library(mgcv)
 gam1 <- gam(beitetrykkr ~ distvei2 + disthus + skogkategori + treartgruppe + region + kant + helling + HOH + tretetthet9,
-             data = browse9.3,
+             data = browse9.2,
              method = "REML")
 
 gam2 <- gam(beitetrykkr ~ s(distvei2) + s(disthus) + skogkategori + treartgruppe + region + kant + helling + HOH + tretetthet9,
-             data = browse9.3,
+             data = browse9.2,
              method = "REML")
 
 ```
@@ -120,58 +124,409 @@ plot.gam(gam2, all.terms = TRUE)
 
 
 
-#### First part of a hurdle model to account for zero inflation
+## Bin - First part of a hurdle model to account for zero inflation
 
-#### bin bin
 
 ##### Checking for the cut for disthus
 ```{r}
 library(lme4)
-m1abin <- glmer(factor(beitetrykkr > 0) ~ disthus_scale + distvei2_scale + skogkategori + treartgruppe + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_scale + skogkategori*distvei2_scale + ac_scale + (1|KOMNR),
+m1abin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + distvei2_trunc_scale + skogkategori + treartgruppe + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + ac_scale + (1|KOMNR),
             family = binomial(),
-            data = browse9.3)
+            data = browse9.2)
 
-m1bbin <- glmer(factor(beitetrykkr > 0) ~ disthus_cut1000_scale + distvei2_scale + skogkategori + treartgruppe + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_scale + skogkategori*distvei2_scale + ac_scale + (1|KOMNR),
+m1bbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut1000_scale + distvei2_trunc_scale + skogkategori + treartgruppe + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + ac_scale + (1|KOMNR),
             family = binomial(),
-            data = browse9.3)
+            data = browse9.2)
 
-m1cbin <- glmer(factor(beitetrykkr > 0) ~ disthus_cut950_scale + distvei2_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_scale + skogkategori*distvei2_scale + (1|KOMNR),
+m1cbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut900_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
             family = binomial(),
-            data = browse9.3)
+            data = browse9.2)
 
-m1dbin <- glmer(factor(beitetrykkr > 0) ~ disthus_cut900_scale + distvei2_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_scale + skogkategori*distvei2_scale + (1|KOMNR),
+m1dbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut800_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
             family = binomial(),
-            data = browse9.3)
+            data = browse9.2)
 
-m1ebin <- glmer(factor(beitetrykkr > 0) ~ disthus_cut850_scale + distvei2_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_scale + skogkategori*distvei2_scale + (1|KOMNR),
+m1ebin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut700_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
             family = binomial(),
-            data = browse9.3)
+            data = browse9.2) 
 
-m1fbin <- glmer(factor(beitetrykkr > 0) ~ disthus_cut800_scale + distvei2_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_scale + skogkategori*distvei2_scale + (1|KOMNR),
+m1fbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut600_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
             family = binomial(),
-            data = browse9.3)
+            data = browse9.2) 
 
-m1gbin <- glmer(factor(beitetrykkr > 0) ~ disthus_cut750_scale + distvei2_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_scale + skogkategori*distvei2_scale + (1|KOMNR),
+m1gbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut500_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
             family = binomial(),
-            data = browse9.3) #7
+            data = browse9.2) 
 
-m1hbin <- glmer(factor(beitetrykkr > 0) ~ disthus_cut700_scale + distvei2_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_scale + skogkategori*distvei2_scale + (1|KOMNR),
+m1hbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut400_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
             family = binomial(),
-            data = browse9.3) #8
+            data = browse9.2) 
 
-m1ibin <- glmer(factor(beitetrykkr > 0) ~ disthus_cut650_scale + distvei2_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_scale + skogkategori*distvei2_scale + (1|KOMNR),
+m1ibin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut300_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
             family = binomial(),
-            data = browse9.3) #9
+            data = browse9.2) 
+
+m1jbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut200_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2) #10
+
+m1kbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut150_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2) #11
+
+m1lbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut175_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2)
 
 ```
 
 ```{r}
 library(AICcmodavg)
 
-Candmods_bin <- list(m1abin, m1bbin, m1cbin, m1dbin, m1ebin, m1fbin, m1gbin, m1hbin, m1ibin)
+Candmods_bin <- list(m1abin, m1bbin, m1cbin, m1dbin, m1ebin, m1fbin, m1gbin, m1hbin, m1ibin, m1jbin, m1kbin, m1lbin)
 
 
 glmmbin_tab <- aictab(Candmods_bin, modnames = NULL,
-                       second.ord = FALSE, nobs = NULL, sort = TRUE)
+                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+
+# cut175 is the thing!
+
 ```
 
+
+```{r}
+library(lme4)
+
+# m2bin <- glmer(factor(beitetrykkr > 0) ~ disthus_cut175_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+#             family = binomial(),
+#             data = browse9.2_dist)
+
+# m3bin <- glmer(factor(beitetrykkr > 0) ~ disthus_scale + distvei2_trunc_scale + (1|KOMNR),
+#             family = binomial(),
+#             data = browse9.2_dist)
+
+m4bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2_dist) #1
+
+m5bin <- glmer(factor(beitetrykkr > 0) ~ distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2_dist) #2
+
+m6bin <- glmer(factor(beitetrykkr > 0) ~ skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2_dist) #3
+
+m7bin <- glmer(factor(beitetrykkr > 0) ~ skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2_dist)
+
+m8bin <- glmer(factor(beitetrykkr > 0) ~ treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2_dist)
+
+m9bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2_dist)
+
+m10bin <- glmer(factor(beitetrykkr > 0) ~ distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2_dist)
+
+m11bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2_dist)
+
+m12bin <- glmer(factor(beitetrykkr > 0) ~ treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2_dist)
+
+```
+
+```{r}
+library(AICcmodavg)
+
+Candmods_bin <- list(m4bin, m5bin, m6bin, m7bin, m8bin, m9bin, m10bin, m11bin, m12bin)
+
+glmmbin_tab <- aictab(Candmods_bin, modnames = NULL,
+                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+
+# m4bin is the thing!
+
+
+```
+
+```{r}
+# Check which optimizer doesn't converge
+allFit(model)
+```
+
+Testing for normality of errors (Although I don't know if this works for binomial)
+```{r}
+summary(m6bin)
+
+plot(m6bin)
+hist(resid(m6bin))
+
+resid.m6bin <- resid(m6bin)
+plot(resid.m6bin)
+
+par(mfrow = c(2,3))
+plot(resid.m6bin ~ skogkategori, data = browse9.2_dist)
+plot(resid.m6bin ~ treartgruppe, data = browse9.2_dist)
+plot(resid.m6bin ~ kant, data = browse9.2_dist)
+plot(resid.m6bin ~ helling_scale, data = browse9.2_dist)
+plot(resid.m6bin ~ HOH_scale, data = browse9.2_dist)
+plot(resid.m6bin ~ tretetthet9_trunc_scale, data = browse9.2_dist)
+
+library(sjPlot)
+plot_model(m6bin, type = c("diag"), transform, terms = NULL)
+# plot_model(m10bin, type = c("resid"), transform, terms = NULL)
+
+
+```
+
+Table of estimates:
+```{r}
+library(sjPlot)
+tab_model(m4bin, transform = NULL, 
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE,
+          show.std = NULL, show.p = TRUE, 
+          show.stat = FALSE, show.df = FALSE, show.r2 = TRUE, 
+          show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, 
+          show.dev = FALSE, show.obs = TRUE)
+
+
+```
+
+Forest plot:
+Whiskers are ci, possible to show se instead; Colourblind friendly colours "#004949","#009292"
+```{r}
+p1 <- plot_model(m4bin, type = c("est"), transform = NULL, show.values = TRUE, value.offset = 0.5, 
+                 vline.color = "grey", colors = c("#004949", "#009292"),
+                 axis.title = "Estimates")
+p1 + theme_sjplot() + font_size(axis_title.x = 15)
+
+```
+
+```{r}
+
+p1 <- plot_model(m4bin, type = c("eff"), transform = NULL, terms = c("treartgruppe"),
+           grid = TRUE)
+# p3 + theme_sjplot()
+
+p2 <- plot_model(m4bin, type = c("eff"), transform = NULL, terms = c("kant"))
+# p4 + theme_sjplot()
+
+p3 <- plot_model(m4bin, type = c("eff"), transform = NULL, terms = c("helling_scale [all]"))
+# p5 + theme_sjplot()
+
+p4 <- plot_model(m4bin, type = c("eff"), transform = NULL, terms = c("HOH_scale [all]"))
+# p6 + theme_sjplot()
+
+p5 <- plot_model(m4bin, type = c("eff"), transform = NULL, terms = c("tretetthet9_trunc_scale [all]"))
+# p7 + theme_sjplot()
+
+p6 <- plot_model(m4bin, type = c("eff"), transform = NULL, terms = c("distvei2_trunc_scale [all]"))
+# p7 + theme_sjplot()
+
+p7 <- plot_model(m4bin, type = c("eff"), transform = NULL, terms = c("skogkategori"))
+# p7 + theme_sjplot()
+
+p8 <- plot_model(m4bin, type = c("eff"), transform = NULL, terms = c("disthus_trunc_scale"))
+# p7 + theme_sjplot()
+
+
+library(gridExtra)
+plot_grid(list(p1, p2, p3, p4, p5, p6, p7, p8))
+
+
+# library(effects)
+# plot(allEffects(m4glmm))
+```
+
+
+
+
+## Beta - Second part of a hurdle model
+
+##### Checking for the cut for disthus
+```{r}
+library(glmmTMB)
+browse9.2pos <- browse9.2[browse9.2$bt100 > 0, ]
+
+m1beta <- glmmTMB(bt100 ~ disthus_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+            data = browse9.2pos,
+            family = beta_family())
+
+m1bbeta <- glmmTMB(bt100 ~ disthus_cut1000_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+            data = browse9.2pos,
+            family = beta_family())
+
+m1cbeta <- glmmTMB(bt100 ~ disthus_cut900_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+            data = browse9.2pos,
+            family = beta_family())
+
+m1dbeta <- glmmTMB(bt100 ~ disthus_cut800_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+            data = browse9.2pos,
+            family = beta_family())
+
+m1ebeta <- glmmTMB(bt100 ~ disthus_cut700_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+            data = browse9.2pos,
+            family = beta_family())
+
+m1fbeta <- glmmTMB(bt100 ~ disthus_cut600_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+            data = browse9.2pos,
+            family = beta_family())
+
+m1gbeta <- glmmTMB(bt100 ~ disthus_cut500_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+            data = browse9.2pos,
+            family = beta_family()) #7
+
+m1hbeta <- glmmTMB(bt100 ~ disthus_cut400_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+            data = browse9.2pos,
+            family = beta_family()) #8
+
+m1ibeta <- glmmTMB(bt100 ~ disthus_cut200_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+            data = browse9.2pos,
+            family = beta_family())
+
+m1jbeta <- glmmTMB(bt100 ~ disthus_cut175_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+            data = browse9.2pos,
+            family = beta_family())
+
+m1kbeta <- glmmTMB(bt100 ~ disthus_cut150_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+            data = browse9.2pos,
+            family = beta_family())
+
+m1lbeta <- glmmTMB(bt100 ~ disthus_cut190_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+            data = browse9.2pos,
+            family = beta_family())
+
+```
+
+
+```{r}
+AIC(m1beta, m1bbeta, m1cbeta, m1dbeta, m1ebeta, m1fbeta, m1gbeta, m1hbeta, m1ibeta, m1jbeta, m1kbeta, m1lbeta)
+
+# cut200 is the thing!
+
+```
+
+```{r}
+library(glmmTMB)
+browse9.2pos_dist <- browse9.2_dist[browse9.2_dist$bt100 > 0, ]
+
+m2beta <- glmmTMB(bt100 ~ disthus_trunc_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+            data = browse9.2pos_dist,
+            family = beta_family())
+
+m3beta <- glmmTMB(bt100 ~ disthus_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+            data = browse9.2pos_dist,
+            family = beta_family())
+
+m4beta <- glmmTMB(bt100 ~ distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+            data = browse9.2pos_dist,
+            family = beta_family())
+
+m5beta <- glmmTMB(bt100 ~ skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+            data = browse9.2pos_dist,
+            family = beta_family())
+
+m6beta <- glmmTMB(bt100 ~ skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+            data = browse9.2pos_dist,
+            family = beta_family())
+
+m7beta <- glmmTMB(bt100 ~ disthus_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+            data = browse9.2pos_dist,
+            family = beta_family())
+
+m8beta <- glmmTMB(bt100 ~ distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+            data = browse9.2pos_dist,
+            family = beta_family())
+
+m9beta <- glmmTMB(bt100 ~ disthus_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+            data = browse9.2pos_dist,
+            family = beta_family())
+
+```
+
+```{r}
+AIC(m2beta, m3beta, m4beta, m5beta, m6beta, m7beta, m8beta, m9beta)
+# m7beta is the thing!
+```
+
+
+
+```{r}
+resid_m7beta <- resid(m7beta, type = "pearson")
+plot(resid_m7beta)
+
+overdisp_fun <- function(model) {
+    rdf <- df.residual(model)
+    rp <- residuals(model,type="pearson")
+    Pearson.chisq <- sum(rp^2)
+    prat <- Pearson.chisq/rdf
+    pval <- pchisq(Pearson.chisq, df=rdf, lower.tail=FALSE)
+    c(chisq=Pearson.chisq,ratio=prat,rdf=rdf,p=pval)
+}
+
+overdisp_fun(m7beta)
+# Have overdispersion, but he (Ben Bolker) says: "Remember that (1) overdispersion is irrelevant for models that estimate a scale parameter (i.e. almost anything but Poisson or binomial: Gaussian, Gamma, negative binomial …) and (2) overdispersion is not estimable (and hence practically irrelevant) for Bernoulli models (= binary data = binomial with N=1)."
+```
+
+Table of estimates:
+```{r}
+library(sjPlot)
+
+tab_model(m7beta, transform = NULL, 
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
+
+
+```
+
+Forest plot:
+Whiskers are ci, possible to show se instead; Colourblind friendly colours "#004949","#009292"
+```{r}
+p1_est <- plot_model(m7beta, type = c("est"), transform = NULL, show.values = TRUE, value.offset = 0.5, 
+                 vline.color = "grey", colors = c("#004949", "#009292"),
+                 axis.title = "Estimates")
+p1_est + theme_sjplot() + font_size(axis_title.x = 15)
+
+```
+
+
+
+```{r}
+pb1 <- plot_model(m7beta, type = c("eff"), transform = NULL, terms = c("disthus_trunc_scale [all]"))
+# pb1 + theme_sjplot()
+
+pb2 <- plot_model(m7beta, type = c("eff"), transform = NULL, terms = c("distvei2_trunc_scale [all]"))
+# pb1 + theme_sjplot()
+
+pb3 <- plot_model(m7beta, type = c("eff"), transform = NULL, terms = c("skogkategori"))
+# pb2 + theme_sjplot()
+
+pb4 <- plot_model(m7beta, type = c("eff"), transform = NULL, terms = c("treartgruppe"),
+                  show.p = TRUE)
+# pb3 + theme_sjplot()
+
+pb5 <- plot_model(m7beta, type = c("eff"), transform = NULL, terms = c("kant"))
+# pb4 + theme_sjplot()
+
+pb6 <- plot_model(m7beta, type = c("eff"), transform = NULL, terms = c("helling_scale [all]"))
+# pb5 + theme_sjplot()
+
+pb7 <- plot_model(m7beta, type = c("eff"), transform = NULL, terms = c("HOH_scale [all]"))
+# pb6 + theme_sjplot()
+
+pb8 <- plot_model(m7beta, type = c("eff"), transform = NULL, terms = c("tretetthet9_trunc_scale [all]"))
+# pb7 + theme_sjplot()
+
+plot_grid(list(pb1, pb2, pb3, pb4, pb5, pb6, pb7, pb8))
+
+
+# type = "pred" = Predicted values (marginal effects) for specific model terms. See ggpredict for details.
+# type = "eff" = Similar to type = "pred", however, discrete predictors are held constant at their proportions (not reference level). See ggeffect for details. ggeffect() computes marginal effects by internally calling Effect. Effect constructs an "eff" object for a term (usually a high-order term), absorbing the lower-order terms marginal to the term in question, and averaging over other terms in the model.
+
+```
