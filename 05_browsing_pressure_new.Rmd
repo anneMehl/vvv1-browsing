@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-
+# Load data
 ```{r}
 
 # load("processdata/browse9.2.rda")
@@ -193,19 +193,27 @@ glmmbin_tab <- aictab(Candmods_bin, modnames = NULL,
 
 ```
 
-
+##### Model selection bin
 ```{r}
 library(lme4)
 
-# m2bin <- glmer(factor(beitetrykkr > 0) ~ disthus_cut175_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
-#             family = binomial(),
-#             data = browse9.2_dist)
+m2bin <- glmer(factor(beitetrykkr > 0) ~ log(disthus+1) + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + distvei2_trunc_scale*skogkategori + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2_dist)
 
-# m3bin <- glmer(factor(beitetrykkr > 0) ~ disthus_scale + distvei2_trunc_scale + (1|KOMNR),
-#             family = binomial(),
-#             data = browse9.2_dist)
+m2abin <- glmer(factor(beitetrykkr > 0) ~ log(disthus+1) + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2_dist)
 
-m4bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + skogkategori*distvei2_trunc_scale + (1|KOMNR),
+m3bin <- glmer(factor(beitetrykkr > 0) ~ log(disthus+1) + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + distvei2_trunc_scale*skogkategori + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2_dist)
+
+m3abin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2_dist)
+
+m4bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + distvei2_trunc_scale*skogkategori + (1|KOMNR),
             family = binomial(),
             data = browse9.2_dist) #1
 
@@ -252,9 +260,39 @@ glmmbin_tab <- aictab(Candmods_bin, modnames = NULL,
                        second.ord = TRUE, nobs = NULL, sort = TRUE)
 
 # m4bin is the thing!
-
+AIC(m2bin, m2abin, m3bin, m3abin, m4bin, m14bin)
+# m2bin is the thing!
 
 ```
+
+```{r}
+m2bin <- glmer(factor(beitetrykkr > 0) ~ log(disthus+1) + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + distvei2_trunc_scale*skogkategori + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2_dist) # OBS! same as m2bin in previous chunk
+
+m13bin <- glmer(factor(beitetrykkr > 0) ~ log(disthus+1) + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*veitype2 + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2_dist)
+
+m14bin <- glmer(factor(beitetrykkr > 0) ~ log(disthus+1) + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2_dist)
+# warning: fixed-effect model matrix is rank deficient so dropping 1 column / coefficient, THEN it just drops the interaction
+
+m15bin <- glmer(factor(beitetrykkr > 0) ~ log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + distvei2_trunc_scale*skogkategori + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2_dist)
+
+m16bin <- glmer(factor(beitetrykkr > 0) ~ log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2_dist)
+
+```
+
+```{r}
+AIC(m2bin, m13bin, m14bin)
+```
+
 
 ```{r}
 # Check which optimizer doesn't converge
@@ -263,24 +301,26 @@ allFit(model)
 
 Testing for normality of errors (Although I don't know if this works for binomial)
 ```{r}
-summary(m6bin)
+summary(m4bin)
 
-plot(m6bin)
-hist(resid(m6bin))
+plot(m4bin)
+hist(resid(m4bin))
 
-resid.m6bin <- resid(m6bin)
-plot(resid.m6bin)
+resid.m4bin <- resid(m4bin)
+plot(resid.m4bin)
 
-par(mfrow = c(2,3))
-plot(resid.m6bin ~ skogkategori, data = browse9.2_dist)
-plot(resid.m6bin ~ treartgruppe, data = browse9.2_dist)
-plot(resid.m6bin ~ kant, data = browse9.2_dist)
-plot(resid.m6bin ~ helling_scale, data = browse9.2_dist)
-plot(resid.m6bin ~ HOH_scale, data = browse9.2_dist)
-plot(resid.m6bin ~ tretetthet9_trunc_scale, data = browse9.2_dist)
+par(mfrow = c(3,3))
+plot(resid.m4bin ~ skogkategori, data = browse9.2_dist)
+plot(resid.m4bin ~ treartgruppe, data = browse9.2_dist)
+plot(resid.m4bin ~ kant, data = browse9.2_dist)
+plot(resid.m4bin ~ helling_scale, data = browse9.2_dist)
+plot(resid.m4bin ~ HOH_scale, data = browse9.2_dist)
+plot(resid.m4bin ~ tretetthet9_trunc_scale, data = browse9.2_dist)
+plot(resid.m4bin ~ disthus_trunc_scale, data = browse9.2_dist)
+plot(resid.m4bin ~ distvei2_trunc_scale, data = browse9.2_dist)
 
 library(sjPlot)
-plot_model(m6bin, type = c("diag"), transform, terms = NULL)
+plot_model(m4bin, type = c("diag"), transform, terms = NULL)
 # plot_model(m10bin, type = c("resid"), transform, terms = NULL)
 
 
@@ -330,15 +370,18 @@ p5 <- plot_model(m4bin, type = c("eff"), transform = NULL, terms = c("tretetthet
 p6 <- plot_model(m4bin, type = c("eff"), transform = NULL, terms = c("distvei2_trunc_scale [all]"))
 # p7 + theme_sjplot()
 
-p7 <- plot_model(m4bin, type = c("eff"), transform = NULL, terms = c("skogkategori"))
-# p7 + theme_sjplot()
+# p7 <- plot_model(m4bin, type = c("eff"), transform = NULL, terms = c("skogkategori"))
+# # p7 + theme_sjplot()
 
 p8 <- plot_model(m4bin, type = c("eff"), transform = NULL, terms = c("disthus_trunc_scale"))
 # p7 + theme_sjplot()
 
+p9 <- plot_model(m4bin, type = c("eff"), transform = NULL, terms = c("distvei2_trunc_scale [all]", "skogkategori"))
+# p7 + theme_sjplot()
+
 
 library(gridExtra)
-plot_grid(list(p1, p2, p3, p4, p5, p6, p7, p8))
+plot_grid(list(p1, p2, p3, p4, p5, p6, p8, p9))
 
 
 # library(effects)
@@ -413,6 +456,7 @@ AIC(m1beta, m1bbeta, m1cbeta, m1dbeta, m1ebeta, m1fbeta, m1gbeta, m1hbeta, m1ibe
 
 ```
 
+##### Model selection beta
 ```{r}
 library(glmmTMB)
 browse9.2pos_dist <- browse9.2_dist[browse9.2_dist$bt100 > 0, ]
@@ -437,7 +481,7 @@ m6beta <- glmmTMB(bt100 ~ skogkategori + treartgruppe + ac_scale + kant + hellin
             data = browse9.2pos_dist,
             family = beta_family())
 
-m7beta <- glmmTMB(bt100 ~ disthus_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+m7beta <- glmmTMB(bt100 ~ disthus_trunc_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos_dist,
             family = beta_family())
 
@@ -445,7 +489,7 @@ m8beta <- glmmTMB(bt100 ~ distvei2_trunc_scale + skogkategori + treartgruppe + a
             data = browse9.2pos_dist,
             family = beta_family())
 
-m9beta <- glmmTMB(bt100 ~ disthus_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+m9beta <- glmmTMB(bt100 ~ disthus_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos_dist,
             family = beta_family())
 
