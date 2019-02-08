@@ -586,7 +586,7 @@ load("processdata/browse9.2.rda")
 
 
 ```{r}
-
+library(ggplot2)
 # ggplot(data = browse9bro_dist, aes(landsdel)) +
 #   geom_bar()+
 #   theme_classic()
@@ -619,11 +619,13 @@ ggplot(data = browse9.2, aes(region)) +
 #   geom_bar()+
 #   theme_classic()
 
-# ggplot(data = browse9bro_dist, aes(veitype1)) +
-#   geom_bar()+
-#   theme_classic()
+ggplot(data = browse9.2_dist, aes(veitype2)) +
+  geom_bar()+
+  theme_classic()
 
-
+ggplot(data = browse9.2_dist, aes(veitype3)) +
+  geom_bar()+
+  theme_classic()
 
 
 ```
@@ -644,6 +646,8 @@ browse9.2$treartgruppe <- factor(browse9.2$treartgruppe9, levels = c("LAUV", "FU
 # browse9.2$hohkatb <- factor(browse9.2$hohkatb, levels = c("100", "0", "200", "300", "400", "500", "600", "700", "800"))
 browse9.2$region <- factor(browse9.2$region, levels = c("Hedmark", "Agder", "Buskerud", "Hordaland",  "More og Romsdal", "Nord-Trondelag", "Nordland", "Oppland", "Ostfold-Akershus", "Rogaland", "Sogn og Fjordane", "Sor-Trondelag", "Troms", "Vestfold-Telemark"))
 
+browse9.2_dist$veitype2 <- as.factor(browse9.2_dist$veitype2)
+
 ```
 
 ```{r}
@@ -656,36 +660,33 @@ load("processdata/browse9.2.rda")
 ```{r}
 
 # subset on disthus and distvei2 > 3000
-browse9.3 <- browse9.2[ which(browse9.2$disthus < 3000 & browse9.2$distvei2 < 3000),]
-save(browse9.3, file = "browse9.3.rda")
-
-browse_9$disthus_cut210 <- ifelse(browse_9$disthus >= 210, 210, browse_9$disthus)
-
-browse_9_dist <- browse_9[browse_9$distvei1 > 200, ] # longest distance to any public road 1500m
-head(browse_9_dist)
-save(browse_9_dist, file = "browse_9_dist.rda")
-
-browse_9_distbin <- browse_9[browse_9$disthus > 200, ] 
-browse_9_distbeta <- browse_9[browse_9$disthus > 210, ] 
+# browse9.3 <- browse9.2[ which(browse9.2$disthus < 3000 & browse9.2$distvei2 < 3000),]
+# save(browse9.3, file = "browse9.3.rda")
+# 
+# browse_9$disthus_cut210 <- ifelse(browse_9$disthus >= 210, 210, browse_9$disthus)
+# 
+# browse_9_dist <- browse_9[browse_9$distvei1 > 200, ] # longest distance to any public road 1500m
 # head(browse_9_dist)
-save(browse_9_distbin, file = "browse_9_distbin.rda")
-save(browse_9_distbeta, file = "browse_9_distbeta.rda")
+# save(browse_9_dist, file = "browse_9_dist.rda")
+# 
+# browse_9_distbin <- browse_9[browse_9$disthus > 200, ] 
+# browse_9_distbeta <- browse_9[browse_9$disthus > 210, ] 
+# # head(browse_9_dist)
+# save(browse_9_distbin, file = "browse_9_distbin.rda")
+# save(browse_9_distbeta, file = "browse_9_distbeta.rda")
 
 
-browse9.2$disthus_trunc <- ifelse(browse9.2$disthus >= 3000, 3000, browse9.2$disthus)
-
+browse9.2$disthus_tr
 browse9.2$distvei2_trunc <- ifelse(browse9.2$distvei2 >= 3000, 3000, browse9.2$distvei2)
-
 browse9.2$tretetthet9_trunc <- ifelse(browse9.2$tretetthet9 >= 3960, 3960, browse9.2$tretetthet9)
+
+
+# browse9.2_dist$disthus_trunc <- ifelse(browse9.2_dist$disthus >= 3000, 3000, browse9.2_dist$disthus)
+# browse9.2_dist$distvei2_trunc <- ifelse(browse9.2_dist$distvei2 >= 3000, 3000, browse9.2_dist$distvei2)
+# browse9.2_dist$tretetthet9_trunc <- ifelse(browse9.2_dist$tretetthet9 >= 3960, 3960, browse9.2_dist$tretetthet9)
 
 browse9.2_dist <- browse9.2[ which(browse9.2$disthus > 200), ]
 head(browse9.2_dist)
-
-browse9.2_dist$disthus_trunc <- ifelse(browse9.2_dist$disthus >= 3000, 3000, browse9.2_dist$disthus)
-
-browse9.2_dist$distvei2_trunc <- ifelse(browse9.2_dist$distvei2 >= 3000, 3000, browse9.2_dist$distvei2)
-
-browse9.2_dist$tretetthet9_trunc <- ifelse(browse9.2_dist$tretetthet9 >= 3960, 3960, browse9.2_dist$tretetthet9)
 
 save(browse9.2_dist, file = "browse9.2_dist.rda")
 
@@ -723,6 +724,8 @@ browse9.2$disthus_trunc_cut150 <- ifelse(browse9.2$disthus_trunc >= 150, 150, br
 browse9.2$disthus_trunc_cut175 <- ifelse(browse9.2$disthus_trunc >= 175, 175, browse9.2$disthus_trunc)
 browse9.2$disthus_trunc_cut160 <- ifelse(browse9.2$disthus_trunc >= 160, 160, browse9.2$disthus_trunc)
 browse9.2$disthus_trunc_cut190 <- ifelse(browse9.2$disthus_trunc >= 190, 190, browse9.2$disthus_trunc)
+browse9.2$disthus_trunc_cut100 <- ifelse(browse9.2$disthus_trunc >= 100, 100, browse9.2$disthus_trunc)
+
 
 browse9.3$disthus_cut1000 <- ifelse(browse9.3$disthus >= 1000, 1000, browse9.3$disthus)
 browse9.3$disthus_cut950 <- ifelse(browse9.3$disthus >= 950, 950, browse9.3$disthus)
@@ -781,6 +784,8 @@ browse9.2$disthus_trunc_cut190_scale = scale(browse9.2$disthus_trunc_cut190)
 browse9.2$tretetthet9_trunc_scale = scale(browse9.2$tretetthet9_trunc)
 browse9.2$distvei2_trunc_scale = scale(browse9.2$distvei2_trunc)
 browse9.2$disthus_trunc_scale = scale(browse9.2$disthus_trunc)
+browse9.2$disthus_trunc_cut100_scale = scale(browse9.2$disthus_trunc_cut100)
+
 
 browse9.2_dist$tretetthet9_trunc_scale = scale(browse9.2_dist$tretetthet9_trunc)
 browse9.2_dist$distvei2_trunc_scale = scale(browse9.2_dist$distvei2_trunc)
