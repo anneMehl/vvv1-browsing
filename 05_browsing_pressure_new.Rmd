@@ -533,6 +533,7 @@ p1_est <- plot_model(m3abeta, type = c("est"), transform = NULL, show.values = T
                  axis.title = "Estimates")
 p1_est + theme_sjplot() + font_size(axis_title.x = 15)
 
+
 ```
 
 
