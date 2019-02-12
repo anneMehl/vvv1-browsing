@@ -31,19 +31,19 @@ fp1 <- ggplot(data = browse9.2_dist, aes(beitetrykkr)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-fp2 <- ggplot(data = browse9.2_dist, aes(disthus_trunc)) +
+fp2 <- ggplot(data = browse9.2, aes(disthus_trunc)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-# fp3 <- ggplot(data = browse9.2_dist, aes(distvei1)) +
+# fp3 <- ggplot(data = browse0.1, aes(distvei1)) +
 #   geom_histogram(bins = 70)+
 #   theme_classic()
 
-fp4 <- ggplot(data = browse9.2_dist, aes(distvei2_trunc)) +
+fp4 <- ggplot(data = browse0.1, aes(distvei2)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-# fp5 <- ggplot(data = browse9.2_dist, aes(distvei3)) +
+# fp5 <- ggplot(data = browse0.1, aes(distvei3)) +
 #   geom_histogram(bins = 70)+
 #   theme_classic()
 
@@ -75,7 +75,7 @@ fp10 <- ggplot(data = browse9.2_dist, aes(HOH)) +
 #   geom_bar()+
 #   theme_classic()
 
-fp12 <- ggplot(data = browse9.2_dist, aes(tretetthet9_trunc)) +
+fp12 <- ggplot(data = browse9.2, aes(tretetthet9_trunc)) +
   geom_bar(width = 20)+
   theme_classic()
 

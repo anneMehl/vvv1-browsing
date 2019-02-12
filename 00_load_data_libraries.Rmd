@@ -32,6 +32,7 @@ browse0.1 <- as.data.frame(browse0.1)
 save(browse0.1, file = "browse0.1.rda")
 
 
+load("rawdata/browse0.1.rda")
 
 ```
 

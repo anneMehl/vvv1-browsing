@@ -238,6 +238,7 @@ load("processdata/browse_9.rda")
 ```{r}
 
 browse_9$disthus_cut210 <- ifelse(browse_9$disthus >= 210, 210, browse_9$disthus)
+browse_9$disthus_cut210 <- ifelse(browse_9$disthus >= 210, 210, browse_9$disthus)
 
 browse_9_dist <- browse_9[browse_9$distvei1 > 200, ] # longest distance to any public road 1500m
 head(browse_9_dist)
@@ -646,12 +647,16 @@ browse9.2$treartgruppe <- factor(browse9.2$treartgruppe9, levels = c("LAUV", "FU
 # browse9.2$hohkatb <- factor(browse9.2$hohkatb, levels = c("100", "0", "200", "300", "400", "500", "600", "700", "800"))
 browse9.2$region <- factor(browse9.2$region, levels = c("Hedmark", "Agder", "Buskerud", "Hordaland",  "More og Romsdal", "Nord-Trondelag", "Nordland", "Oppland", "Ostfold-Akershus", "Rogaland", "Sogn og Fjordane", "Sor-Trondelag", "Troms", "Vestfold-Telemark"))
 
-browse9.2_dist$veitype2 <- as.factor(browse9.2_dist$veitype2)
+browse9.2_dist$veitype2 <- as.character(browse9.2_dist$veitype2)
+browse9.2_dist$veitype2[browse9.2_dist$veitype2 == ""] <- "europaogriksveg"
+browse9.2_dist$veitype2 <- factor(browse9.2_dist$veitype2, levels = c("privatveg", "europaogriksveg", "fylkesveg", "kommuneveg"))
+
 
 ```
 
 ```{r}
 save(browse9.2, file = "browse9.2.rda")
+save(browse9.2_dist, file = "browse9.2_dist.rda")
 load("processdata/browse9.2.rda")
 ```
 
@@ -676,6 +681,7 @@ load("processdata/browse9.2.rda")
 # save(browse_9_distbeta, file = "browse_9_distbeta.rda")
 
 
+
 browse9.2$disthus_tr
 browse9.2$distvei2_trunc <- ifelse(browse9.2$distvei2 >= 3000, 3000, browse9.2$distvei2)
 browse9.2$tretetthet9_trunc <- ifelse(browse9.2$tretetthet9 >= 3960, 3960, browse9.2$tretetthet9)
@@ -687,6 +693,8 @@ browse9.2$tretetthet9_trunc <- ifelse(browse9.2$tretetthet9 >= 3960, 3960, brows
 
 browse9.2_dist <- browse9.2[ which(browse9.2$disthus > 200), ]
 head(browse9.2_dist)
+
+
 
 save(browse9.2_dist, file = "browse9.2_dist.rda")
 
