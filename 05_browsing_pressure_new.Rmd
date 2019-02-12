@@ -226,37 +226,41 @@ AIC(m1kbin, m1lbin, m1sbin)
 ```{r}
 library(lme4)
 
-m2bin <- m1kbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+m2bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
             family = binomial(),
-            data = browse9.2)
+            data = browse9.2_dist)
 
-m2abin <- m1kbin <- glmer(factor(beitetrykkr > 0) ~ log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
-            family = binomial(),
-            data = browse9.2)
+# m2abin <- m1kbin <- glmer(factor(beitetrykkr > 0) ~ log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+#             family = binomial(),
+#             data = browse9.2_dist)
 
-m3bin <- m1kbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*veitype2 + (1|KOMNR),
+m3bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*veitype2 + (1|KOMNR),
             family = binomial(),
-            data = browse9.2)
-# fit warnings:
-# fixed-effect model matrix is rank deficient so dropping 1 column / coefficient
+            data = browse9.2_dist)
 
-m4bin <- m1kbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+m3abin <- glmer(factor(beitetrykkr > 0) ~ log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*veitype2 + (1|KOMNR),
             family = binomial(),
-            data = browse9.2)
+            data = browse9.2_dist)
 
-m5bin <- m1kbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2+1) + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*veitype2 + (1|KOMNR),
+m4bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             family = binomial(),
-            data = browse9.2)
-# fit warnings:
-# fixed-effect model matrix is rank deficient so dropping 1 column / coefficient
+            data = browse9.2_dist)
+
+m5bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2+1) + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*veitype2 + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2_dist)
+
+m6bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*veitype2 + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2_dist)
 
 ```
 
 ```{r}
 library(AICcmodavg)
 
-AIC(m2bin, m2abin, m3bin, m4bin)
-
+AIC(m2bin, m3bin, m3abin, m4bin, m5bin, m6bin)
+AIC(m2bin, m3bin)
 Candmods_bin <- list(m4bin, m5bin, m6bin, m7bin, m8bin, m9bin, m10bin, m11bin, m12bin)
 
 glmmbin_tab <- aictab(Candmods_bin, modnames = NULL,
@@ -351,7 +355,7 @@ p7 + theme_sjplot()
 # p8 <- plot_model(m2abin, type = c("eff"), transform = NULL, terms = c("disthus_trunc_scale"))
 # p7 + theme_sjplot()
 
-p9 <- plot_model(m2abin, type = c("eff"), transform = NULL, terms = c("distvei2 [0:150]", "skogkategori"))
+p9 <- plot_model(m3bin, type = c("eff"), transform = NULL, terms = c("distvei2 [0:3000]", "veitype2"))
 p9 + theme_sjplot()
 
 
@@ -461,27 +465,24 @@ library(glmmTMB)
 browse9.2pos_dist <- browse9.2_dist[browse9.2_dist$bt100 > 0, ]
 
 m2beta <- glmmTMB(bt100 ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
-            data = browse9.2pos,
+            data = browse9.2pos_dist,
             family = beta_family())
 
 m3beta <- glmmTMB(bt100 ~ disthus_trunc_scale + log(distvei2+1) + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
-            data = browse9.2pos,
+            data = browse9.2pos_dist,
             family = beta_family())
 
 m3abeta <- glmmTMB(bt100 ~ log(distvei2+1) + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
-            data = browse9.2pos,
+            data = browse9.2pos_dist,
             family = beta_family())
 
 m4beta <- glmmTMB(bt100 ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
-            data = browse9.2pos,
+            data = browse9.2pos_dist,
             family = beta_family())
 
 m5beta <- glmmTMB(bt100 ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*veitype2 + (1|KOMNR),
-            data = browse9.2pos,
+            data = browse9.2pos_dist,
             family = beta_family())
-# Warning message:
-# In fitTMB(TMBStruc) :
-#   Model convergence problem; non-positive-definite Hessian matrix. See vignette('troubleshooting')
 
 m6beta <- glmmTMB(bt100 ~ log(distvei2+1) + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos,
@@ -492,7 +493,7 @@ m6beta <- glmmTMB(bt100 ~ log(distvei2+1) + treartgruppe + ac_scale + kant + hel
 ```{r}
 AIC(m2beta, m3beta, m4beta, m5beta)
 # m3(a)beta is the thing!
-AIC(m3abeta, m6beta)
+AIC(m2beta, m5beta)
 
 ```
 
