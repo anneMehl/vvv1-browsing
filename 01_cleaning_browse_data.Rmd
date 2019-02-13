@@ -682,8 +682,8 @@ load("processdata/browse9.2.rda")
 
 
 
-browse9.2$disthus_tr
-browse9.2$distvei2_trunc <- ifelse(browse9.2$distvei2 >= 3000, 3000, browse9.2$distvei2)
+browse9.2$disthus_trunc <- ifelse(browse9.2$disthus >= 3000, 3000, browse9.2$disthus)
+browse9.2$distvei2_trunc <- ifelse(browse9.2$distvei2 >= 2218, 2218, browse9.2$distvei2)
 browse9.2$tretetthet9_trunc <- ifelse(browse9.2$tretetthet9 >= 3960, 3960, browse9.2$tretetthet9)
 
 

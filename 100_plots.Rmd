@@ -22,6 +22,11 @@ theme_set(theme_pubr())
 ```
 
 
+```{r}
+hist(browse9.2$tretetthet9_trunc)
+```
+
+
 ### Frequency plots
 
 ```{r}
@@ -31,7 +36,7 @@ fp1 <- ggplot(data = browse9.2_dist, aes(beitetrykkr)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
-fp2 <- ggplot(data = browse9.2, aes(disthus_trunc)) +
+fp2 <- ggplot(data = browse9.2_dist, aes(disthus_trunc)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
@@ -39,7 +44,7 @@ fp2 <- ggplot(data = browse9.2, aes(disthus_trunc)) +
 #   geom_histogram(bins = 70)+
 #   theme_classic()
 
-fp4 <- ggplot(data = browse0.1, aes(distvei2)) +
+fp4 <- ggplot(data = browse9.2_dist, aes(distvei2_trunc)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
@@ -56,7 +61,7 @@ fp7 <- ggplot(data = browse9.2_dist, aes(kant)) +
   theme_classic()
 
 fp8 <- ggplot(data = browse9.2_dist, aes(treartgruppe)) +
-  geom_bar()+
+  geom_histogram()+
   theme_classic()
 
 fp9 <- ggplot(data = browse9.2_dist, aes(helling)) +
@@ -75,8 +80,8 @@ fp10 <- ggplot(data = browse9.2_dist, aes(HOH)) +
 #   geom_bar()+
 #   theme_classic()
 
-fp12 <- ggplot(data = browse9.2, aes(tretetthet9_trunc)) +
-  geom_bar(width = 20)+
+fp12 <- ggplot(data = browse9.2_dist, aes(tretetthet9_trunc)) +
+  geom_histogram()+
   theme_classic()
 
 # ggplot(data = browse9.2_dist, aes(log(tretetthet9))) +
