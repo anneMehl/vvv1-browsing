@@ -1,0 +1,37 @@
+---
+title: "treedensity"
+author: "anne"
+date: "14 februar 2019"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Load data
+```{r}
+load("processdata/browse9.2.rda")
+```
+
+
+
+```{r}
+library(lme4)
+m1 <- glmer(tretetthet9_trunc ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + (1|KOMNR),
+            family = poisson(),
+            data = browse9.2)
+
+m2 <- glmer(tretetthet9_trunc ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + (1|KOMNR),
+            family = gaussian(),
+            data = browse9.2)
+
+```
+
+```{r}
+plot(m1)
+```
+
