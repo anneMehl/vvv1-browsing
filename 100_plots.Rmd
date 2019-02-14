@@ -80,7 +80,11 @@ fp10 <- ggplot(data = browse9.2_dist, aes(HOH)) +
 #   geom_bar()+
 #   theme_classic()
 
-fp12 <- ggplot(data = browse9.2_dist, aes(tretetthet9_trunc)) +
+fp12 <- ggplot(data = browse9.2, aes(log(tretetthet9_trunc))) +
+  geom_histogram()+
+  theme_classic()
+
+ggplot(data = browse9.2, aes(tretetthet9_trunc)) +
   geom_histogram()+
   theme_classic()
 
