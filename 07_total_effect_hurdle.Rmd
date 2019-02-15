@@ -1,0 +1,98 @@
+---
+title: "total hurdle"
+author: "anne"
+date: "15 februar 2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(pscl)
+library(lme4)
+library(glmmTMB)
+```
+
+```{r}
+
+m4abin <- glmer(factor(beitetrykkr > 0) ~ log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2_dist)
+
+
+m4abeta <- glmmTMB(bt100 ~ log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+            data = browse9.2pos_dist,
+            family = beta_family())
+
+```
+
+```{r}
+dat <- browse9.2_dist
+focal <- "distveg2"
+```
+
+```{r}
+# focal: a numeric variable 
+resp_curve <- function(focal, dat, m4abin, m4abeta, nvals = 100, plot = T, nb_btstrp = 999){
+  newdat <- dat # [c(1:nvals),]  -->  this is only because the factors are a pain...
+  for (i in c(1:ncol(newdat))){
+    if (class(newdat[,i])=="integer") newdat[,i] <- mean(dat[,i], na.rm=T) 
+    if (class(newdat[,i])=="numeric") newdat[,i] <- mean(dat[,i], na.rm=T) 
+    if (class(newdat[,i])=="factor") newdat[c(1:nvals),i] <- dat[,i][dat[,i]==names(which.max(summary(dat[,i])))][c(1:nvals)]
+  }
+newdat[c(1:nvals),focal] <- seq(min(dat[,focal]), max(dat[,focal]), length.out = nvals) #you could also add a custom range here...
+  
+  
+# model matrices
+mm1 <- model.matrix(m4abin, data=newdat)
+mm1 <- mm1[c(1:nvals),]
+mm2 <- model.matrix(m4abeta, data=newdat)
+mm2 <- mm2[c(1:nvals),]
+newdat <- newdat[c(1:nvals),]
+  
+# bootstrap focal coefficent
+# zeromod
+zerocoef <- coefficients(m4abin)
+ses <- sqrt(diag(vcov(m4abin)))
+ses <- ses[names(ses) == focal]
+smpl <- c(0, rnorm(nb_btstrp, mean = 0, sd = ses))
+zeromat <- matrix(zerocoef, nrow = length(zerocoef), ncol = length(smpl), byrow = F)
+zeromat[1,] <- zeromat[1,] + smpl
+  
+predzero_smpl <- inv.logit(mm1 %*% zeromat) 
+
+# percmod
+perccoef <- coefficients(m4abeta)
+ses <- sqrt(diag(vcov(m4abeta)))
+ses <- ses[names(ses) == focal]
+smpl <- c(0, rnorm(nb_btstrp, mean = 0, sd = ses))
+percmat <- matrix(perccoef, nrow = length(perccoef), ncol = length(smpl), byrow = F)
+percmat[1,] <- percmat[1,] + smpl
+  
+predperc_smpl <- exp(mm2 %*% percmat) 
+  
+pred_smpl <- predzero_smpl*predperc_smpl
+  
+newdat$mean <- pred_smpl[,1]
+newdat$sd <- apply(pred_smpl, 1, sd)
+newdat$CI05 <- apply(pred_smpl, 1, quantile, probs=0.05)
+newdat$CI95 <- apply(pred_smpl, 1, quantile, probs=0.95)
+  
+newdat <- newdat[,c(focal, "mean", "sd", "CI05", "CI95")]
+  
+if (plot) {
+    plot(newdat[,focal], newdat$mean, type="l", lwd=2, xlab=focal, ylab="predicted value")
+    lines(newdat[,focal], newdat$CI95, col="dark grey")
+    lines(newdat[,focal], newdat$CI05, col="dark grey")
+    lines(newdat[,focal], newdat$mean, col="black")
+  }
+if (!plot) return(newdat)
+}
+
+resp_curve("distvei2", dat, m4abin, m4abeta, nvals=100, plot=T, nb_btstrp = 999)
+
+```
+
