@@ -73,14 +73,14 @@ library(ape)
 
 
 # Make a matrix of coordinates - use when chunk above was not run
-coords <- as.matrix(cbind(browse9.2$UTM_OV_33, browse9.2$UTM_SN_33))
+coords <- as.matrix(cbind(browse9.3$UTM_OV_33, browse9.3$UTM_SN_33))
 
 # compute the autocovariate based on the above distance and weight
-ac <- autocov_dist(browse9.2$beitetrykkr, coords, nbs = 5000, type="inverse", zero.policy = TRUE)
-browse9.2$ac <- ac
+ac <- autocov_dist(browse9.3$beitetrykkr, coords, nbs = 5000, type="inverse", zero.policy = TRUE)
+browse9.3$ac <- ac
 
 
-save(browse9.2, file = "browse9.2.rda")
+save(browse9.3, file = "browse9.3.rda")
 
 
 ```
