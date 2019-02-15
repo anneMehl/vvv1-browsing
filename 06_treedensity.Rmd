@@ -18,20 +18,136 @@ load("processdata/browse9.2.rda")
 ```
 
 
-
+##### Model selection first step (log or not, cut or not)
 ```{r}
 library(lme4)
-m1 <- glmer(tretetthet9_trunc ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + (1|KOMNR),
+m1a <- glmer(tretetthet9_trunc ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + (1|KOMNR),
             family = poisson(),
             data = browse9.2)
+
+m1 <- lmer(log(tretetthet9_trunc+1) ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + (1|KOMNR),
+            data = browse9.3)
 
 m2 <- glmer(tretetthet9_trunc ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + (1|KOMNR),
             family = gaussian(),
             data = browse9.2)
 
+m3 <- lmer(log(tretetthet9+1) ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + (1|KOMNR),
+            data = browse9.2)
+
+m4 <- lmer(tretetthet9_trunc ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + (1|KOMNR),
+            data = browse9.2)
+
+m5 <- lmer(log(tretetthet9_trunc+1) ~ disthus_trunc_scale + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + (1|KOMNR),
+            data = browse9.3)
+
+m6 <- lmer(log(tretetthet9_trunc+1) ~ disthus_trunc_cut200_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + (1|KOMNR),
+            data = browse9.3)
+
+m7 <- lmer(log(tretetthet9_trunc+1) ~ disthus_trunc_cut100_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + (1|KOMNR),
+            data = browse9.3)
+
+m8 <- lmer(log(tretetthet9_trunc+1) ~ disthus_trunc_cut300_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + (1|KOMNR),
+            data = browse9.3)
+
+m9 <- lmer(log(tretetthet9_trunc+1) ~ disthus_trunc_cut250_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + (1|KOMNR),
+            data = browse9.3)
+
+m10 <- lmer(log(tretetthet9_trunc+1) ~ disthus_trunc_cut250_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + (1|KOMNR),
+            data = browse9.3_dist)
+
+```
+
+##### Model selection
+```{r}
+m11 <- lmer(log(tretetthet9_trunc+1) ~ log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + (1|KOMNR),
+            data = browse9.3_dist)
+
+m12 <- lmer(log(tretetthet9_trunc+1) ~ log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + vegetasjon + (1|KOMNR),
+            data = browse9.3_dist)
+
+m13 <- lmer(log(tretetthet9_trunc+1) ~ log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + helling + (1|KOMNR),
+            data = browse9.3_dist)
+
+m14 <- lmer(log(tretetthet9_trunc+1) ~ log(distvei2+1) + treartgruppe + ac_scale + kant + beitetrykkr + vegetasjon + (1|KOMNR),
+            data = browse9.3_dist)
+
+m15 <- lmer(log(tretetthet9_trunc+1) ~ log(distvei2+1) + skogkategori + ac_scale + kant + beitetrykkr + vegetasjon + (1|KOMNR),
+            data = browse9.3_dist)
+
+m16 <- lmer(log(tretetthet9_trunc+1) ~ log(distvei2+1) + ac_scale + kant + beitetrykkr + vegetasjon + (1|KOMNR),
+            data = browse9.3_dist)
+
+m17 <- lmer(log(tretetthet9_trunc+1) ~ log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + helling + HOH + (1|KOMNR),
+            data = browse9.3_dist)
+
+```
+
+
+```{r}
+AIC(m1, m5, m6, m7, m8, m9)
+AIC(m11, m12, m13, m14, m15, m16, m17)
+
+summary(m1)
+summary(m9)
+summary(m11)
+summary(m13)
+
+```
+
+
+```{r}
+plot(m13)
+resid_m13 <- resid(m13,type = "pearson")
+plot(resid_m13)
+hist(resid_m13)
+qqnorm(resid_m13)
+
+vcov.merMod(m13)
+
+```
+
+##### Figs and tabs
+```{r}
+library(sjPlot)
 ```
 
 ```{r}
-plot(m1)
+
+tab_model(m13, 
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
+
 ```
+
+```{r}
+p1_est <- plot_model(m13, type = c("est"), transform = NULL, show.values = TRUE, value.offset = 0.5, 
+                 vline.color = "grey", colors = c("#004949", "#009292"),
+                 axis.title = "Estimates")
+p1_est + theme_sjplot() + font_size(axis_title.x = 15)
+```
+
+```{r}
+
+p1 <- plot_model(m13, type = c("eff"), transform = NULL, terms = c("distvei2 [0:2500]"))
+# pb2 + theme_sjplot()
+
+p2 <- plot_model(m13, type = c("eff"), transform = NULL, terms = c("skogkategori"))
+# pb3 + theme_sjplot()
+
+p3 <- plot_model(m13, type = c("eff"), transform = NULL, terms = c("treartgruppe"))
+# pb3 + theme_sjplot()
+
+p4 <- plot_model(m13, type = c("eff"), transform = NULL, terms = c("kant"))
+# pb3 + theme_sjplot()
+
+p5 <- plot_model(m13, type = c("eff"), transform = NULL, terms = c("helling"))
+# pb3 + theme_sjplot()
+
+p6 <- plot_model(m13, type = c("eff"), transform = NULL, terms = c("beitetrykkr"))
+# pb3 + theme_sjplot()
+
+library(gridExtra)
+plot_grid(list(p1, p2, p3, p4, p5, p6))
+```
+
 
