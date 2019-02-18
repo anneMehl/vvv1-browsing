@@ -23,26 +23,29 @@ load("processdata/browse9.2pos.rda")
 #### models for >200m from houses
 ```{r}
 
-m4abin <- glmer(factor(beitetrykkr > 0) ~ log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
-            family = binomial(),
-            data = browse9.2_dist)
+# m4abin <- glmer(factor(beitetrykkr > 0) ~ log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+#             family = binomial(),
+#             data = browse9.2_dist)
+load("output/m4bin.rda") # is m4abin
 
-
-m4abeta <- glmmTMB(bt100 ~ log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
-            data = browse9.2pos_dist,
-            family = beta_family())
+# m4abeta <- glmmTMB(bt100 ~ log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+#             data = browse9.2pos_dist,
+#             family = beta_family())
+load("output/m4beta.rda") # is m4abeta
 
 ```
 
 #### models for <200m from houses
 ```{r}
-m1kbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut150_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+m1kbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut200_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             family = binomial(),
             data = browse9.2)
+save(m1kbin, file = "m1kbin")
 
 m1ibeta <- glmmTMB(bt100 ~ disthus_trunc_cut200_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
             data = browse9.2pos,
             family = beta_family()) 
+save(m1ibeta, file = "m1ibeta")
 
 ```
 
@@ -51,8 +54,8 @@ m1ibeta <- glmmTMB(bt100 ~ disthus_trunc_cut200_scale + log(distvei2+1) + skogka
 zeromod <- m4abin
 percmod <- m4abeta
 
-dat <- browse9.2_dist
-focal <- "disthus_trunc_cut200_scale"
+dat <- browse9.2
+focal <- "distvei2_trunc"
 ```
 
 #### function
@@ -183,7 +186,7 @@ resp_curve("kant", isfactor=T, dat=browse9.2_dist, zeromod=m4abin, percmod=m4abe
 resp_curve("helling_scale", dat=browse9.2_dist, zeromod=m4abin, percmod=m4abeta, nvals=100, plot=T, nb_btstrp=999)
 resp_curve("HOH_scale", dat=browse9.2_dist, zeromod=m4abin, percmod=m4abeta, nvals=100, plot=T, nb_btstrp=999)
 resp_curve("tretetthet9_trunc_scale", dat=browse9.2_dist, zeromod=m4abin, percmod=m4abeta, nvals=100, plot=T, nb_btstrp=999)
-resp_curve("disthus_trunc_cut200_scale", dat=browse9.2_dist, zeromod=m4abin, percmod=m4abeta, nvals=100, plot=T, nb_btstrp=999)
+# resp_curve("disthus_trunc_cut200_scale", dat=browse9.2_dist, zeromod=m4abin, percmod=m4abeta, nvals=100, plot=T, nb_btstrp=999)
 
 ```
 
