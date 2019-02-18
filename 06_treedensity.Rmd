@@ -15,6 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Load data
 ```{r}
 load("processdata/browse9.2.rda")
+load("processdata/browse9.3_dist.rda")
 ```
 
 
@@ -88,6 +89,15 @@ m17 <- lmer(log(tretetthet9_trunc+1) ~ log(distvei2+1) + skogkategori + treartgr
 AIC(m1, m5, m6, m7, m8, m9)
 AIC(m11, m12, m13, m14, m15, m16, m17)
 
+#     df      AIC
+# m11 15 60911.00
+# m12 31 60699.67 <-- Lowest AIC, but I think we should mayeb not use vegetation as predictor
+# m13 16 60897.90 <-- BEST
+# m14 27 61119.11
+# m15 29 63738.88
+# m16 25 64014.19
+# m17 17 60915.69
+
 summary(m1)
 summary(m9)
 summary(m11)
@@ -132,7 +142,7 @@ p1 <- plot_model(m13, type = c("eff"), transform = NULL, terms = c("distvei2 [0:
 # pb2 + theme_sjplot()
 
 p2 <- plot_model(m13, type = c("eff"), transform = NULL, terms = c("skogkategori"))
-# pb3 + theme_sjplot()
+p2 + theme_sjplot()
 
 p3 <- plot_model(m13, type = c("eff"), transform = NULL, terms = c("treartgruppe"))
 # pb3 + theme_sjplot()
