@@ -23,7 +23,7 @@ theme_set(theme_pubr())
 
 
 ```{r}
-hist(browse9.2$tretetthet9_trunc)
+hist(log(browse9.2$tretetthet9_trunc))
 ```
 
 
@@ -34,6 +34,10 @@ library(ggplot2)
 
 fp1 <- ggplot(data = browse9.2_dist, aes(beitetrykkr)) +
   geom_histogram(bins = 70)+
+  theme_classic()
+
+ggplot(data = browse0.1, aes(blaabaerdekning)) +
+  geom_histogram()+
   theme_classic()
 
 fp2 <- ggplot(data = browse9.2_dist, aes(disthus_trunc)) +
@@ -171,289 +175,14 @@ grid.arrange(fpb1, fpb2, fpb4, fpb6, fpb7, fpb8, fpb9, fpb10, fpb12, nrow = 3)
 
 
 
-### Effect of distance to roads on browsing pressure %
-#### ROS
 ```{r}
-
-ggplot(data = browse_sub, aes(browsingpressure)) +
-  stat_smooth(method = "lm", formula(y ~ x + I(x^2)))
-  theme_classic()
- 
+library(ggplot2)
 
 
-# browsingpressure = (akkumulert i 9., siste år i 10.)
-ggplot(data = browse9, aes(distroad1, browsingpressure, fill = distroad1)) +
-            geom_point()
-            labs(x = "Distance to closest public road (m)", y = "Browsing pressure %")+
-            theme_classic()
 
-ggplot(browse9, aes(x = distvei1, y = beitetrykk)) +
-            geom_point()+
-    stat_smooth(method = "lm", color = "red") +
-  stat_smooth(color = "blue") + 
-  labs(x = "Distance to closest public road in m (where closest house further than 500 m away)", y = "Browsing pressure %")
-
-ggplot(broadhouse10, aes(x = distroad1, y = browsingpressure)) +
-            geom_point()+
-    stat_smooth(method = "lm", color = "red") +
-  stat_smooth(color = "blue") + 
-  labs(x = "Distance to closest public road in m (where closest house futher than 500 m away)", y = "Browsing pressure %")
-            
-ggplot(broadhouse9, aes(x = distroad1, y = browsingpressure)) +
-            geom_point()+
-    stat_smooth(method = "lm", formula = y ~ x + I(x^2), color = "red") +
-  stat_smooth(color = "blue")+ 
-  labs(x = "Distance to closest public road in m (where closest house futher than 500 m away)", y = "Browsing pressure %")
-
-ggplot(broadhouse9, aes(x = distroad1, y = browsingpressure)) +
-            geom_point()+
-    stat_smooth(method = "lm", formula = y ~ x + I(x^2) + I(x^3), color = "yellow") +
-  stat_smooth(color = "blue")+ 
-  labs(x = "Distance to closest public road in m (where closest house futher than 500 m away)", y = "Browsing pressure %")
-    
-ggplot(broadhouse9, aes(x = distroad1, y = log(browsingpressure + 1))) +
-            geom_point()+
-    stat_smooth(method = "lm", formula = y ~ x + I(x^2) + I(x^3), color = "yellow") +
-  stat_smooth(color = "blue")+ 
-  labs(x = "Distance to closest public road in m (where closest house futher than 500 m away)", y = "Browsing pressure %")
-
-
-ggplot(browseroad1500, aes(x = distroad1, y = browsingpressure)) +
-            geom_point()+
-    stat_smooth(method = "lm", color = "red") +
-  stat_smooth(color = "blue")
-            
-ggplot(browseroad1500, aes(x = distroad1, y = browsingpressure)) +
-            geom_point()+
-    stat_smooth(method = "lm", formula = y ~ x + I(x^2), color = "red") +
-  stat_smooth(color = "blue")
-
-ggplot(browseroad1500, aes(x = distroad1, y = browsingpressure)) +
-            geom_point()+
-    stat_smooth(method = "lm", formula = y ~ x + I(x^2) + I(x^3), color = "yellow") +
-  stat_smooth(color = "blue")
-    
-ggplot(browseroad1500, aes(x = distroad1, y = log(browsingpressure + 1))) +
-            geom_point()+
-    stat_smooth(method = "lm", formula = y ~ x + I(x^2) + I(x^3), color = "yellow") +
-  stat_smooth(color = "blue")
-
-
-ggplot(broadhouse9, aes(x = distroad1, y = browsingpressure)) +
-    geom_point() +
-    stat_smooth(method = "glm", color = "green") +
-  stat_smooth(color = "blue") + 
-  labs(x = "Distance to closest public road in m (where closest house futher than 500 m away)", y = "Browsing pressure %")
-
-ggplot(browse_9, aes(x = distvei1, y = elgbROSprs9)) +
-    geom_point() +
-    stat_smooth(method = "glm", formula = y ~ x + I(x^2), color = "red") +
-  stat_smooth(color = "blue") + 
-  labs(x = "Distance to closest public road in m (where closest house futher than 500 m away)", y = "Browsing pressure %")
-
-ggplot(browse_9, aes(x = distvei1, y = beitetrykk)) +
-    geom_point() +
-    stat_smooth(method = "glm", formula = y ~ x + I(x^2), color = "red") +
-  stat_smooth(color = "blue") + 
-  labs(x = "Distance to closest public road in m (where closest house futher than 500 m away)", y = "Browsing pressure %")
-
-ggplot(broadhouse9, aes(x = distroad1, y = browsingpressure)) +
-    geom_point() +
-    stat_smooth(method = "glm", formula = y ~ x + I(x^2) + I(x^3), color = "yellow") +
-  stat_smooth(color = "blue") + 
-  labs(x = "Distance to closest public road in m (where closest house futher than 500 m away)", y = "Browsing pressure %")
-
-
-ggplot(browseroad1500, aes(x = distroad1, y = browsingpressure)) +
-    geom_point() +
-    stat_smooth(method = "glm", color = "green") +
-  stat_smooth(color = "blue")
-
-ggplot(browseroad1500, aes(x = distroad1, y = browsingpressure)) +
-    geom_point() +
-    stat_smooth(method = "glm", formula = y ~ x + I(x^2), color = "red") +
-  stat_smooth(color = "blue")
-
-ggplot(browseroad1500, aes(x = distroad1, y = browsingpressure)) +
-    geom_point() +
-    stat_smooth(method = "glm", formula = y ~ x + I(x^2) + I(x^3), color = "yellow") +
-  stat_smooth(color = "blue")
-            
-
+funp1 <- ggplot(browse9.2_dist(x = c(0, 2500)), aes(x = x)) +
+        stat_function(fun = resp_curve())
 ```
-#### Birch/ other deciduous trees
-```{r}
-# 10th takst
-ggplot(data = browse_sub, aes(distroad1, bbirch10)) +
-  geom_point() +
-  geom_smooth()+
-            labs(x = "Distance to closest public road (m)", y = "Browsing pressure on birch %")+
-            theme_classic()
-
-ggplot(data = browse_sub, aes(distroad2, bbirch10, fill = distroad2)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public and private roads (m)", y = "Browsing pressure on birch %")+
-            theme_classic()
-
-ggplot(data = browse_sub, aes(distroad3, bbirch10, fill = distroad3)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public, private and forest roads (m)", y = "Browsing pressure on birch %")+
-            theme_classic()
-
-# 9th takst (here other deciduous)
-ggplot(data = browse_sub, aes(distroad1, bdec9, fill = distroad1)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public road (m)", y = "Browsing pressure on other decisuous trees %")+
-            theme_classic()
-
-ggplot(data = browse_sub, aes(distroad2, bdec9, fill = distroad2)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public and private roads (m)", y = "Browsing pressure on other decisuous trees %")+
-            theme_classic()
-
-ggplot(data = browse_sub, aes(distroad3, bdec9, fill = distroad3)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public, private and forest roads (m)", y = "Browsing pressure on other decisuous trees %")+
-            theme_classic()
-
-```
-#### Pine
-```{r}
-# 10th takst
-ggplot(data = browse_sub, aes(distroad1, bpine10, fill = distroad1)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public road (m)", y = "Browsing pressure on pine %")+
-            theme_classic()
-
-ggplot(data = browse_sub, aes(distroad2, bpine10, fill = distroad2)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public and private roads (m)", y = "Browsing pressure on pine %")+
-            theme_classic()
-
-ggplot(data = browse_sub, aes(distroad3, bpine10, fill = distroad3)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public, private and forest roads (m)", y = "Browsing pressure on pine %")+
-            theme_classic()
-
-# 9th takst
-ggplot(data = browse_sub, aes(distroad1, bpine9, fill = distroad1)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public road (m)", y = "Browsing pressure on pine %")+
-            theme_classic()
-
-ggplot(data = browse_sub, aes(distroad2, bpine9, fill = distroad2)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public and private roads (m)", y = "Browsing pressure on pine %")+
-            theme_classic()
-
-ggplot(data = browse_sub, aes(distroad3, bpine9, fill = distroad3)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public, private and forest roads (m)", y = "Browsing pressure on pine %")+
-            theme_classic()
-
-```
-
-#### Bilberry cover
-```{r}
-
-ggplot(data = browse_sub, aes(distroad1, bilberrycover, fill = distroad1)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public road (m)", y = "Bilberry cover %")+
-            theme_classic()
-
-ggplot(data = browse_sub, aes(distroad2, bilberrycover, fill = distroad2)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public and private roads (m)", y = "Bilberry cover %")+
-            theme_classic()
-
-ggplot(data = browse_sub, aes(distroad3, bilberrycover, fill = distroad3)) +
-            geom_smooth()+
-            labs(x = "Distance to closest public, private and forest roads (m)", y = "Bilberry cover %")+
-            theme_classic()
-
-```
-
-### Effect of road type on browsing pressure %
-
-```{r}
-# 10th takst
-ggplot(data = browse_sub, aes(roadtype1, bros10, fill = roadtype1)) +
-            geom_boxplot()+
-            labs(x = "Road type (public roads)", y = "Browsing pressure on ROS %")+
-            theme_classic()
-
-ggplot(data = browse_sub, aes(roadtype1, bbirch10, fill = roadtype1)) +
-            geom_boxplot()+
-            labs(x = "Road type (public roads)", y = "Browsing pressure on birch %")+
-            theme_classic()
-
-ggplot(data = browse_sub, aes(roadtype1, bpine10, fill = roadtype1)) +
-            geom_boxplot()+
-            labs(x = "Road type (public roads)", y = "Browsing pressure on pine %")+
-            theme_classic()
-
-```
-
-
-
-
-### Recruits per ha of different tree species
-#### 9th takst
-```{r}
-# ggplot(data = species_ha9, aes(species, nbha)) +
-#             geom_col(show.legend = TRUE)+
-#             labs(x = "", y = "Recruits per ha 2005-2009")+
-#             theme_classic()
-
-
-```
-#### 10th takst
-```{r}
-ggplot(data = species_ha10, aes(species10, nbha10)) +
-            geom_col(show.legend = TRUE)+
-            labs(x = "", y = "Recruits per ha 2010-2014")+
-            theme_classic()
-
-
-```
-
-
-
-
-```{r}
-# test <- summarise(browse_sub, mean(ros.ha9, na.rm = TRUE))
-
-mean(browse_sub$moosepineha10, na.rm = TRUE)
-mean(browse_sub$mooserosha10, na.rm = TRUE)
-mean(browse_sub$moosedecha10, na.rm = TRUE)
-
-species10 <- c("pine", "ros", "other deciduous trees")
-nbha10 <- c("242", "1063", "469")
-species_ha10 <- data.frame(species10, nbha10)
-
-str(species_ha10)
-
-species_ha10$nbha10 <- as.integer(as.character(species_ha10$nbha10))
-
-```
-
-```{r}
-
-# mean(browse_sub$moosepineha9, na.rm = TRUE)
-# mean(browse_sub$mooserosha9, na.rm = TRUE)
-# mean(browse_sub$moosedecha9, na.rm = TRUE)
-# 
-# species9 <- c("other decisuous", "pine", "ros")
-# nbha9 <- c("106", "489", "1006")
-# species_ha9 <- data.frame(species9, nbha9)
-# 
-# str(species_ha9)
-# 
-# species_ha9$nbha9 <- as.integer(as.character(species_ha9$nbha9))
-
-```
-
-
 
 
 
