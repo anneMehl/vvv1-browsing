@@ -4,7 +4,7 @@ author: "anne"
 date: "14 februar 2019"
 output: word_document
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -14,9 +14,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Load data
 ```{r}
-load("processdata/browse9.2.rda")
+# load("processdata/browse9.2.rda")
 load("processdata/browse9.3.rda")
 load("processdata/browse9.3_dist.rda")
+```
+
+
+```{r}
+browse9.3_dist$log_distvei2_trunc <- log(browse9.3_dist$distvei2_trunc+1)
 ```
 
 
@@ -70,6 +75,7 @@ AIC(m1, m3, m4, m5, m6, m11)
 
 ##### Model selection
 ```{r}
+library(lme4)
 mhus <- lmer(log(tretetthet9_trunc+1) ~ disthus_trunc_cut200_scale + log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + (1|KOMNR),
             data = browse9.3)
 
@@ -79,7 +85,7 @@ m11 <- lmer(log(tretetthet9_trunc+1) ~ log(distvei2_trunc+1) + skogkategori + tr
 m12 <- lmer(log(tretetthet9_trunc+1) ~ log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + vegetasjon + (1|KOMNR),
             data = browse9.3_dist)
 
-m13 <- lmer(log(tretetthet9_trunc+1) ~ log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + helling + (1|KOMNR),
+m13 <- lmer(log(tretetthet9_trunc+1) ~ log_distvei2_trunc + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + helling + (1|KOMNR),
             data = browse9.3_dist)
 
 m14 <- lmer(log(tretetthet9_trunc+1) ~ log(distvei2_trunc+1) + treartgruppe + ac_scale + kant + beitetrykkr + vegetasjon + (1|KOMNR),
@@ -130,9 +136,15 @@ vcov.merMod(m13)
 
 ##### Figs and tabs
 
+###### Trying to get estimates
 ```{r}
 library(emmeans)
+library(lmerTest)
+emm_options(pbkrtest.limit = 22325, lmerTest.limit = 22325)
 
+# ls_means(m13, test.effs=NULL, method.grad='simple')
+
+coefdisthus <- as.data.frame(emmeans(mhus, specs = "disthus_trunc_cut200_scale"))
 coefdistvei <- emmeans(m13, specs = "distvei2_trunc")
 coefskogkat <- emmeans(m13, specs = "skogkategori")
 coeftreart <- emmeans(m13, specs = "treartgruppe")
@@ -140,15 +152,63 @@ coefkant <- emmeans(m13, specs = "kant")
 coefbt <- emmeans(m13, specs = "beitetrykkr")
 coefhell <- emmeans(m13, specs = "helling")
 
-a <- 6.06
-error <- qnorm(0.975)*0.0241/sqrt(19265)
-lower <- a-error
-upper <- a+error
+newdata <- as.data.frame(matrix(ncol = 1, nrow = 19865))
+predicted_fe <- predict(m13, newdata = browse9.3_dist, type = c("response"), allow.new.levels = T)
+
+predicted_ci <- confint(m13, method = c("boot"), nsim = 100)
+predicted_ci1 <- confint(m13, method = c("Wald"), intercept = F)
+predicted_ci2 <- confint(m13, method = c("Wald"), boot.type = c("basic") )
+predicted_ci3 <- confint(m13, method = c("Wald"), boot.type = c("norm") )
+
+library(effects)
+test <- as.data.frame(effect(mod = m13, se = T, term = "helling"))
+plot(allEffects(m13))
+mySumm2 <- function(.) {
+    c(beta=fixef(.),sigma=sigma(.), sig01=sqrt(unlist(VarCorr(.))))
+}
+
+t1 <- mySumm2(m13)
+boo01 <- bootMer(m13, mySumm2, nsim = 100)
 
 ```
-log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + beitetrykkr + helling 
+c("perc","basic","norm")
+
+##### Figures with ggplot
+```{r}
+library(ggplot2)
+
+p1 <- ggplot(data = coefm13,aes(term, estimate)) +
+  geom_line(colour = "#009292", linetype = 1, size = 1)+
+  geom_ribbon(aes(ymin = lower.CL, ymax = upper.CL), colour = "#004949", linetype = 2, alpha = 0.2) +
+  theme_light() +
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  xlab("\nDistance to house") + 
+  ylab("Tree density\n") +
+  scale_y_continuous(limits = c(10, 30), breaks =  seq(from = 10, to = 30, by = 5))
 
 
+p3 <- ggplot(data = resskogkat,aes(var, point)) +
+  geom_pointrange(aes(ymin = CI025, ymax = CI975), colour = "#009292", size = 1) +
+  theme_light() +
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  xlab("\nForest category") + 
+  ylab("Browsing pressure (%)\n") +
+  scale_x_discrete(labels = c("Highproductive \nold forest", "Highproductive \nyoung forest", "Lowproductive \nold forest", "Lowproductive \nyoung forest", "Unproductive \nforest"))+
+  scale_y_continuous(limits = c(5, 50), breaks =  seq(from = 5, to = 50, by = 10))
+
+
+library(gridExtra)
+grid.arrange(p4, p1, p2, p3, p7, p6, p5, p8,
+          nrow = 3, ncol = 3)
+
+
+```
+
+
+
+##### Figures with sjPlot
 ```{r}
 library(sjPlot)
 ```
@@ -169,11 +229,20 @@ p1_est + theme_sjplot()
 
 ```{r}
 
-p1 <- plot_model(m13, type = c("eff"), transform = NULL, terms = c("distvei2 [0:2500]"))
-# pb2 + theme_sjplot()
+p1 <- plot_model(m13, type = c("eff"), terms = c("log_distvei2_trunc [exp]"),
+                 colors = "#004949", title = "", line.size = 1, log.y = F)
+p1 + theme_light() +
+  theme(axis.text = element_text(family = "sans", size = 10, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  xlab("\nDistance to road") + 
+  ylab("Tree density (log)\n")
 
-p2 <- plot_model(m13, type = c("eff"), transform = NULL, terms = c("skogkategori"))
-p2 + theme_sjplot()
+get_model_data(m13, type = "eff",  terms = "skogkategori",  pred.type = "fe")
+
+
+p2 <- plot_model(m13, type = c("eff"), transform = NULL, terms = "skogkategori", 
+                 colors = "Accent", title = "", line.size = 1)
+p2 + theme_light()
 
 p3 <- plot_model(m13, type = c("eff"), transform = NULL, terms = c("treartgruppe"))
 # pb3 + theme_sjplot()
@@ -181,7 +250,7 @@ p3 <- plot_model(m13, type = c("eff"), transform = NULL, terms = c("treartgruppe
 p4 <- plot_model(m13, type = c("eff"), transform = NULL, terms = c("kant"))
 # pb3 + theme_sjplot()
 
-p5 <- plot_model(m13, type = c("eff"), transform = NULL, terms = c("helling"))
+p5 <- plot_model(m13, type = c("eff"), transform = NULL, terms = c("helling [n=1]"))
 # pb3 + theme_sjplot()
 
 p6 <- plot_model(m13, type = c("eff"), transform = NULL, terms = c("beitetrykkr"))
