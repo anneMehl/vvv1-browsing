@@ -141,39 +141,39 @@ vcov.merMod(m13)
 
 ###### Trying to get estimates
 ```{r}
-library(emmeans)
-library(lmerTest)
-emm_options(pbkrtest.limit = 22325, lmerTest.limit = 22325)
+# library(emmeans)
+# library(lmerTest)
+# emm_options(pbkrtest.limit = 22325, lmerTest.limit = 22325)
+# 
+# # ls_means(m13, test.effs=NULL, method.grad='simple')
+# 
+# coefdisthus <- as.data.frame(emmeans(mhus, specs = "disthus_trunc_cut200_scale"))
+# coefdistvei <- emmeans(m13, specs = "distvei2_trunc")
+# coefskogkat <- emmeans(m13, specs = "skogkategori")
+# coeftreart <- emmeans(m13, specs = "treartgruppe")
+# coefkant <- emmeans(m13, specs = "kant")
+# coefbt <- emmeans(m13, specs = "beitetrykkr")
+# coefhell <- emmeans(m13, specs = "helling")
+# 
+# newdata <- as.data.frame(matrix(ncol = 1, nrow = 19865))
+# predicted_fe <- predict(m13, newdata = browse9.3_dist, type = c("response"), allow.new.levels = T)
+# 
+# predicted_ci <- confint(m13, method = c("boot"), nsim = 100)
+# predicted_ci1 <- confint(m13, method = c("Wald"), intercept = F)
+# predicted_ci2 <- confint(m13, method = c("Wald"))
+# predicted_ci3 <- confint(m13, method = c("Wald"), boot.type = c("norm") )
+# 
+# library(effects)
+# test <- as.data.frame(effect(mod = m13, se = T, term = "helling"))
+# plot(allEffects(m13))
+# mySumm2 <- function(.) {
+#     c(beta=fixef(.),sigma=sigma(.), sig01=sqrt(unlist(VarCorr(.))))
+# }
+# 
+# t1 <- mySumm2(m13)
+# boo01 <- bootMer(m13, mySumm2, nsim = 100)
 
-# ls_means(m13, test.effs=NULL, method.grad='simple')
-
-coefdisthus <- as.data.frame(emmeans(mhus, specs = "disthus_trunc_cut200_scale"))
-coefdistvei <- emmeans(m13, specs = "distvei2_trunc")
-coefskogkat <- emmeans(m13, specs = "skogkategori")
-coeftreart <- emmeans(m13, specs = "treartgruppe")
-coefkant <- emmeans(m13, specs = "kant")
-coefbt <- emmeans(m13, specs = "beitetrykkr")
-coefhell <- emmeans(m13, specs = "helling")
-
-newdata <- as.data.frame(matrix(ncol = 1, nrow = 19865))
-predicted_fe <- predict(m13, newdata = browse9.3_dist, type = c("response"), allow.new.levels = T)
-
-predicted_ci <- confint(m13, method = c("boot"), nsim = 100)
-predicted_ci1 <- confint(m13, method = c("Wald"), intercept = F)
-predicted_ci2 <- confint(m13, method = c("Wald"), boot.type = c("basic") )
-predicted_ci3 <- confint(m13, method = c("Wald"), boot.type = c("norm") )
-
-library(effects)
-test <- as.data.frame(effect(mod = m13, se = T, term = "helling"))
-plot(allEffects(m13))
-mySumm2 <- function(.) {
-    c(beta=fixef(.),sigma=sigma(.), sig01=sqrt(unlist(VarCorr(.))))
-}
-
-t1 <- mySumm2(m13)
-boo01 <- bootMer(m13, mySumm2, nsim = 100)
-
-
+library(sjPlot)
 resdisthus <- get_model_data(mhus, type = "eff",  terms = "disthus_trunc_cut200_scale",  pred.type = "re")
 resdistvei <- get_model_data(m13, type = "eff",  terms = "log_distvei2_trunc",  pred.type = "re")
 resdistveia <- get_model_data(m13a, type = "eff",  terms = "distvei2_trunc [0:2500]",  pred.type = "re")
