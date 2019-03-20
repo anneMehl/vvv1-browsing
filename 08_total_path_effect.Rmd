@@ -28,8 +28,12 @@ percmod <- m4abeta
 load("output/m13a.rda")
 treemod <- m13a
 
+```
+
+```{r}
+
 dat <- browse9.2_dist
-focal <- "distvei2_trunc"
+focal <- "HOH_scale"
 isfactor = F
 
 
@@ -280,11 +284,11 @@ resp_curve("tretetthet9_trunc_scale", dat=browse9.2_dist, treedat=browse9.3_dist
 
 par(mfrow=c(2,3))
 resp_curve("distvei2_trunc", isfactor=F, dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=T, nb_btstrp=999)
-resp_curve("skogkategori", isfactor=T, dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="total", nvals=100, plot=T, nb_btstrp=999)
-resp_curve("treartgruppe", isfactor=T, dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="total", nvals=100, plot=T, nb_btstrp=999)
-resp_curve("kant", isfactor=T, dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="total", nvals=100, plot=T, nb_btstrp=999)
-resp_curve("helling_scale", dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="total", nvals=100, plot=T, nb_btstrp=999)
-resp_curve("HOH_scale", dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="total", nvals=100, plot=T, nb_btstrp=999)
+resp_curve("skogkategori", isfactor=T, dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=T, nb_btstrp=999)
+resp_curve("treartgruppe", isfactor=T, dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=T, nb_btstrp=999)
+resp_curve("kant", isfactor=T, dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=T, nb_btstrp=999)
+resp_curve("helling_scale", dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=T, nb_btstrp=999)
+resp_curve("HOH_scale", dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=T, nb_btstrp=999)
 
 
 
