@@ -32,9 +32,10 @@ treemod <- m13a
 
 ```{r}
 
+browse9.2_dist[,"treartgruppe9"] <- NULL
 dat <- browse9.2_dist
-focal <- "HOH_scale"
-isfactor = F
+focal <- "treartgruppe"
+isfactor = T
 
 
 ```
