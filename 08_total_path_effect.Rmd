@@ -34,8 +34,8 @@ treemod <- m13a
 
 browse9.2_dist[,"treartgruppe9"] <- NULL
 dat <- browse9.2_dist
-focal <- "treartgruppe"
-isfactor = T
+focal <- "HOH_scale"
+isfactor = F
 
 
 ```
@@ -275,26 +275,51 @@ if (!isfactor) nofcts <- nofcts[!grepl(focal, nofcts)]
 
 
 par(mfrow=c(3,3))
-resp_curve("distvei2_trunc", isfactor=F, dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="hurdle_only", nvals=100, plot=T, nb_btstrp=999)
-resp_curve("skogkategori", isfactor=T, dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="hurdle_only", nvals=100, plot=T, nb_btstrp=999)
-resp_curve("treartgruppe", isfactor=T, dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="hurdle_only", nvals=100, plot=T, nb_btstrp=999)
-resp_curve("kant", isfactor=T, dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="hurdle_only", nvals=100, plot=T, nb_btstrp=999)
-resp_curve("helling_scale", dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="hurdle_only", nvals=100, plot=T, nb_btstrp=999)
-resp_curve("HOH_scale", dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="hurdle_only", nvals=100, plot=T, nb_btstrp=999)
-resp_curve("tretetthet9_trunc_scale", dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="hurdle_only", nvals=100, plot=T, nb_btstrp=999)
+hurdle_distvei <- resp_curve("distvei2_trunc", isfactor=F, dat=browse9.2_dist, treedat=browse9.3_dist,zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
+save(hurdle_distvei, file = "hurdle_distvei.rda")
+
+hurdle_skogkat <- resp_curve("skogkategori", isfactor=T, dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
+save(hurdle_skogkat, file = "hurdle_skogkat.rda")
+
+hurdle_treart <- resp_curve("treartgruppe", isfactor=T, dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
+save(hurdle_treart, file = "hurdle_treart.rda")
+
+hurdle_kant <- resp_curve("kant", isfactor=T, dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
+save(hurdle_kant, file = "hurdle_kant.rda")
+
+hurdle_hell <- resp_curve("helling_scale", dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
+save(hurdle_hell, file = "hurdle_hell.rda")
+
+hurdle_hoh <- resp_curve("HOH_scale", dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
+save(hurdle_hoh, file = "hurdle_hoh.rda")
+
+hurdle_tretett <- resp_curve("tretetthet9_trunc_scale", dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
+save(hurdle_tretett, file = "hurdle_tretett.rda")
+
 
 par(mfrow=c(2,3))
-resp_curve("distvei2_trunc", isfactor=F, dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=T, nb_btstrp=999)
-resp_curve("skogkategori", isfactor=T, dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=T, nb_btstrp=999)
-resp_curve("treartgruppe", isfactor=T, dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=T, nb_btstrp=999)
-resp_curve("kant", isfactor=T, dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=T, nb_btstrp=999)
-resp_curve("helling_scale", dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=T, nb_btstrp=999)
-resp_curve("HOH_scale", dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=T, nb_btstrp=999)
+total_distvei <- resp_curve("distvei2_trunc", isfactor=F, dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=F, nb_btstrp=999)
+save(total_distvei, file = "total_distvei.rda")
+
+total_skogkat <- resp_curve("skogkategori", isfactor=T, dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=F, nb_btstrp=999)
+save(total_skogkat, file = "total_skogkat.rda")
+
+total_treart <- resp_curve("treartgruppe", isfactor=T, dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=F, nb_btstrp=999)
+save(total_treart, file = "total_treart.rda")
+
+total_kant <- resp_curve("kant", isfactor=T, dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=F, nb_btstrp=999)
+save(total_kant, file = "total_kant.rda")
+
+total_hell <- resp_curve("helling_scale", dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=F, nb_btstrp=999)
+save(total_hell, file = "total_hell.rda")
+
+total_hoh <- resp_curve("HOH_scale", dat=browse9.2_dist, treedat=browse9.3_dist, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=F, nb_btstrp=999)
+save(total_hoh, file = "total_hoh.rda")
 
 
 
 
-resp_curve <- function(focal, isfactor=FALSE, dat, treedat, zeromod, percmod, treemod, which_effect=c("hurdle_only", "total")[2], nvals=100, plot=T, nb_btstrp=999){
+
 
 
 
