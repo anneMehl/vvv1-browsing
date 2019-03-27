@@ -19,15 +19,15 @@ load("browse9.3_dist.rda")
 treedat <- browse9.3_dist
 
 #focal: a numeric variable or a factor 
-resp_curve <- function(focal, isfactor=FALSE, dat, treedat, zeromod, percmod, treemod, which_effect=c("hurdle_only", "total")[2], nvals=100, plot=T, nb_btstrp=999){
+resp_curve <- function(focal, isfactor=FALSE, dat, treedat, zeromod, percmod, treemod, which_effect=c("hurdle_only", "total", "direct")[2], nvals=100, plot=T, nb_btstrp=999){
   treefocal <- focal
   if (focal=="distvei2_trunc") treefocal <- "log_distvei2_trunc"
   if (focal=="helling_scale") treefocal <- "helling"
   
   if (!isfactor) {
-    rng2 <- rng <- quantile(dat[,focal], probs=c(0.01, 0.99))
+    rng2 <- rng <- quantile(dat[,focal], probs=c(0.005, 0.995))
     dat[c(1:nvals),focal] <- seq(rng[1], rng[2], length.out=nvals)
-    if (focal!=treefocal) rng2 <- quantile(treedat[,treefocal], probs=c(0.01, 0.99))
+    if (focal!=treefocal) rng2 <- quantile(treedat[,treefocal], probs=c(0.005, 0.995))
     treedat[c(1:nvals),treefocal] <- seq(rng2[1], rng2[2], length.out=nvals)
   }
 
@@ -155,7 +155,7 @@ resp_curve <- function(focal, isfactor=FALSE, dat, treedat, zeromod, percmod, tr
     }
   }
   
-  if (which_effect=="total"){
+  if (which_effect!="hurdle_only"){
     #model matrix for treemod
     mm3 <- model.matrix(terms(treemod), data=treedat)
     #set to mean value, or set factors to intercept
@@ -184,12 +184,13 @@ resp_curve <- function(focal, isfactor=FALSE, dat, treedat, zeromod, percmod, tr
       }
     }
     
-    toto <- function(x, mm3, pred_smpl){
+    toto <- function(x, mm3, pred_smpl, which_effect=c("hurdle_only", "total", "direct")){
       tmp <- mm3
-      tmp[,which(colnames(tmp)=="beitetrykkr")] <- pred_smpl[,x]
+      if (which_effect=="total") tmp[,which(colnames(tmp)=="beitetrykkr")] <- pred_smpl[,x]
+      if (which_effect=="direct") tmp[,which(colnames(tmp)=="beitetrykkr")] <- pred_smpl[1,1]
       return(tmp)
     }
-    lmm3 <- lapply(c(1:ncol(pred_smpl)), toto, mm3=mm3, pred_smpl=pred_smpl)
+    lmm3 <- lapply(c(1:ncol(pred_smpl)), toto, mm3=mm3, pred_smpl=pred_smpl, which_effect=which_effect)
     
     #bootstrap focal coefficent
     treecoef <- fixef(treemod)
