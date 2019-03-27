@@ -254,11 +254,11 @@ library(lme4)
 #             family = binomial(),
 #             data = browse9.2_dist)
 
-m4bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+m4bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + helling + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             family = binomial(),
             data = browse9.2_dist)
 
-m4abin <- glmer(factor(beitetrykkr > 0) ~ log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+m4abin <- glmer(factor(beitetrykkr > 0) ~ log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + helling + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             family = binomial(),
             data = browse9.2_dist)
 
