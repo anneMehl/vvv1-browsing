@@ -702,7 +702,7 @@ browse9.2$tretetthet9_trunc <- ifelse(browse9.2$tretetthet9 >= 3960, 3960, brows
 # browse9.2_dist$distvei2_trunc <- ifelse(browse9.2_dist$distvei2 >= 3000, 3000, browse9.2_dist$distvei2)
 # browse9.2_dist$tretetthet9_trunc <- ifelse(browse9.2_dist$tretetthet9 >= 3960, 3960, browse9.2_dist$tretetthet9)
 
-browse9.2_dist <- browse9.2[ which(browse9.2$disthus > 200), ]
+browse9.2_distnew <- browse9.2[ which(browse9.2$disthus > 200), ]
 head(browse9.2_dist)
 
 
@@ -795,6 +795,9 @@ browse9.2$disthus_trunc_cut100_scale = scale(browse9.2$disthus_trunc_cut100)
 browse9.2_dist$tretetthet9_trunc_scale = scale(browse9.2_dist$tretetthet9_trunc)
 browse9.2_dist$distvei2_trunc_scale = scale(browse9.2_dist$distvei2_trunc)
 browse9.2_dist$disthus_trunc_scale = scale(browse9.2_dist$disthus_trunc)
+browse9.2_dist$helling_scale = scale(browse9.2_dist$helling)
+browse9.2_dist$helling_scale <- browse9.2_dist$helling_scale
+browse9.2_dist$helling_scale <- NULL
 
 browse9.3$HOH_scale = scale(browse9.3$HOH)
 browse9.3$tretetthet9_scale = scale(browse9.3$tretetthet9)
@@ -812,7 +815,7 @@ browse9.3$disthus_cut700_scale = scale(browse9.3$disthus_cut700)
 browse9.3$disthus_cut650_scale = scale(browse9.3$disthus_cut650)
 
 save(browse9.2, file = "browse9.2.rda")
-save(browse9.2_dist, file = "browse9.2_dist.rda")
+save(browse9.2_distnew, file = "browse9.2_distnew.rda")
 
 ```
 
