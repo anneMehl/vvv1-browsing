@@ -175,13 +175,13 @@ vcov.merMod(m13)
 
 library(sjPlot)
 resdisthus <- get_model_data(mhus, type = "eff",  terms = "disthus_trunc_cut200_scale",  pred.type = "re")
-resdistvei <- get_model_data(m13, type = "eff",  terms = "log_distvei2_trunc",  pred.type = "re")
-resdistveia <- get_model_data(m13a, type = "eff",  terms = "distvei2_trunc [0:2500]",  pred.type = "re")
-resskogkat <- get_model_data(m13, type = "eff",  terms = "skogkategori",  pred.type = "re")
-restreart <- get_model_data(m13, type = "eff",  terms = "treartgruppe",  pred.type = "re")
-reskant <- get_model_data(m13, type = "eff",  terms = "kant",  pred.type = "re")
-reshelling <- get_model_data(m13, type = "eff",  terms = "helling",  pred.type = "re")
-resbeitetrykk <- get_model_data(m13, type = "eff",  terms = "beitetrykkr",  pred.type = "re")
+# resdistvei <- get_model_data(m13a, type = "eff",  terms = "log_distvei2_trunc",  pred.type = "re")
+resdistvei <- get_model_data(m13a, type = "eff",  terms = "distvei2_trunc [0:2500]",  pred.type = "re")
+resskogkat <- get_model_data(m13a, type = "eff",  terms = "skogkategori",  pred.type = "re")
+restreart <- get_model_data(m13a, type = "eff",  terms = "treartgruppe",  pred.type = "re")
+reskant <- get_model_data(m13a, type = "eff",  terms = "kant",  pred.type = "re")
+reshelling <- get_model_data(m13a, type = "eff",  terms = "helling",  pred.type = "re")
+resbeitetrykk <- get_model_data(m13a, type = "eff",  terms = "beitetrykkr",  pred.type = "re")
 
 ```
 
