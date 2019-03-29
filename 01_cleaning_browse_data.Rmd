@@ -611,7 +611,7 @@ ggplot(data = browse9.2, aes(kant)) +
   geom_bar()+
   theme_classic()
 
-ggplot(data = browse9.2, aes(treartgruppe9)) +
+ggplot(data = browse9.4, aes(treartgruppe9)) +
   geom_bar()+
   theme_classic()
 
