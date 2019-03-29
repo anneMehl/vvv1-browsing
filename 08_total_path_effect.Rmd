@@ -14,14 +14,15 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## New dataset with only variables we use in the models
 ```{r}
-browse9.4 <- browse9.2_dist[,c(1:2,4-9,11,13-16,18,24,26:34,37:48,50:68,70:91,93:96,98:99)]
+
 browse9.4 <- browse9.2_dist[,c(3,10,12,17,19:23,25,35,36,49,69,92,97)]
 browse9.4 <- subset(browse9.4, select = -c(4:5,9,12))
 browse9.4$tretetthet9_trunc <- browse9.2_dist$tretetthet9_trunc
 browse9.4[,"beitetrykk9"] <- NULL
 browse9.4$beitetrykkr <- browse9.2_dist$beitetrykkr
+browse9.4[,"tretetthet9_trunc_scale"] <- NULL
 
-browse9.4$treartgruppe9 <- as.factor(browse9.4$treartgruppe9)
+browse9.4$treartgruppe9 <- factor(browse9.4$treartgruppe9, levels = c("LAUV", "FURU", "ROS"))
 
 save(browse9.4, file = "browse9.4.rda")
 
@@ -32,6 +33,7 @@ save(browse9.4, file = "browse9.4.rda")
 ## Load data and models
 ```{r}
 load("processdata/browse9.4.rda")
+# load("processdata/browse9.2_dist.rda")
 # head(browse9.2_dist)
 
 # browse9.4pos <- browse9.4[browse9.4$bt100 > 0, ]
@@ -39,22 +41,22 @@ load("processdata/browse9.4.rda")
 # load("processdata/browse9.3_dist.rda")
 treedat <- browse9.4
 
-# m4abin <- glmer(factor(beitetrykkr > 0) ~ log(distvei2_trunc+1) + skogkategori + treartgruppe9 + ac_scale + kant + helling + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+# m4abin2 <- glmer(factor(beitetrykkr > 0) ~ log(distvei2_trunc+1) + skogkategori + treartgruppe9 + ac_scale + kant + helling + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc + (1|KOMNR),
 #             family = binomial(),
 #             data = browse9.4)
-load("output/m4bin.rda")
-zeromod <- m4abin
+load("output/m4bin2.rda")
+zeromod <- m4abin2
 
-m4abeta <- glmmTMB(bt100 ~ log(distvei2_trunc+1) + skogkategori + treartgruppe9 + ac_scale + kant + helling + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
-            data = browse9.4pos,
-            family = beta_family())
-load("output/m4beta.rda")
-percmod <- m4abeta
+# m4abeta2 <- glmmTMB(bt100 ~ log(distvei2_trunc+1) + skogkategori + treartgruppe9 + ac_scale + kant + helling + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc + (1|KOMNR),
+#             data = browse9.4pos,
+#             family = beta_family())
+load("output/m4beta2.rda")
+percmod <- m4abeta2
 
-m13a <- lmer(log(tretetthet9_trunc+1) ~ log(distvei2_trunc+1) + skogkategori + treartgruppe9 + ac_scale + kant + beitetrykkr + helling + (1|KOMNR),
-            data = browse9.4)
-load("output/m13a.rda")
-treemod <- m13a
+# m13a2 <- lmer(log(tretetthet9_trunc+1) ~ log(distvei2_trunc+1) + skogkategori + treartgruppe9 + ac_scale + kant + beitetrykkr + helling + (1|KOMNR),
+#             data = browse9.4)
+load("output/m13a2.rda")
+treemod <- m13a2
 
 ```
 
@@ -63,19 +65,19 @@ treemod <- m13a
 # browse9.2_dist[,"treartgruppe9"] <- NULL
 
 dat <- browse9.4
-focal <- "distvei2_trunc"
+focal <- "helling"
 isfactor = F
 
 
 ```
 
-  if (focal=="helling_scale") treefocal <- "helling"
+
   
 ## Run function for: "hurdle only"-, "total"- or "direct"-effect (which_effect=c("hurdle_only", "total", "direct"))
 ```{r}
 
 #focal: a numeric variable or a factor 
-resp_curve <- function(focal, isfactor=FALSE, dat, treedat, zeromod, percmod, treemod, which_effect=c("hurdle_only")[2], nvals=100, plot=T, nb_btstrp=999){
+resp_curve <- function(focal, isfactor=FALSE, dat, treedat, zeromod, percmod, treemod, which_effect=c("direct")[2], nvals=100, plot=T, nb_btstrp=999){
   treefocal <- focal
   
   if (!isfactor) {
@@ -301,81 +303,81 @@ resp_curve <- function(focal, isfactor=FALSE, dat, treedat, zeromod, percmod, tr
 ## Get function data
 ```{r}
 
-
+# Hurdle only
 par(mfrow=c(3,3))
-hurdle_distvei <- resp_curve("distvei2_trunc", isfactor=F, dat=browse9.4, treedat=browse9.4,zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
+hurdle_distvei <- resp_curve("distvei2_trunc", isfactor=F, dat=browse9.4, treedat=browse9.4,zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
 
 save(hurdle_distvei, file = "hurdle_distvei.rda")
 
-hurdle_skogkat <- resp_curve("skogkategori", isfactor=T, dat=browse9.4, treedat=browse9.4, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
+hurdle_skogkat <- resp_curve("skogkategori", isfactor=T, dat=browse9.4, treedat=browse9.4, zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
 
 save(hurdle_skogkat, file = "hurdle_skogkat.rda")
 
-hurdle_treart <- resp_curve("treartgruppe", isfactor=T, dat=browse9.4, treedat=browse9.4, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
+hurdle_treart <- resp_curve("treartgruppe9", isfactor=T, dat=browse9.4, treedat=browse9.4, zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
 
 save(hurdle_treart, file = "hurdle_treart.rda")
 
-hurdle_kant <- resp_curve("kant", isfactor=T, dat=browse9.4, treedat=browse9.4, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
+hurdle_kant <- resp_curve("kant", isfactor=T, dat=browse9.4, treedat=browse9.4, zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
 
 save(hurdle_kant, file = "hurdle_kant.rda")
 
-hurdle_hell <- resp_curve("helling_scale", dat=browse9.4, treedat=browse9.4, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
+hurdle_hell <- resp_curve("helling", dat=browse9.4, treedat=browse9.4, zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
 
 save(hurdle_hell, file = "hurdle_hell.rda")
 
-hurdle_hoh <- resp_curve("HOH_scale", dat=browse9.4, treedat=browse9.4, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
+hurdle_hoh <- resp_curve("HOH_scale", dat=browse9.4, treedat=browse9.4, zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
 
 save(hurdle_hoh, file = "hurdle_hoh.rda")
 
-hurdle_tretett <- resp_curve("tretetthet9_trunc_scale", dat=browse9.4, treedat=browse9.4, zeromod=m4abin, percmod=m4abeta, treemod=m13, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
+hurdle_tretett <- resp_curve("tretetthet9_trunc", dat=browse9.4, treedat=browse9.4, zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
 
 save(hurdle_tretett, file = "hurdle_tretett.rda")
 
 
-
+# total
 par(mfrow=c(2,3))
-total_distvei <- resp_curve("distvei2_trunc", isfactor=F, dat=browse9.4, treedat=browse9.4, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=F, nb_btstrp=999)
+total_distvei <- resp_curve("distvei2_trunc", isfactor=F, dat=browse9.4, treedat=browse9.4, zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="total", nvals=100, plot=F, nb_btstrp=999)
 
 save(total_distvei, file = "total_distvei.rda")
 
-total_skogkat <- resp_curve("skogkategori", isfactor=T, dat=browse9.4, treedat=browse9.4, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=F, nb_btstrp=999)
+total_skogkat <- resp_curve("skogkategori", isfactor=T, dat=browse9.4, treedat=browse9.4, zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="total", nvals=100, plot=F, nb_btstrp=999)
 
 save(total_skogkat, file = "total_skogkat.rda")
 
-total_treart <- resp_curve("treartgruppe", isfactor=T, dat=browse9.4, treedat=browse9.4, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=F, nb_btstrp=999)
+total_treart <- resp_curve("treartgruppe9", isfactor=T, dat=browse9.4, treedat=browse9.4, zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="total", nvals=100, plot=F, nb_btstrp=999)
 
 save(total_treart, file = "total_treart.rda")
 
-total_kant <- resp_curve("kant", isfactor=T, dat=browse9.4, treedat=browse9.4, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=F, nb_btstrp=999)
+total_kant <- resp_curve("kant", isfactor=T, dat=browse9.4, treedat=browse9.4, zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="total", nvals=100, plot=F, nb_btstrp=999)
 
 save(total_kant, file = "total_kant.rda")
 
-total_hell <- resp_curve("helling", dat=browse9.4, treedat=browse9.4, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="total", nvals=100, plot=F, nb_btstrp=999)
+total_hell <- resp_curve("helling", dat=browse9.4, treedat=browse9.4, zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="total", nvals=100, plot=F, nb_btstrp=999)
 
 save(total_hell, file = "total_hell.rda")
 
 
-
+# direct
 par(mfrow=c(2,3))
-direct_distvei <- resp_curve("distvei2_trunc", isfactor=F, dat=browse9.4, treedat=browse9.4, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="direct", nvals=100, plot=F, nb_btstrp=999)
+direct_distvei <- resp_curve("distvei2_trunc", isfactor=F, dat=browse9.4, treedat=browse9.4, zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="direct", nvals=100, plot=F, nb_btstrp=999)
 
-save(total_distvei, file = "direct_distvei.rda")
+save(direct_distvei, file = "direct_distvei.rda")
 
-direct_skogkat <- resp_curve("skogkategori", isfactor=T, dat=browse9.4, treedat=browse9.4, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="direct", nvals=100, plot=F, nb_btstrp=999)
+direct_skogkat <- resp_curve("skogkategori", isfactor=T, dat=browse9.4, treedat=browse9.4, zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="direct", nvals=100, plot=F, nb_btstrp=999)
 
-save(total_skogkat, file = "direct_skogkat.rda")
+save(direct_skogkat, file = "direct_skogkat.rda")
 
-direct_treart <- resp_curve("treartgruppe", isfactor=T, dat=browse9.4, treedat=browse9.4, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="direct", nvals=100, plot=F, nb_btstrp=999)
+direct_treart <- resp_curve("treartgruppe", isfactor=T, dat=browse9.4, treedat=browse9.4, zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="direct", nvals=100, plot=F, nb_btstrp=999)
 
-save(total_treart, file = "direct_treart.rda")
+save(direct_treart, file = "direct_treart.rda")
 
-direct_kant <- resp_curve("kant", isfactor=T, dat=browse9.4, treedat=browse9.4, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="direct", nvals=100, plot=F, nb_btstrp=999)
+direct_kant <- resp_curve("kant", isfactor=T, dat=browse9.4, treedat=browse9.4, zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="direct", nvals=100, plot=F, nb_btstrp=999)
 
-save(total_kant, file = "direct_kant.rda")
+save(direct_kant, file = "direct_kant.rda")
 
-direct_hell <- resp_curve("helling", dat=browse9.4, treedat=browse9.4, zeromod=m4abin, percmod=m4abeta, treemod=m13a, which_effect="direct", nvals=100, plot=F, nb_btstrp=999)
+direct_hell <- resp_curve("helling", dat=browse9.4, treedat=browse9.4, zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="direct", nvals=100, plot=F, nb_btstrp=999)
 
-save(total_hell, file = "direct_hell.rda")
+save(direct_hell, file = "direct_hell.rda")
 
 
 ```
@@ -395,22 +397,28 @@ load("output/total_kant.rda")
 load("output/total_treart.rda")
 load("output/total_hell.rda")
 
-head(total_distvei)
-head(resdistvei)
+load("output/direct_distvei.rda")
+load("output/direct_skogkat.rda")
+load("output/direct_kant.rda")
+load("output/direct_treart.rda")
+load("output/direct_hell.rda")
+
+
 ```
 
 
 ## rescale
 ```{r}
 
-attributes(browse9.2_dist$helling_scale)
-attributes(browse9.2$helling_scale)
+
+attributes(browse9.2$HOH_scale)
 
 d$s.x * attr(d$s.x, 'scaled:scale') + attr(d$s.x, 'scaled:center')
 
-browse9.2$helling_scale * 20.54662 + 19.76553
 
-total_hell$var <- total_hell$var * 20.54662 + 19.76553
+browse9.2$HOH_scale * 244.7748 + 361.8423
+
+hurdle_hoh$var <- hurdle_hoh$var * 244.7748 + 361.8423
 
 
 ```
@@ -525,18 +533,18 @@ pt_hell <- ggplot() +
   scale_color_manual(name = "Effect on tree\ndensity", 
                      values = c("total" = "#009292", "direct" = "#004949"))
 
-ph <- ggplot(data = reshell,aes(var, point)) +
+ph_hell <- ggplot(data = hurdle_hell,aes(var, point)) +
   geom_line(colour = "#009292", linetype = 1, size = 1)+
   geom_ribbon(aes(ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   theme_light() +
-  theme(axis.title.y = element_blank(), axis.text = element_text(size = 10),
+  theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nSlope (%)") + 
   ylab("Browsing pressure (%)\n")+
   scale_y_continuous(limits = c(10, 30), breaks =  seq(from = 10, to = 30, by = 5))
 
 
-p7 <- ggplot(data = reshoh,aes(var, point)) +
+ph_hoh <- ggplot(data = hurdle_hoh,aes(var, point)) +
   geom_line(colour = "#009292", linetype = 1, size = 1)+
   geom_ribbon(aes(ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   theme_light() +
@@ -547,7 +555,7 @@ p7 <- ggplot(data = reshoh,aes(var, point)) +
   scale_y_continuous(limits = c(10, 30), breaks =  seq(from = 10, to = 30, by = 5))
 
 
-p8 <- ggplot(data = restretett,aes(var, point)) +
+ph_tretett <- ggplot(data = hurdle_tretett,aes(var, point)) +
   geom_line(colour = "#009292", linetype = 1, size = 1)+
   geom_ribbon(aes(ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   theme_light() +
