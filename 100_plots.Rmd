@@ -32,7 +32,7 @@ hist(log(browse9.2$tretetthet9_trunc))
 ```{r}
 library(ggplot2)
 
-fp1 <- ggplot(data = browse9.2_dist, aes(beitetrykkr)) +
+fp1 <- ggplot(data = browse9.4, aes(beitetrykkr)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
