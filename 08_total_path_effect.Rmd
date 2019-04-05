@@ -27,30 +27,70 @@ browse9.4$treartgruppe9 <- factor(browse9.4$treartgruppe9, levels = c("LAUV", "F
 save(browse9.4, file = "browse9.4.rda")
 
 
+browse9.4_house <- browse9.2[,c(8,10,12,17,19:21,23:25,35,49,92)]
+browse9.4_house[,"disthus"] <- NULL
+browse9.4_house[,"HOH"] <- NULL
+browse9.4_house[,"tretetthet9"] <- NULL
+browse9.4_house$tretetthet9_trunc <- browse9.2$tretetthet9_trunc
+browse9.4_house$KOMNR <- browse9.2$KOMNR
+browse9.4_house$treartgruppe9 <- factor(browse9.4_house$treartgruppe9, levels = c("LAUV", "FURU", "ROS"))
+
+save(browse9.4_house, file = "browse9.4_house.rda")
+
 ```
 
 
 ## Load data and models
 ```{r}
 load("processdata/browse9.4.rda")
+load("processdata/browse9.4_house.rda")
+
 # load("processdata/browse9.2_dist.rda")
 # head(browse9.2_dist)
 
+
 # browse9.4pos <- browse9.4[browse9.4$bt100 > 0, ]
+# browse9.4_house_pos <- browse9.4_house[browse9.4_house$bt100 > 0, ]
 
 # load("processdata/browse9.3_dist.rda")
 treedat <- browse9.4
+treedat <- browse9.4_house
 
+
+library(lme4)
+library(glmmTMB)
+# ---------------- House models
+m1kbin2 <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut200_scale + log(distvei2+1) + skogkategori + treartgruppe9 + ac_scale + kant + helling + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc + (1|KOMNR),
+            family = binomial(),
+            data = browse9.4_house)
+# save(m1kbin2, file = "m1kbin2.rda")
+load("output/m1kbin2.rda")
+zeromod <- m1kbin2
+
+m1ibeta2 <- glmmTMB(bt100 ~ disthus_trunc_cut200_scale + log(distvei2+1) + skogkategori + treartgruppe9 + ac_scale + kant + helling + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc + (1|KOMNR),
+            data = browse9.4_house_pos,
+            family = beta_family())
+# save(m1ibeta2, file = "m1ibeta2.rda")
+load("output/m1ibeta2.rda")
+percmod <- m1ibeta2
+
+mhus2 <- lmer(log(tretetthet9_trunc+1) ~ disthus_trunc_cut200_scale + log(distvei2+1) + skogkategori + treartgruppe9 + ac_scale + kant + beitetrykkr + (1|KOMNR),
+            data = browse9.4_house)
+# save(mhus2, file = "mhus2.rda")
+load("output/mhus2.rda")
+treemod <- mhus2
+
+# ----------------- road models
 # m4abin2 <- glmer(factor(beitetrykkr > 0) ~ log(distvei2_trunc+1) + skogkategori + treartgruppe9 + ac_scale + kant + helling + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc + (1|KOMNR),
 #             family = binomial(),
 #             data = browse9.4)
-load("output/m4bin2.rda")
+load("output/m4abin2.rda")
 zeromod <- m4abin2
 
 # m4abeta2 <- glmmTMB(bt100 ~ log(distvei2_trunc+1) + skogkategori + treartgruppe9 + ac_scale + kant + helling + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc + (1|KOMNR),
 #             data = browse9.4pos,
 #             family = beta_family())
-load("output/m4beta2.rda")
+load("output/m4abeta2.rda")
 percmod <- m4abeta2
 
 # m13a2 <- lmer(log(tretetthet9_trunc+1) ~ log(distvei2_trunc+1) + skogkategori + treartgruppe9 + ac_scale + kant + beitetrykkr + helling + (1|KOMNR),
@@ -64,8 +104,9 @@ treemod <- m13a2
 
 # browse9.2_dist[,"treartgruppe9"] <- NULL
 
+dat <- browse9.4_house
 dat <- browse9.4
-focal <- "helling"
+focal <- "beitetrykkr"
 isfactor = F
 
 
@@ -77,7 +118,7 @@ isfactor = F
 ```{r}
 
 #focal: a numeric variable or a factor 
-resp_curve <- function(focal, isfactor=FALSE, dat, treedat, zeromod, percmod, treemod, which_effect=c("direct")[2], nvals=100, plot=T, nb_btstrp=999){
+resp_curve <- function(focal, isfactor=FALSE, dat, treedat, zeromod, percmod, treemod, which_effect=c("hurdle_only")[2], nvals=100, plot=T, nb_btstrp=999){
   treefocal <- focal
   
   if (!isfactor) {
@@ -299,12 +340,109 @@ resp_curve <- function(focal, isfactor=FALSE, dat, treedat, zeromod, percmod, tr
 
 ```
 
+## Function only for DIRECT effect of browsing pressure on tree density
+```{r}
+resp_curve_bp <- function(focal="beitetrykkr", isfactor=FALSE, dat, treedat, zeromod, percmod, treemod, which_effect="direct", nvals=100, plot=T, nb_btstrp=999){
+  treefocal <- focal
+ 
+
+ if (!isfactor) {
+    rng2 <- rng <- quantile(dat[,focal], probs=c(0.005, 0.995))
+    dat[c(1:nvals),focal] <- seq(rng[1], rng[2], length.out=nvals)
+    if (focal!=treefocal) rng2 <- quantile(treedat[,treefocal], probs=c(0.005, 0.995))
+    treedat[c(1:nvals),treefocal] <- seq(rng2[1], rng2[2], length.out=nvals)
+  }
+  
+
+  if (which_effect!="hurdle_only"){
+    #model matrix for treemod
+    mm3 <- model.matrix(terms(treemod), data=treedat)
+    #set to mean value, or set factors to intercept
+    colnms <- colnames(mm3)
+    modframe <- treemod@frame
+    modframe$"log(tretetthet9_trunc + 1)" <- NULL
+    fcts <- names(modframe)[sapply(modframe, class)=="factor"]
+    nofcts <- names(modframe)[sapply(modframe, class)!="factor"]
+    if (!isfactor) nofcts <- nofcts[!grepl(treefocal, nofcts)]
+    for (i in nofcts){
+      if (!is.na(match(i, colnames(mm3)))){
+        mm3[c(1:nvals),i] <- rep(median(mm3[,i]), each=nvals)
+      }
+    }
+    for (i in fcts){
+      mm3[c(1:nvals),grep(i, colnms)] <- 0
+    }
+    #set focal variable
+    if (!isfactor) mm3 <- mm3[c(1:nvals),] 
+    if (isfactor) {
+      mm3 <- mm3[c(1:(1+length(grep(treefocal, colnms)))),] 
+      j=1
+      for (i in grep(treefocal, colnms)){
+        j=j+1
+        mm3[j,i] <- 1
+      }
+    }
+
+    #bootstrap focal coefficent
+    treecoef <- fixef(treemod)
+    if (focal!="HOH_scale"){
+      treemat <- matrix(treecoef, nrow=length(treecoef), ncol=nb_btstrp+1, byrow=F)
+      ses <- sqrt(diag(as.matrix(vcov(treemod))))
+      if (!isfactor){
+        ses <- ses[grep(treefocal, names(ses))]
+        smpl <- c(0, rnorm(nb_btstrp, mean=0, sd=ses))
+        treemat[1,] <- treemat[1,]+smpl
+      }
+      if (isfactor){
+        sess <- c(ses[1], ses[grep(treefocal, names(ses))])
+        for (i in c(1:j)){
+          if (i==1) smpl <- c(0, rnorm(nb_btstrp, mean=0, sd=sess[i]))
+          if (i>1) smpl <- rbind(smpl, c(0, rnorm(nb_btstrp, mean=0, sd=sess[i])))
+        }
+        treemat[c(1, grep(treefocal, names(ses))),] <- treemat[c(1, grep(treefocal, names(ses))),]+smpl
+      } 
+    }
+    if (focal=="HOH_scale") treemat <- matrix(treecoef, nrow=length(treecoef), ncol=1, byrow=F)
+    
+    pred_smpl <- mm3 %*% treemat
+    
+    if (!isfactor){
+      res <- data.frame(var=seq(rng[1], rng[2], length.out=nvals), point=pred_smpl[,1], mean=apply(pred_smpl, 1, mean), sd=apply(pred_smpl, 1, sd), 
+                        CI025=apply(pred_smpl, 1, quantile, probs=0.025), CI975=apply(pred_smpl, 1, quantile, probs=0.975))
+      if (plot) {
+        plot(res[,"var"], res$point, type="l", lwd=2, xlab=focal, ylab="log(treedensity)")
+        lines(res[,"var"], res$CI975, col="dark grey")
+        lines(res[,"var"], res$CI025, col="dark grey")
+        lines(res[,"var"], res$point, col="black")
+      }
+    }
+    
+    if (isfactor){
+      res <- data.frame(var=levels(dat[, grep(focal, names(dat))]), point=pred_smpl[,1], mean=apply(pred_smpl, 1, mean), sd=apply(pred_smpl, 1, sd), 
+                        CI025=apply(pred_smpl, 1, quantile, probs=0.025), CI975=apply(pred_smpl, 1, quantile, probs=0.975))
+      if (plot) {
+        plot(c(1:nrow(res)), res$point, type="p", ylim=c(min(res$CI025), max(res$CI975)), xlab=focal, ylab="log(treedensity)", xaxt = 'n')
+        axis(1, at=c(1:nrow(res)), labels=res$var)
+        segments(c(1:nrow(res)), res$CI975, c(1:nrow(res)), res$CI025)
+      }
+    }
+  }
+  
+  if (!plot) return(res)
+}
+
+```
+
+
 
 ## Get function data
 ```{r}
 
 # Hurdle only
-par(mfrow=c(3,3))
+hurdle_disthus <- resp_curve("disthus_trunc_cut200_scale", isfactor=F, dat=browse9.4_house, treedat=browse9.4_house,zeromod=m1kbin2, percmod=m1ibeta2, treemod=mhus2, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
+
+save(hurdle_distvei, file = "hurdle_distvei.rda")
+
 hurdle_distvei <- resp_curve("distvei2_trunc", isfactor=F, dat=browse9.4, treedat=browse9.4,zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
 
 save(hurdle_distvei, file = "hurdle_distvei.rda")
@@ -379,6 +517,9 @@ direct_hell <- resp_curve("helling", dat=browse9.4, treedat=browse9.4, zeromod=m
 
 save(direct_hell, file = "direct_hell.rda")
 
+direct_beite <- resp_curve_bp("beitetrykkr", dat=browse9.4, treedat=browse9.4, zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="direct", nvals=100, plot=F, nb_btstrp=999)
+
+save(direct_beite, file = "direct_beite.rda")
 
 ```
 ## load function data
@@ -426,6 +567,16 @@ hurdle_hoh$var <- hurdle_hoh$var * 244.7748 + 361.8423
 ## plots
 ```{r}
 library(ggplot2)
+
+ph_disthus <- ggplot(data = hurdle_disthus, aes(var, point)) +
+  geom_line(colour = "#009292", linetype = 1, size = 1)+
+  geom_ribbon(aes(ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  theme_light() +
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  xlab("\nDistance to house") + 
+  ylab("Browsing pressure\n") +
+  scale_y_continuous(limits = c(10, 30), breaks =  seq(from = 10, to = 30, by = 5))
 
 pt_distvei <- ggplot() + 
   geom_line(data = total_distvei, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
@@ -565,6 +716,17 @@ ph_tretett <- ggplot(data = hurdle_tretett,aes(var, point)) +
   ylab("Browsing pressure (%)\n")+
   scale_y_continuous(limits = c(10, 30), breaks =  seq(from = 10, to = 30, by = 5))
 
+
+pt_beite <- ggplot() + 
+  geom_line(data = direct_beite, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = direct_beite, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  xlab("\nbrowsing pressure") + 
+  ylab("Tree density\n") +
+  theme_light()+
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  scale_color_manual(name = "Effect on tree\ndensity", 
+                     values = c("total" = "#009292", "direct" = "#004949"))
 # library(cowplot)
 # plot_grid(p1, p2, p3, p4, p5, p6, p7, p8,
 #           nrow = 3, ncol = 3)
