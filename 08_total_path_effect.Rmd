@@ -114,19 +114,19 @@ isfactor = F
 
 ```
 
-
+probs=c(0.005, 0.995)
   
 ## Run function for: "hurdle only"-, "total"- or "direct"-effect (which_effect=c("hurdle_only", "total", "direct"))
 ```{r}
 
 #focal: a numeric variable or a factor 
-resp_curve <- function(focal, isfactor=FALSE, dat, treedat, zeromod, percmod, treemod, which_effect=c("direct")[2], nvals=100, plot=T, nb_btstrp=999){
+resp_curve <- function(focal, isfactor=FALSE, dat, treedat, zeromod, percmod, treemod, which_effect=c("hurdle_only")[2], nvals=100, plot=T, nb_btstrp=999){
   treefocal <- focal
   
   if (!isfactor) {
-    rng2 <- rng <- quantile(dat[,focal], probs=c(0.005, 0.995))
+    rng2 <- rng <- quantile(dat[,focal], probs=c(0.000, 0.995))
     dat[c(1:nvals),focal] <- seq(rng[1], rng[2], length.out=nvals)
-    if (focal!=treefocal) rng2 <- quantile(treedat[,treefocal], probs=c(0.005, 0.995))
+    if (focal!=treefocal) rng2 <- quantile(treedat[,treefocal], probs=c(0.000, 0.995))
     treedat[c(1:nvals),treefocal] <- seq(rng2[1], rng2[2], length.out=nvals)
   }
 
@@ -441,9 +441,9 @@ resp_curve_bp <- function(focal="beitetrykkr", isfactor=FALSE, dat, treedat, zer
 ```{r}
 
 # Hurdle only
-hurdle_disthus <- resp_curve("disthus_trunc_cut200_scale", isfactor=F, dat=browse9.4_house, treedat=browse9.4_house,zeromod=m1kbin2, percmod=m1ibeta2, treemod=mhus2, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
+hurdle_disthus2 <- resp_curve("disthus_trunc_cut200_scale", isfactor=F, dat=browse9.4_house, treedat=browse9.4_house,zeromod=m1kbin2, percmod=m1ibeta2, treemod=mhus2, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
 
-save(hurdle_distvei, file = "hurdle_distvei.rda")
+save(hurdle_disthus2, file = "hurdle_disthus2.rda")
 
 hurdle_distvei <- resp_curve("distvei2_trunc", isfactor=F, dat=browse9.4, treedat=browse9.4,zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="hurdle_only", nvals=100, plot=F, nb_btstrp=999)
 
@@ -475,9 +475,9 @@ save(hurdle_tretett, file = "hurdle_tretett.rda")
 
 
 # total
-total_disthus <- resp_curve("disthus_trunc_cut200_scale", isfactor=F, dat=browse9.4_house, treedat=browse9.4_house,zeromod=m1kbin2, percmod=m1ibeta2, treemod=mhus2, which_effect="total", nvals=100, plot=F, nb_btstrp=999)
+total_disthus2 <- resp_curve("disthus_trunc_cut200_scale", isfactor=F, dat=browse9.4_house, treedat=browse9.4_house,zeromod=m1kbin2, percmod=m1ibeta2, treemod=mhus2, which_effect="total", nvals=100, plot=F, nb_btstrp=999)
 
-save(total_disthus, file = "total_disthus.rda")
+save(total_disthus2, file = "total_disthus.rda")
 
 total_distvei <- resp_curve("distvei2_trunc", isfactor=F, dat=browse9.4, treedat=browse9.4, zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="total", nvals=100, plot=F, nb_btstrp=999)
 
@@ -532,7 +532,7 @@ save(direct_beite, file = "direct_beite.rda")
 ```
 ## load function data
 ```{r}
-load("output/hurdle_disthus.rda")
+load("output/hurdle_disthus2.rda")
 load("output/hurdle_distvei.rda")
 load("output/hurdle_skogkat.rda")
 load("output/hurdle_kant.rda")
@@ -577,8 +577,8 @@ save(hurdle_hoh, file = "hurdle_hoh.rda")
 
 browse9.2$disthus_trunc_cut200_scale * 27.71453 + 192.2636
 
-hurdle_disthus$var <- hurdle_disthus$var * 27.71453 + 192.2636
-save(hurdle_disthus, file = "hurdle_disthus.rda")
+hurdle_disthus2$var <- hurdle_disthus2$var * 27.71453 + 192.2636
+save(hurdle_disthus2, file = "hurdle_disthus2.rda")
 
 total_disthus$var <- total_disthus$var * 27.71453 + 192.2636
 save(total_disthus, file = "total_disthus.rda")
@@ -593,8 +593,8 @@ save(direct_disthus, file = "direct_disthus.rda")
 library(ggplot2)
 
 pt_disthus <- ggplot() + 
-  geom_line(data = total_disthus, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = total_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  geom_line(data = total_disthus2, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = total_disthus2, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   geom_line(data = direct_disthus, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = direct_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   xlab("\nDistance to house (m)") + 
@@ -605,7 +605,7 @@ pt_disthus <- ggplot() +
   scale_color_manual(name = "Effect on tree\ndensity", 
                      values = c("total" = "#009292", "direct" = "#004949"))
 
-ph_disthus <- ggplot(data = hurdle_disthus, aes(var, point)) +
+ph_disthus <- ggplot(data = hurdle_disthus2, aes(var, point)) +
   geom_line(colour = "#009292", linetype = 1, size = 1)+
   geom_ribbon(aes(ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   theme_light() +
