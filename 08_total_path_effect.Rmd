@@ -53,29 +53,28 @@ load("processdata/browse9.4_house.rda")
 # browse9.4_house_pos <- browse9.4_house[browse9.4_house$bt100 > 0, ]
 
 # load("processdata/browse9.3_dist.rda")
-treedat <- browse9.4
-treedat <- browse9.4_house
+
 
 
 library(lme4)
 library(glmmTMB)
 # ---------------- House models
-m1kbin2 <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut200_scale + log(distvei2+1) + skogkategori + treartgruppe9 + ac_scale + kant + helling + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc + (1|KOMNR),
-            family = binomial(),
-            data = browse9.4_house)
+# m1kbin2 <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut200_scale + log(distvei2+1) + skogkategori + treartgruppe9 + ac_scale + kant + helling + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc + (1|KOMNR),
+#             family = binomial(),
+#             data = browse9.4_house)
 # save(m1kbin2, file = "m1kbin2.rda")
 load("output/m1kbin2.rda")
 zeromod <- m1kbin2
 
-m1ibeta2 <- glmmTMB(bt100 ~ disthus_trunc_cut200_scale + log(distvei2+1) + skogkategori + treartgruppe9 + ac_scale + kant + helling + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc + (1|KOMNR),
-            data = browse9.4_house_pos,
-            family = beta_family())
+# m1ibeta2 <- glmmTMB(bt100 ~ disthus_trunc_cut200_scale + log(distvei2+1) + skogkategori + treartgruppe9 + ac_scale + kant + helling + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc + (1|KOMNR),
+#             data = browse9.4_house_pos,
+#             family = beta_family())
 # save(m1ibeta2, file = "m1ibeta2.rda")
 load("output/m1ibeta2.rda")
 percmod <- m1ibeta2
 
-mhus2 <- lmer(log(tretetthet9_trunc+1) ~ disthus_trunc_cut200_scale + log(distvei2+1) + skogkategori + treartgruppe9 + ac_scale + kant + beitetrykkr + (1|KOMNR),
-            data = browse9.4_house)
+# mhus2 <- lmer(log(tretetthet9_trunc+1) ~ disthus_trunc_cut200_scale + log(distvei2+1) + skogkategori + treartgruppe9 + ac_scale + kant + beitetrykkr + (1|KOMNR),
+#             data = browse9.4_house)
 # save(mhus2, file = "mhus2.rda")
 load("output/mhus2.rda")
 treemod <- mhus2
@@ -104,9 +103,12 @@ treemod <- m13a2
 
 # browse9.2_dist[,"treartgruppe9"] <- NULL
 
+treedat <- browse9.4_house
+treedat <- browse9.4
+
 dat <- browse9.4_house
 dat <- browse9.4
-focal <- "beitetrykkr"
+focal <- "disthus_trunc_cut200_scale"
 isfactor = F
 
 
@@ -118,7 +120,7 @@ isfactor = F
 ```{r}
 
 #focal: a numeric variable or a factor 
-resp_curve <- function(focal, isfactor=FALSE, dat, treedat, zeromod, percmod, treemod, which_effect=c("hurdle_only")[2], nvals=100, plot=T, nb_btstrp=999){
+resp_curve <- function(focal, isfactor=FALSE, dat, treedat, zeromod, percmod, treemod, which_effect=c("direct")[2], nvals=100, plot=T, nb_btstrp=999){
   treefocal <- focal
   
   if (!isfactor) {
@@ -473,7 +475,10 @@ save(hurdle_tretett, file = "hurdle_tretett.rda")
 
 
 # total
-par(mfrow=c(2,3))
+total_disthus <- resp_curve("disthus_trunc_cut200_scale", isfactor=F, dat=browse9.4_house, treedat=browse9.4_house,zeromod=m1kbin2, percmod=m1ibeta2, treemod=mhus2, which_effect="total", nvals=100, plot=F, nb_btstrp=999)
+
+save(total_disthus, file = "total_disthus.rda")
+
 total_distvei <- resp_curve("distvei2_trunc", isfactor=F, dat=browse9.4, treedat=browse9.4, zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="total", nvals=100, plot=F, nb_btstrp=999)
 
 save(total_distvei, file = "total_distvei.rda")
@@ -496,7 +501,10 @@ save(total_hell, file = "total_hell.rda")
 
 
 # direct
-par(mfrow=c(2,3))
+direct_disthus <- resp_curve("disthus_trunc_cut200_scale", isfactor=F, dat=browse9.4_house, treedat=browse9.4_house,zeromod=m1kbin2, percmod=m1ibeta2, treemod=mhus2, which_effect="direct", nvals=100, plot=F, nb_btstrp=999)
+
+save(direct_disthus, file = "direct_disthus.rda")
+
 direct_distvei <- resp_curve("distvei2_trunc", isfactor=F, dat=browse9.4, treedat=browse9.4, zeromod=m4abin2, percmod=m4abeta2, treemod=m13a2, which_effect="direct", nvals=100, plot=F, nb_btstrp=999)
 
 save(direct_distvei, file = "direct_distvei.rda")
@@ -524,6 +532,7 @@ save(direct_beite, file = "direct_beite.rda")
 ```
 ## load function data
 ```{r}
+load("output/hurdle_disthus.rda")
 load("output/hurdle_distvei.rda")
 load("output/hurdle_skogkat.rda")
 load("output/hurdle_kant.rda")
@@ -532,6 +541,7 @@ load("output/hurdle_hell.rda")
 load("output/hurdle_hoh.rda")
 load("output/hurdle_tretett.rda")
 
+load("output/total_disthus.rda")
 load("output/total_distvei.rda")
 load("output/total_skogkat.rda")
 load("output/total_kant.rda")
@@ -543,6 +553,7 @@ load("output/direct_skogkat.rda")
 load("output/direct_kant.rda")
 load("output/direct_treart.rda")
 load("output/direct_hell.rda")
+load("output/direct_beite.rda")
 
 
 ```
@@ -553,6 +564,7 @@ load("output/direct_hell.rda")
 
 
 attributes(browse9.2$HOH_scale)
+attributes(browse9.2$disthus_trunc_cut200_scale)
 
 d$s.x * attr(d$s.x, 'scaled:scale') + attr(d$s.x, 'scaled:center')
 
@@ -560,7 +572,19 @@ d$s.x * attr(d$s.x, 'scaled:scale') + attr(d$s.x, 'scaled:center')
 browse9.2$HOH_scale * 244.7748 + 361.8423
 
 hurdle_hoh$var <- hurdle_hoh$var * 244.7748 + 361.8423
+save(hurdle_hoh, file = "hurdle_hoh.rda")
 
+
+browse9.2$disthus_trunc_cut200_scale * 27.71453 + 192.2636
+
+hurdle_disthus$var <- hurdle_disthus$var * 27.71453 + 192.2636
+save(hurdle_disthus, file = "hurdle_disthus.rda")
+
+total_disthus$var <- total_disthus$var * 27.71453 + 192.2636
+save(total_disthus, file = "total_disthus.rda")
+
+direct_disthus$var <- direct_disthus$var * 27.71453 + 192.2636
+save(direct_disthus, file = "direct_disthus.rda")
 
 ```
 
@@ -568,14 +592,27 @@ hurdle_hoh$var <- hurdle_hoh$var * 244.7748 + 361.8423
 ```{r}
 library(ggplot2)
 
+pt_disthus <- ggplot() + 
+  geom_line(data = total_disthus, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = total_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  geom_line(data = direct_disthus, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = direct_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  xlab("\nDistance to house (m)") + 
+  ylab("log(Tree density)\n") +
+  theme_light()+
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  scale_color_manual(name = "Effect on tree\ndensity", 
+                     values = c("total" = "#009292", "direct" = "#004949"))
+
 ph_disthus <- ggplot(data = hurdle_disthus, aes(var, point)) +
   geom_line(colour = "#009292", linetype = 1, size = 1)+
   geom_ribbon(aes(ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   theme_light() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
-  xlab("\nDistance to house") + 
-  ylab("Browsing pressure\n") +
+  xlab("\nDistance to house (m)") + 
+  ylab("Browsing pressure (%)\n") +
   scale_y_continuous(limits = c(10, 30), breaks =  seq(from = 10, to = 30, by = 5))
 
 pt_distvei <- ggplot() + 
@@ -583,8 +620,8 @@ pt_distvei <- ggplot() +
   geom_ribbon(data = total_distvei, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   geom_line(data = direct_distvei, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = direct_distvei, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
-  xlab("\nDistance to road") + 
-  ylab("Tree density\n") +
+  xlab("\nDistance to road (m)") + 
+  ylab("log(Tree density)\n") +
   theme_light()+
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
@@ -597,8 +634,8 @@ ph_distvei <- ggplot(data = hurdle_distvei, aes(var, point)) +
   theme_light() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
-  xlab("\nDistance to road") + 
-  ylab("Browsing pressure\n") +
+  xlab("\nDistance to road (m)") + 
+  ylab("Browsing pressure (%)\n") +
   scale_y_continuous(limits = c(10, 30), breaks =  seq(from = 10, to = 30, by = 5))
 
 
@@ -609,7 +646,7 @@ pt_skogkat <- ggplot() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nForest category") + 
-  ylab("Tree density\n") +
+  ylab("log(Tree density)\n") +
   scale_x_discrete(labels = c("Highproductive \nold forest", "Highproductive \nyoung forest", "Lowproductive \nold forest", "Lowproductive \nyoung forest", "Unproductive \nforest"))+
   scale_color_manual(name = "Effect on tree\ndensity", 
                      values = c("total" = "#009292", "direct" = "#004949"))
@@ -632,7 +669,7 @@ pt_treart <- ggplot() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nTree species group") + 
-  ylab("Tree density\n") +
+  ylab("log(Tree density)\n") +
   scale_x_discrete(labels = c("Pine", "Other deciduous \ntrees", "Rowan, aspen, \nwillow")) +
   scale_color_manual(name = "Effect on tree\ndensity", 
                      values = c("total" = "#009292", "direct" = "#004949"))
@@ -654,9 +691,9 @@ pt_kant <- ggplot() +
   theme_light() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
-  xlab("\nEdge") + 
-  ylab("Tree density\n") +
-  scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-10m", "Edge missing")) +
+  xlab("\nEdge effect") + 
+  ylab("log(Tree density)\n") +
+  scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-10m", "Edge information\nmissing")) +
   scale_color_manual(name = "Effect on tree\ndensity", 
                      values = c("total" = "#009292", "direct" = "#004949"))
 
@@ -665,9 +702,9 @@ ph_kant <- ggplot(data = hurdle_kant, aes(var, point)) +
   theme_light() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
-  xlab("\nEdge") + 
+  xlab("\nEdge effect") + 
   ylab("Browsing pressure (%)\n") +
-  scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-10m", "Edge missing"))+
+  scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-10m", "Edge information\nmissing"))+
   scale_y_continuous(limits = c(5, 50), breaks =  seq(from = 5, to = 50, by = 10))
 
 
@@ -676,8 +713,8 @@ pt_hell <- ggplot() +
   geom_ribbon(data = total_hell, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   geom_line(data = direct_hell, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = direct_hell, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
-  xlab("\nslope") + 
-  ylab("Tree density\n") +
+  xlab("\nSlope (%)") + 
+  ylab("log(Tree density)\n") +
   theme_light()+
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
@@ -701,7 +738,7 @@ ph_hoh <- ggplot(data = hurdle_hoh,aes(var, point)) +
   theme_light() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
-  xlab("\nMetres above sea level") + 
+  xlab("\nAltitude (m)") + 
   ylab("Browsing pressure (%)\n")+
   scale_y_continuous(limits = c(10, 30), breaks =  seq(from = 10, to = 30, by = 5))
 
@@ -720,8 +757,8 @@ ph_tretett <- ggplot(data = hurdle_tretett,aes(var, point)) +
 pt_beite <- ggplot() + 
   geom_line(data = direct_beite, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = direct_beite, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
-  xlab("\nbrowsing pressure") + 
-  ylab("Tree density\n") +
+  xlab("\nbrowsing pressure (%)") + 
+  ylab("log(Tree density)\n") +
   theme_light()+
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
@@ -732,7 +769,10 @@ pt_beite <- ggplot() +
 #           nrow = 3, ncol = 3)
 
 library(gridExtra)
-grid.arrange(p4, p1, p2, p3, p7, p6, p5, p8,
+grid.arrange(ph_tretett, ph_disthus, ph_distvei, ph_hell, ph_hoh, ph_kant, ph_skogkat, ph_treart,
+          nrow = 3, ncol = 3)
+
+grid.arrange(pt_disthus, pt_distvei, pt_hell, pt_kant, pt_skogkat, pt_treart, pt_beite,
           nrow = 3, ncol = 3)
 
 
