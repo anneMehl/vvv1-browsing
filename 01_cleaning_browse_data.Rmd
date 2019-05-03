@@ -997,11 +997,13 @@ browse9.1 <- browse9.1[,c(1:5,7:9,15:24,34:36,40:45,51,59,62:67,74,76:79,88:90,9
 
 browse9.5 <- browse9.1
 browse9.5 <- browse9.5[,c(1:3,5:8,19:24,36,41,43,48,50:53)]
+browse9.5 <- subset(browse9.5, select = -c(27:32,34:36))
+
 
 browse9.5sct <- subset(browse9.5sc, select = -c(27:32,34:36))
 
 
-save(browse9.5sc, file = "browse9.5sc.rda")
+save(browse9.5, file = "browse9.5.rda")
 
 ```
 
@@ -1100,7 +1102,7 @@ browse9.5$bt100 <- browse9.5$beitetrykkr/100
 # browse9.2$landsdel <- factor(browse9.2$landsdel, levels = c("Sørlandet", "Østlandet-Øst", "Midt-Norge", "Nord-Norge", "Vestlandet", "Østlandet-vest"))
 browse9.5$skogkategori <- factor(browse9.5$skogkategori, levels = c("Lavproduktiv_eldreskog", "Høyproduktiv_eldreskog", "Høyproduktiv_ungskog",  "Lavproduktiv_ungskog", "Uproduktiv_skog"))
 browse9.5$kant <- factor(browse9.5$kant, levels = c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant")) 
-browse9.5$treartgruppe <- factor(browse9.5$treartgruppe9, levels = c("LAUV", "FURU", "ROS"))
+browse9.5$treartgruppe9 <- factor(browse9.5$treartgruppe9, levels = c("LAUV", "FURU", "ROS"))
 # browse9.2$hohkatb <- factor(browse9.2$hohkatb, levels = c("100", "0", "200", "300", "400", "500", "600", "700", "800"))
 browse9.5$region <- factor(browse9.5$region, levels = c("Hedmark", "Agder", "Buskerud", "Hordaland",  "More og Romsdal", "Nord-Trondelag", "Nordland", "Oppland", "Ostfold-Akershus", "Rogaland", "Sogn og Fjordane", "Sor-Trondelag", "Troms", "Vestfold-Telemark"))
 
@@ -1112,7 +1114,7 @@ browse9.5$region <- factor(browse9.5$region, levels = c("Hedmark", "Agder", "Bus
 ```
 
 ```{r}
-save(browse9.2, file = "browse9.2.rda")
+save(browse9.5, file = "browse9.5.rda")
 save(browse9.2_dist, file = "browse9.2_dist.rda")
 load("processdata/browse9.2.rda")
 ```
@@ -1151,13 +1153,20 @@ load("processdata/browse9.2.rda")
 browse9.2_distnew <- browse9.2[ which(browse9.2$disthus > 200), ]
 head(browse9.2_dist)
 
+browse9.6 <- browse9.5
+browse9.6 <- browse9.5[browse9.5$treartgruppe9 != "ROS", ]
 
 browse9.5$andtre <- ifelse(browse9.5$treartgruppe9 == "FURU", (browse9.5$Furu_0_25_PRHA + browse9.5$Furu_25_49_PRHA)/(browse9.5$Furu_0_PRHA + browse9.5$Furu_0_25_PRHA + browse9.5$Furu_25_49_PRHA), (browse9.5$Lauv_0_25_PRHA + browse9.5$Lauv_25_49_PRHA)/ (browse9.5$Lauv_0_PRHA + browse9.5$Lauv_0_25_PRHA + browse9.5$Lauv_25_49_PRHA))
+
+browse9.6$andtre <- ifelse(browse9.6$treartgruppe9 == "FURU", (browse9.6$Furu_0_25_PRHA + browse9.6$Furu_25_49_PRHA)/(browse9.6$Furu_0_PRHA + browse9.6$Furu_0_25_PRHA + browse9.6$Furu_25_49_PRHA), (browse9.6$Lauv_0_25_PRHA + browse9.6$Lauv_25_49_PRHA)/ (browse9.6$Lauv_0_PRHA + browse9.6$Lauv_0_25_PRHA + browse9.6$Lauv_25_49_PRHA))
+
+browse9.6$anttre <- ifelse(browse9.6$treartgruppe9 == "FURU", (browse9.6$Furu_0_25_PRHA + browse9.6$Furu_25_49_PRHA), (browse9.6$Lauv_0_25_PRHA + browse9.6$Lauv_25_49_PRHA))
+
 plot(browse9.5$andtre ~ browse9.5$treartgruppe9)
 
 
 
-save(browse9.2_dist, file = "browse9.2_dist.rda")
+save(browse9.5, file = "browse9.5.rda")
 
 ```
 
@@ -1267,5 +1276,49 @@ browse9.3$disthus_cut650_scale = scale(browse9.3$disthus_cut650)
 
 save(browse9.2, file = "browse9.2.rda")
 save(browse9.2_distnew, file = "browse9.2_distnew.rda")
+
+```
+
+
+
+
+
+## browse9.6
+
+##### threshold cuts disthus
+```{r}
+browse9.6$disthus_1000 <- ifelse(browse9.6$disthus >= 1000, 1000, browse9.6$disthus)
+browse9.6$disthus_cut950 <- ifelse(browse9.6$disthus >= 950, 950, browse9.6$disthus)
+browse9.6$disthus_900 <- ifelse(browse9.6$disthus >= 900, 900, browse9.6$disthus)
+browse9.6$disthus_cut850 <- ifelse(browse9.6$disthus >= 850, 850, browse9.6$disthus)
+browse9.6$disthus_800 <- ifelse(browse9.6$disthus >= 800, 800, browse9.6$disthus)
+browse9.6$disthus_cut750 <- ifelse(browse9.6$disthus >= 750, 750, browse9.6$disthus)
+browse9.6$disthus_700 <- ifelse(browse9.6$disthus >= 700, 700, browse9.6$disthus)
+browse9.6$disthus_cut650 <- ifelse(browse9.6$disthus >= 650, 650, browse9.6$disthus)
+browse9.6$disthus_600 <- ifelse(browse9.6$disthus >= 600, 600, browse9.6$disthus)
+browse9.6$disthus_500 <- ifelse(browse9.6$disthus >= 500, 500, browse9.6$disthus)
+browse9.6$disthus_400 <- ifelse(browse9.6$disthus >= 400, 400, browse9.6$disthus)
+browse9.6$disthus_300 <- ifelse(browse9.6$disthus >= 300, 300, browse9.6$disthus)
+browse9.6$disthus_200 <- ifelse(browse9.6$disthus >= 200, 200, browse9.6$disthus)
+browse9.6$disthus_150 <- ifelse(browse9.6$disthus >= 150, 150, browse9.6$disthus)
+browse9.6$disthus_175 <- ifelse(browse9.6$disthus >= 175, 175, browse9.6$disthus)
+browse9.6$disthus_160 <- ifelse(browse9.6$disthus >= 160, 160, browse9.6$disthus)
+browse9.6$disthus_190 <- ifelse(browse9.6$disthus >= 190, 190, browse9.6$disthus)
+# browse9.2$disthus_trunc_cut1000 <- ifelse(browse9.2$disthus_trunc >= 1000, 1000, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut900 <- ifelse(browse9.2$disthus_trunc >= 900, 900, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut800 <- ifelse(browse9.2$disthus_trunc >= 800, 800, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut700 <- ifelse(browse9.2$disthus_trunc >= 700, 700, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut600 <- ifelse(browse9.2$disthus_trunc >= 600, 600, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut500 <- ifelse(browse9.2$disthus_trunc >= 500, 500, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut400 <- ifelse(browse9.2$disthus_trunc >= 400, 400, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut300 <- ifelse(browse9.2$disthus_trunc >= 300, 300, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut200 <- ifelse(browse9.2$disthus_trunc >= 200, 200, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut150 <- ifelse(browse9.2$disthus_trunc >= 150, 150, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut175 <- ifelse(browse9.2$disthus_trunc >= 175, 175, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut160 <- ifelse(browse9.2$disthus_trunc >= 160, 160, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut190 <- ifelse(browse9.2$disthus_trunc >= 190, 190, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut100 <- ifelse(browse9.2$disthus_trunc >= 100, 100, browse9.2$disthus_trunc)
+
+save(browse9.6, file = "browse9.6.rda")
 
 ```
