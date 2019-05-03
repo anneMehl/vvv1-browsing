@@ -1,0 +1,239 @@
+---
+title: "treedensity-height_hurdle"
+author: "anne"
+date: "3 mai 2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+#### Modelling spatial autocorrelation (https://onlinelibrary.wiley.com/doi/full/10.1111/j.2007.0906-7590.05171.x)
+Change the projection and make coordinates and a spatial point data frame to make a shapefile
+
+```{r}
+library(tidyr)
+browse9.6$UTMmerge <- paste(browse9.6$UTM_OV_33, browse9.6$UTM_SN_33, sep="_")
+sum(duplicated(browse9.6$UTMmerge))
+```
+
+
+```{r}
+
+library(sp)
+library(rgdal)
+
+crs <- CRS("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")
+coords <- cbind(browse9.6$UTM_OV_33, browse9.6$UTM_SN_33)
+data_spdf <- SpatialPointsDataFrame(coords, browse9.6, proj4string = crs)
+# plot(data_spdf)
+writeOGR(data_spdf, dsn = "output", layer = "spac", driver = "ESRI Shapefile")
+
+```
+
+
+```{r}
+
+library(spdep)
+library(ape)
+
+# spdep package:
+
+# prepare neighbour lists for spatial autocorrelation analysis
+# nb.list <- dnearneigh(as.matrix(browse9.3[browse9.3$beitetrykkr, c("UTM_OV_33", "UTM_SN_33")]), 0, 5000)
+# nb.weights <- nb2listw(nb.list, zero.policy = TRUE)
+# 
+# moran.plot(resid_m1abin, nb.weights, zero.policy = TRUE, spChk = NULL, labels = TRUE, xlab = NULL, ylab = NULL, quiet = NULL)
+# 
+# resid_m1abin <- resid(m1abin, type = "pearson")
+# resid_m1bbin <- resid(m1bbin, type = "pearson")
+# 
+# moran.test(browse9.3$beitetrykkr, nb.weights, zero.policy = TRUE, randomisation=TRUE,
+#  alternative="greater", rank = FALSE, na.action=na.fail, spChk=NULL,
+#  adjust.n=TRUE, drop.EI2=FALSE)
+# 
+# moran.test(resid_m1bbin, nb.weights, zero.policy = TRUE, randomisation=TRUE,
+#  alternative="greater", rank = FALSE, na.action=na.fail, spChk=NULL,
+#  adjust.n=TRUE, drop.EI2=FALSE)
+
+
+# Make a matrix of coordinates - use when chunk above was not run
+coords <- as.matrix(cbind(browse9.6$UTM_OV_33, browse9.6$UTM_SN_33))
+
+# compute the autocovariate based on the above distance and weight
+ac <- autocov_dist(browse9.6$beitetrykkr, coords, nbs = 5000, type="inverse", zero.policy = TRUE)
+browse9.6$ac <- ac
+
+
+save(browse9.6, file = "browse9.6.rda")
+
+
+```
+
+
+
+
+#### gam
+
+```{r}
+library(ggplot2)
+ggplot(browse9.6, aes(x = disthus, y = beitetrykkr)) +
+    geom_point() +
+    stat_smooth(method = "glm", color = "green") +
+  stat_smooth(color = "blue")
+
+# +
+#   scale_x_continuous(breaks=c(100,150, 200, 250, 300, 400, 500, 1000, 1500, 2000, 3000))
+
+```
+
+```{r}
+library(mgcv)
+
+
+
+gam1 <- gam(andtre ~ disthus + distvei2 + skogkategori + treartgruppe9 + kant + helling + HOH + beitetrykkr,
+             data = browse9.6,
+             method = "REML")
+
+gam2 <- gam(andtre ~ s(disthus) + s(distvei2) + skogkategori + treartgruppe9 + kant + helling + HOH + beitetrykkr,
+             data = browse9.6,
+             method = "REML")
+
+```
+
+```{r}
+plot.gam(gam1, all.terms = TRUE)
+plot.gam(gam2, all.terms = TRUE)
+# threshold: disthus ~700/900m, distvei2 ~200/300m
+```
+
+
+
+
+
+## Bin - First part of a hurdle model to account for zero inflation
+##### Checking for the cut for disthus (browse9.6)
+```{r}
+# load("processdata/browse9.6sc.rda")
+load("processdata/browse9.6.rda")
+
+```
+
+```{r}
+library(lme4)
+
+pvars <- c("disthus","disthus_500", "disthus_400", "disthus_1000", "disthus_900", "disthus_800", "disthus_700", "disthus_600", "disthus_160",
+           "distvei2",
+           "helling","HOH",
+           "andtre", "ac")
+browse9.6sc <- browse9.6
+browse9.6sc[pvars] <- lapply(browse9.6sc[pvars],scale)
+
+save(browse9.6sc, file = "browse9.6sc.rda")
+
+
+m1bin <- glmer(factor(andtre) ~ disthus + distvei2 + skogkategori + treartgruppe9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+family = binomial(),
+data = browse9.6sc)
+
+
+# m1bbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut1000_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+#             family = binomial(),
+#             data = browse9.2)
+# 
+# m1cbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut900_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+#             family = binomial(),
+#             data = browse9.2)
+# 
+# m1dbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut800_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+#             family = binomial(),
+#             data = browse9.2)
+# 
+# m1ebin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut700_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+#             family = binomial(),
+#             data = browse9.2)
+# 
+# m1fbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut600_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+#             family = binomial(),
+#             data = browse9.2)
+
+m1gbin <- glmer(factor(beitetrykkr > 0) ~ disthus_500 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + andtre + (1|KOMNR),
+            family = binomial(),
+            data = browse9.6sc)
+
+m1hbin <- glmer(factor(beitetrykkr > 0) ~ disthus_400 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + andtre + (1|KOMNR),
+            family = binomial(),
+            data = browse9.6sc)
+
+m1ibin <- glmer(factor(beitetrykkr > 0) ~ disthus_300 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + andtre + (1|KOMNR),
+            family = binomial(),
+            data = browse9.6sc)
+
+m1jbin <- glmer(factor(beitetrykkr > 0) ~ disthus_200 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + andtre + (1|KOMNR),
+            family = binomial(),
+            data = browse9.6sc)
+
+m1kbin <- glmer(factor(beitetrykkr > 0) ~ disthus_190 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + andtre + (1|KOMNR),
+            family = binomial(),
+            data = browse9.6sc)
+
+m1lbin <- glmer(factor(beitetrykkr > 0) ~ disthus_175 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + andtre + (1|KOMNR),
+            family = binomial(),
+            data = browse9.6sc) # second best
+
+m1sbin <- glmer(factor(beitetrykkr > 0) ~ disthus_160 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + andtre + (1|KOMNR),
+            family = binomial(),
+            data = browse9.6sc) # best
+
+m1tbin <- glmer(factor(beitetrykkr > 0) ~ disthus_150 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + andtre + (1|KOMNR),
+            family = binomial(),
+            data = browse9.6sc)
+
+
+# ------------ log selection -----------
+
+pvars <- c("disthus_160",
+           "helling","HOH",
+           "andtre", "ac")
+browse9.6sc <- browse9.6
+browse9.6sc[pvars] <- lapply(browse9.6sc[pvars],scale)
+
+
+m1nbin <- glmer(factor(beitetrykkr > 0) ~ log(disthus+1) + log(distvei2+1) + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + andtre + (1|KOMNR),
+            family = binomial(),
+            data = browse9.6sc)
+
+m1oin <- glmer(factor(beitetrykkr > 0) ~ log(disthus+1) + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + andtre + (1|KOMNR),
+            family = binomial(),
+            data = browse9.6sc)
+
+m1pbin <- glmer(factor(beitetrykkr > 0) ~ disthus + log(distvei2+1) + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + andtre + (1|KOMNR),
+            family = binomial(),
+            data = browse9.6sc)
+
+m1qbin <- glmer(factor(beitetrykkr > 0) ~ disthus_160 + log(distvei2+1) + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + andtre + (1|KOMNR),
+            family = binomial(),
+            data = browse9.6sc) # BEST
+
+# m1rbin <- glmer(factor(beitetrykkr > 0) ~ disthus_160 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + andtre + (1|KOMNR),
+#             family = binomial(),
+#             data = browse9.6sc) 
+
+
+```
+
+
+```{r}
+
+AIC(m1abin, m1gbin, m1hbin, m1ibin, m1jbin, m1kbin, m1lbin, m1sbin, m1tbin)
+
+AIC(m1sbin, m1nbin, m1oin, m1pbin, m1qbin)
+
+# cut 160 is the thing!
+
+
+```
