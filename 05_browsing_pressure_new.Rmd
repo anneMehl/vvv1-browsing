@@ -219,6 +219,12 @@ m1rbin <- glmer(factor(beitetrykkr > 0) ~ log(disthus+1) + log(distvei2+1) + sko
 
 ##### Checking for the cut for disthus (browse9.5)
 ```{r}
+load("processdata/browse9.5sc.rda")
+load("processdata/browse9.5.rda")
+
+```
+
+```{r}
 library(lme4)
 
 pvars <- c("disthus","disthus_500", "disthus_400", "disthus_300", "disthus_200", "disthus_190", "disthus_175", "disthus_160", "disthus_150",
@@ -331,9 +337,12 @@ glmmbin_tab <- aictab(Candmods_bin, modnames = NULL,
 
 # cut150 is the thing!
 
+# browse9.5sc
 AIC(m1abin, m1gbin, m1hbin, m1ibin, m1jbin, m1kbin, m1lbin, m1sbin, m1tbin)
 
 AIC(m1sbin, m1nbin, m1oin, m1pbin, m1qbin)
+
+# cut 160 is the thing!
 
 
 ```
@@ -395,6 +404,18 @@ m8bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2_trun
 
 ```
 
+##### browse9.5
+```{r}
+library(lme4)
+m1qbin <- glmer(factor(beitetrykkr > 0) ~ disthus_160 + log(distvei2+1) + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + andtre + (1|KOMNR),
+            family = binomial(),
+            data = browse9.5sc)
+
+library(effects)
+plot(allEffects(m1qbin))
+```
+
+
 ```{r}
 library(AICcmodavg)
 
@@ -441,7 +462,7 @@ library(sjPlot)
 plot_model(m2abin, type = c("diag"), transform, terms = NULL)
 # plot_model(m10bin, type = c("resid"), transform, terms = NULL)
 
-vcov.merMod(m4abin)
+vcov.merMod(m1qbin)
 coef(m4abin)
 fixef(m4abin)
 
