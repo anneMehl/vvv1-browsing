@@ -119,7 +119,7 @@ grid.arrange(fp1, fp2, fp4, fp6, fp7, fp8, fp9, fp10, fp12, nrow = 3)
 ```{r}
 library(ggplot2)
 
-fpb1 <- ggplot(data = browse9.2pos_dist, aes(beitetrykkr)) +
+ggplot(data = browse9.5m, aes(browspres_merged)) +
   geom_histogram(bins = 70)+
   theme_classic()
 
@@ -131,7 +131,7 @@ fpb2 <- ggplot(data = browse9.2pos_dist, aes(disthus_trunc)) +
 #   geom_histogram(bins = 70)+
 #   theme_classic()
 
-fpb4 <- ggplot(data = browse9.2pos_dist, aes(distvei2_trunc)) +
+ggplot(data = browse9.5m, aes(log(distvei2+1))) +
   geom_histogram(bins = 70)+
   theme_classic()
 
