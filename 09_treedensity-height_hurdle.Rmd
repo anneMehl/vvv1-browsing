@@ -18,8 +18,8 @@ Change the projection and make coordinates and a spatial point data frame to mak
 
 ```{r}
 library(tidyr)
-browse9.6$UTMmerge <- paste(browse9.6$UTM_OV_33, browse9.6$UTM_SN_33, sep="_")
-sum(duplicated(browse9.6$UTMmerge))
+browse9.5m$UTMmerge <- paste(browse9.5m$UTM_OV_33, browse9.5m$UTM_SN_33, sep="_")
+sum(duplicated(browse9.5m$UTMmerge))
 ```
 
 
@@ -29,8 +29,8 @@ library(sp)
 library(rgdal)
 
 crs <- CRS("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")
-coords <- cbind(browse9.6$UTM_OV_33, browse9.6$UTM_SN_33)
-data_spdf <- SpatialPointsDataFrame(coords, browse9.6, proj4string = crs)
+coords <- cbind(browse9.5m$UTM_OV_33, browse9.5m$UTM_SN_33)
+data_spdf <- SpatialPointsDataFrame(coords, browse9.5m, proj4string = crs)
 # plot(data_spdf)
 writeOGR(data_spdf, dsn = "output", layer = "spac", driver = "ESRI Shapefile")
 
@@ -45,7 +45,7 @@ library(ape)
 # spdep package:
 
 # prepare neighbour lists for spatial autocorrelation analysis
-# nb.list <- dnearneigh(as.matrix(browse9.3[browse9.3$beitetrykkr, c("UTM_OV_33", "UTM_SN_33")]), 0, 5000)
+# nb.list <- dnearneigh(as.matrix(browse9.3[browse9.3$browspres_merged, c("UTM_OV_33", "UTM_SN_33")]), 0, 5000)
 # nb.weights <- nb2listw(nb.list, zero.policy = TRUE)
 # 
 # moran.plot(resid_m1abin, nb.weights, zero.policy = TRUE, spChk = NULL, labels = TRUE, xlab = NULL, ylab = NULL, quiet = NULL)
@@ -53,7 +53,7 @@ library(ape)
 # resid_m1abin <- resid(m1abin, type = "pearson")
 # resid_m1bbin <- resid(m1bbin, type = "pearson")
 # 
-# moran.test(browse9.3$beitetrykkr, nb.weights, zero.policy = TRUE, randomisation=TRUE,
+# moran.test(browse9.3$browspres_merged, nb.weights, zero.policy = TRUE, randomisation=TRUE,
 #  alternative="greater", rank = FALSE, na.action=na.fail, spChk=NULL,
 #  adjust.n=TRUE, drop.EI2=FALSE)
 # 
@@ -63,14 +63,14 @@ library(ape)
 
 
 # Make a matrix of coordinates - use when chunk above was not run
-coords <- as.matrix(cbind(browse9.6$UTM_OV_33, browse9.6$UTM_SN_33))
+coords <- as.matrix(cbind(browse9.5m$UTM_OV_33, browse9.5m$UTM_SN_33))
 
 # compute the autocovariate based on the above distance and weight
-ac <- autocov_dist(browse9.6$beitetrykkr, coords, nbs = 5000, type="inverse", zero.policy = TRUE)
-browse9.6$ac <- ac
+ac <- autocov_dist(browse9.5m$browspres_merged, coords, nbs = 5000, type="inverse", zero.policy = TRUE)
+browse9.5m$ac <- ac
 
 
-save(browse9.6, file = "browse9.6.rda")
+save(browse9.5m, file = "browse9.5m.rda")
 
 
 ```
@@ -82,7 +82,7 @@ save(browse9.6, file = "browse9.6.rda")
 
 ```{r}
 library(ggplot2)
-ggplot(browse9.6, aes(x = disthus, y = beitetrykkr)) +
+ggplot(browse9.6, aes(x = disthus, y = browspres_merged)) +
     geom_point() +
     stat_smooth(method = "glm", color = "green") +
   stat_smooth(color = "blue")
@@ -97,11 +97,11 @@ library(mgcv)
 
 
 
-gam1 <- gam(andtre ~ disthus + distvei2 + skogkategori + treartgruppe9 + kant + helling + HOH + beitetrykkr,
+gam1 <- gam(proplt ~ disthus + distvei2 + skogkategori + treartgruppe9 + kant + helling + HOH + browspres_merged,
              data = browse9.6,
              method = "REML")
 
-gam2 <- gam(andtre ~ s(disthus) + s(distvei2) + skogkategori + treartgruppe9 + kant + helling + HOH + beitetrykkr,
+gam2 <- gam(proplt ~ s(disthus) + s(distvei2) + skogkategori + treartgruppe9 + kant + helling + HOH + browspres_merged,
              data = browse9.6,
              method = "REML")
 
@@ -120,11 +120,12 @@ plot.gam(gam2, all.terms = TRUE)
 
 
 
+
 ## Bin - First part of a hurdle model to account for zero inflation
-##### Checking for the cut for disthus (browse9.6/7)
+##### Checking for the cut for disthus (browse9.5m/6)
 ```{r}
-load("processdata/browse9.6sc.rda")
-load("processdata/browse9.6.rda")
+# load("processdata/browse9.5sc.rda")
+load("processdata/browse9.5m.rda")
 
 ```
 
@@ -133,89 +134,89 @@ library(lme4)
 
 pvars <- c("disthus","disthus_500", "disthus_400", "disthus_1000", "disthus_900", "disthus_800", "disthus_700", "disthus_600", "disthus_160", "disthus_300", "disthus_200", "disthus_175", "disthus_350",
            "distvei2",
-           "helling","HOH", "ac", "beitetrykkr")
-browse9.6sc <- browse9.6
-browse9.6sc[pvars] <- lapply(browse9.6sc[pvars],scale)
+           "helling","HOH", "ac", "browspres_merged")
+browse9.5msc <- browse9.5m
+browse9.5msc[pvars] <- lapply(browse9.5msc[pvars],scale)
 
-save(browse9.6sc, file = "browse9.6sc.rda")
+save(browse9.5msc, file = "browse9.5msc.rda")
 
 
-m1bin <- glmer(factor(andtre > 0) ~ disthus + distvei2 + skogkategori + treartgruppe9 + beitetrykkr + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+m1bin <- glmer(factor(proplt > 0) ~ disthus + distvei2 + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = binomial(),
-data = browse9.6sc)
+data = browse9.5msc)
 
-m2bin <- glmer(factor(andtre > 0) ~ disthus_1000 + distvei2 + skogkategori + treartgruppe9 + beitetrykkr + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+m2bin <- glmer(factor(proplt > 0) ~ disthus_1000 + distvei2 + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = binomial(),
-data = browse9.6sc)
+data = browse9.5msc)
 
-m3bin <- glmer(factor(andtre > 0) ~ disthus_900 + distvei2 + skogkategori + treartgruppe9 + beitetrykkr + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+m3bin <- glmer(factor(proplt > 0) ~ disthus_900 + distvei2 + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = binomial(),
-data = browse9.6sc)
+data = browse9.5msc)
 
-m4bin <- glmer(factor(andtre > 0) ~ disthus_800 + distvei2 + skogkategori + treartgruppe9 + beitetrykkr + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+m4bin <- glmer(factor(proplt > 0) ~ disthus_800 + distvei2 + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = binomial(),
-data = browse9.6sc)
+data = browse9.5msc)
 
-m5bin <- glmer(factor(andtre > 0) ~ disthus_700 + distvei2 + skogkategori + treartgruppe9 + beitetrykkr + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+m5bin <- glmer(factor(proplt > 0) ~ disthus_700 + distvei2 + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = binomial(),
-data = browse9.6sc)
+data = browse9.5msc)
 
-m6bin <- glmer(factor(andtre > 0) ~ disthus_600 + distvei2 + skogkategori + treartgruppe9 + beitetrykkr + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+m6bin <- glmer(factor(proplt > 0) ~ disthus_600 + distvei2 + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = binomial(),
-data = browse9.6sc)
+data = browse9.5msc)
 
-m7bin <- glmer(factor(andtre > 0) ~ disthus_500 + distvei2 + skogkategori + treartgruppe9 + beitetrykkr + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+m7bin <- glmer(factor(proplt > 0) ~ disthus_500 + distvei2 + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = binomial(),
-data = browse9.6sc)
+data = browse9.5msc)
 
-m8bin <- glmer(factor(andtre > 0) ~ disthus_400 + distvei2 + skogkategori + treartgruppe9 + beitetrykkr + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+m8bin <- glmer(factor(proplt > 0) ~ disthus_400 + distvei2 + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = binomial(),
-data = browse9.6sc) # best!
+data = browse9.5msc) # best!
 
-m9bin <- glmer(factor(andtre > 0) ~ disthus_160 + distvei2 + skogkategori + treartgruppe9 + beitetrykkr + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+m9bin <- glmer(factor(proplt > 0) ~ disthus_160 + distvei2 + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = binomial(),
-data = browse9.6sc)
+data = browse9.5msc)
 
-m10bin <- glmer(factor(andtre > 0) ~ disthus_300 + distvei2 + skogkategori + treartgruppe9 + beitetrykkr + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+m10bin <- glmer(factor(proplt > 0) ~ disthus_300 + distvei2 + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = binomial(),
-data = browse9.6sc) 
+data = browse9.5msc) 
 
-m11bin <- glmer(factor(andtre > 0) ~ disthus_200 + distvei2 + skogkategori + treartgruppe9 + beitetrykkr + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+m11bin <- glmer(factor(proplt > 0) ~ disthus_200 + distvei2 + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = binomial(),
-data = browse9.6sc)
+data = browse9.5msc)
 
-m12bin <- glmer(factor(andtre > 0) ~ disthus_175 + distvei2 + skogkategori + treartgruppe9 + beitetrykkr + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+m12bin <- glmer(factor(proplt > 0) ~ disthus_175 + distvei2 + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = binomial(),
-data = browse9.6sc)
+data = browse9.5msc)
 
-m13bin <- glmer(factor(andtre > 0) ~ disthus_350 + distvei2 + skogkategori + treartgruppe9 + beitetrykkr + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+m13bin <- glmer(factor(proplt > 0) ~ disthus_350 + distvei2 + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = binomial(),
-data = browse9.6sc)
+data = browse9.5msc)
 
 # ------------ log selection -----------
 
-pvars <- c(
-           "helling","HOH", "beitetrykkr", "ac")
-browse9.6sc <- browse9.6
-browse9.6sc[pvars] <- lapply(browse9.6sc[pvars],scale)
+pvars <- c("disthus_400",
+           "helling","HOH", "browspres_merged", "ac")
+browse9.5msc <- browse9.5m
+browse9.5msc[pvars] <- lapply(browse9.5msc[pvars],scale)
 
 # "disthus_400", "disthus", "distvei2",
 
-m0abin <- glmer(factor(andtre > 0) ~ log(disthus+1) + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykkr + kant + helling + HOH + I(HOH^2) +  ac +  (1|KOMNR),
+m0abin <- glmer(factor(proplt > 0) ~ log(disthus+1) + log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac +  (1|KOMNR),
             family = binomial(),
-            data = browse9.6sc)
+            data = browse9.5msc)
 
-m0bbin <- glmer(factor(andtre > 0) ~ log(disthus+1) + distvei2 + skogkategori + treartgruppe9 + beitetrykkr + kant + helling + HOH + I(HOH^2) +  ac +  (1|KOMNR),
+m0bbin <- glmer(factor(proplt > 0) ~ log(disthus+1) + distvei2 + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac +  (1|KOMNR),
             family = binomial(),
-            data = browse9.6sc)
+            data = browse9.5msc)
 
-m0cbin <- glmer(factor(andtre > 0) ~ disthus + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykkr + kant + helling + HOH + I(HOH^2) +  ac +  (1|KOMNR),
+m0cbin <- glmer(factor(proplt > 0) ~ disthus + log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac +  (1|KOMNR),
             family = binomial(),
-            data = browse9.6sc)
+            data = browse9.5msc)
 
-m0dbin <- glmer(factor(andtre > 0) ~ disthus_400 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykkr + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+m0dbin <- glmer(factor(proplt > 0) ~ disthus_400 + log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = binomial(),
-data = browse9.6sc) # BEST
+data = browse9.5msc) # BEST
 
 
 ```
@@ -225,7 +226,7 @@ data = browse9.6sc) # BEST
 
 AIC(m1bin, m2bin, m3bin, m4bin, m5bin, m6bin, m7bin, m8bin, m9bin, m10bin, m11bin, m12bin, m13bin)
 
-AIC(m0abin, m0bbin, m0cbin, m0dbin, m8bin)
+AIC(m0dbin, m8bin)
 
 # cut 400 is the thing!
 
@@ -236,48 +237,52 @@ AIC(m0abin, m0bbin, m0cbin, m0dbin, m8bin)
 
 ```{r}
 library(lme4)
-load("processdata/browse9.7.rda")
-load("processdata/browse9.7sc.rda")
+load("processdata/browse9.6.rda")
+load("processdata/browse9.6sc.rda")
 
-pvars <- c("helling","HOH","ac", "beitetrykkr")
-browse9.7sc <- browse9.7
-browse9.7sc[pvars] <- lapply(browse9.7sc[pvars],scale)
+pvars <- c("helling","HOH","ac", "browspres_merged")
+browse9.6sc <- browse9.6
+browse9.6sc[pvars] <- lapply(browse9.6sc[pvars],scale)
 
-save(browse9.7sc, file = "browse9.7sc.rda")
+save(browse9.6sc, file = "browse9.6sc.rda")
 
 
 
-m14bin <- glmer(factor(andtre > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykkr + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+m14bin <- glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = binomial(),
-data = browse9.7sc)
+data = browse9.6sc) # 2nd best with one point difference
 
-m15bin <- glmer(factor(andtre > 0) ~ log(distvei2+1) + treartgruppe9 + beitetrykkr + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
-family = binomial(),
-data = browse9.7sc)
+m14abin <- glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+family = binomial(link = "cloglog"),
+data = browse9.6sc)
 
-m16bin <- glmer(factor(andtre > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykkr + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+m15bin <- glmer(factor(proplt > 0) ~ log(distvei2+1) + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = binomial(),
-data = browse9.7sc) # BEST
+data = browse9.6sc)
 
-m17bin <- glmer(factor(andtre > 0) ~ log(distvei2+1) + treartgruppe9 + beitetrykkr + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+m16bin <- glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = binomial(),
-data = browse9.7sc)
+data = browse9.6sc) # BEST
 
-m18bin <- glmer(factor(andtre > 0) ~ log(distvei2+1) + treartgruppe9 + beitetrykkr + helling + HOH + I(HOH^2) + (1|KOMNR),
+m17bin <- glmer(factor(proplt > 0) ~ log(distvei2+1) + treartgruppe9 + browspres_merged + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = binomial(),
-data = browse9.7sc) 
+data = browse9.6sc)
 
-m19bin <- glmer(factor(andtre > 0) ~ log(distvei2+1) + treartgruppe9 + beitetrykkr + helling + HOH + (1|KOMNR),
+m18bin <- glmer(factor(proplt > 0) ~ log(distvei2+1) + treartgruppe9 + browspres_merged + helling + HOH + I(HOH^2) + (1|KOMNR),
 family = binomial(),
-data = browse9.7sc)
+data = browse9.6sc) 
 
-m20bin <- glmer(factor(andtre > 0) ~ log(distvei2+1) + treartgruppe9 + beitetrykkr + helling + HOH + skogkategori + (1|KOMNR),
+m19bin <- glmer(factor(proplt > 0) ~ log(distvei2+1) + treartgruppe9 + browspres_merged + helling + HOH + (1|KOMNR),
 family = binomial(),
-data = browse9.7sc)
+data = browse9.6sc)
 
-m21bin <- glmer(factor(andtre > 0) ~ log(distvei2+1) + treartgruppe9 + beitetrykkr + helling + HOH + kant + (1|KOMNR),
+m20bin <- glmer(factor(proplt > 0) ~ log(distvei2+1) + treartgruppe9 + browspres_merged + helling + HOH + skogkategori + (1|KOMNR),
 family = binomial(),
-data = browse9.7sc)
+data = browse9.6sc)
+
+m21bin <- glmer(factor(proplt > 0) ~ log(distvei2+1) + treartgruppe9 + browspres_merged + helling + HOH + kant + (1|KOMNR),
+family = binomial(),
+data = browse9.6sc)
 
 ```
 
@@ -288,6 +293,7 @@ summary(m16bin)
 
 library(effects)
 plot(allEffects(m16bin))
+plot(effect("skogkategori", m16bin))
 
 ```
 
@@ -300,86 +306,85 @@ plot(allEffects(m16bin))
 ##### Checking for the cut for disthus (browse9.6)
 ```{r}
 library(glmmTMB)
-load("processdata/browse9.6pos.rda")
+# load("processdata/browse9.6pos.rda")
 
-browse9.6pos <- browse9.6[browse9.6$andtre > 0, ]
-browse9.6pos$andtre <- ifelse(browse9.6pos$andtre == 1, 0.99, browse9.6pos$andtre)
+browse9.5mpos <- browse9.5m[browse9.5m$proplt > 0, ]
+browse9.5mpos$proplt <- ifelse(browse9.5mpos$proplt == 1, 0.99, browse9.5mpos$proplt)
 
 pvars <- c("disthus","disthus_500", "disthus_400", "disthus_1000", "disthus_900", "disthus_800", "disthus_700", "disthus_600", "disthus_160", "disthus_300", "disthus_200", "disthus_175", "disthus_350",
            "distvei2",
-           "helling","HOH", "ac", "beitetrykkr")
-browse9.6possc <- browse9.6pos
-browse9.6possc[pvars] <- lapply(browse9.6possc[pvars],scale)
+           "helling","HOH", "ac", "browspres_merged")
+browse9.5mpossc <- browse9.5mpos
+browse9.5mpossc[pvars] <- lapply(browse9.5mpossc[pvars],scale)
 
-save(browse9.6pos, file = "browse9.6pos.rda")
+save(browse9.5mpossc, file = "browse9.5mpossc.rda")
 
 
-m1beta <- glmmTMB(andtre ~ disthus_1000 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + beitetrykkr + (1|KOMNR),
-            data = browse9.6possc,
+m1beta <- glmmTMB(proplt ~ disthus_1000 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+            data = browse9.5mpossc,
             family = beta_family())
 
-m2beta <- glmmTMB(andtre ~ disthus_900 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + beitetrykkr + (1|KOMNR),
-            data = browse9.6possc,
+m2beta <- glmmTMB(proplt ~ disthus_900 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+            data = browse9.5mpossc,
             family = beta_family())
 
-m3beta <- glmmTMB(andtre ~ disthus_800 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + beitetrykkr + (1|KOMNR),
-            data = browse9.6possc,
+m3beta <- glmmTMB(proplt ~ disthus_800 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+            data = browse9.5mpossc,
             family = beta_family())
 
-m4beta <- glmmTMB(andtre ~ disthus_700 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + beitetrykkr + (1|KOMNR),
-            data = browse9.6possc,
+m4beta <- glmmTMB(proplt ~ disthus_700 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+            data = browse9.5mpossc,
             family = beta_family())
 
-m5beta <- glmmTMB(andtre ~ disthus_600 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + beitetrykkr + (1|KOMNR),
-            data = browse9.6possc,
+m5beta <- glmmTMB(proplt ~ disthus_600 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+            data = browse9.5mpossc,
             family = beta_family())
 
-m6beta <- glmmTMB(andtre ~ disthus_500 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + beitetrykkr + (1|KOMNR),
-            data = browse9.6possc,
+m6beta <- glmmTMB(proplt ~ disthus_500 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+            data = browse9.5mpossc,
             family = beta_family())
 
-m7beta <- glmmTMB(andtre ~ disthus_400 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + beitetrykkr + (1|KOMNR),
-            data = browse9.6possc,
+m7beta <- glmmTMB(proplt ~ disthus_400 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+            data = browse9.5mpossc,
             family = beta_family())
 
-m8beta <- glmmTMB(andtre ~ disthus_300 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + beitetrykkr + (1|KOMNR),
-            data = browse9.6possc,
+m8beta <- glmmTMB(proplt ~ disthus_300 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+            data = browse9.5mpossc,
             family = beta_family())
 
-m10beta <- glmmTMB(andtre ~ disthus_200 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + beitetrykkr + (1|KOMNR),
-            data = browse9.6possc,
+m10beta <- glmmTMB(proplt ~ disthus_200 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+            data = browse9.5mpossc,
             family = beta_family()) # best!
 
-m11beta <- glmmTMB(andtre ~ disthus_160 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + beitetrykkr + (1|KOMNR),
-            data = browse9.6possc,
+m11beta <- glmmTMB(proplt ~ disthus_160 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+            data = browse9.5mpossc,
             family = beta_family())
 
 
 
 # ------ log selection ------
 pvars <- c("distvei2",
-           "helling","HOH", "ac", "beitetrykkr")
-browse9.6possc <- browse9.6pos
-browse9.6possc[pvars] <- lapply(browse9.6possc[pvars],scale)
+           "helling","HOH", "ac", "browspres_merged")
+browse9.5mpossc <- browse9.6pos
+browse9.5mpossc[pvars] <- lapply(browse9.5mpossc[pvars],scale)
 
 # "disthus", "disthus_200","distvei2",
 
-m0abeta <- glmmTMB(andtre ~ disthus + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + beitetrykkr + (1|KOMNR),
-            data = browse9.6possc,
-            family = beta_family()) # 3rd best
-
-m0bbeta <- glmmTMB(andtre ~ disthus + log(distvei2+1) + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + beitetrykkr + (1|KOMNR),
-            data = browse9.6possc,
-            family = beta_family()) # 2nd best, but we want to cut disthus, so choose 3rd best
-
-m0cbeta <- glmmTMB(andtre ~ log(disthus+1) + log(distvei2+1) + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + beitetrykkr + (1|KOMNR),
-            data = browse9.6possc,
-            family = beta_family()) # best, but we want to cut disthus, so choose 2nd best
-
-m0dbeta <- glmmTMB(andtre ~ log(disthus+1) + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + beitetrykkr + (1|KOMNR),
-            data = browse9.6possc,
+m0abeta <- glmmTMB(proplt ~ disthus + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+            data = browse9.5mpossc,
             family = beta_family()) 
 
+m0bbeta <- glmmTMB(proplt ~ disthus_200 + log(distvei2+1) + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+            data = browse9.5mpossc,
+            family = beta_family()) 
+
+m0cbeta <- glmmTMB(proplt ~ log(disthus+1) + log(distvei2+1) + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+            data = browse9.5mpossc,
+            family = beta_family()) 
+
+m0dbeta <- glmmTMB(proplt ~ log(disthus+1) + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+            data = browse9.5mpossc,
+            family = beta_family()) 
 
 
 
@@ -401,38 +406,38 @@ library(glmmTMB)
 load("processdata/browse9.7pos.rda")
 
 pvars <- c(
-           "helling","HOH", "ac", "beitetrykkr")
+           "helling","HOH", "ac", "browspres_merged")
 browse9.7possc <- browse9.7pos
 browse9.7possc[pvars] <- lapply(browse9.7possc[pvars],scale)
 
 save(browse9.7pos, file = "browse9.7pos.rda")
 
 
-m12beta <- glmmTMB(andtre ~ log(distvei2+1) + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + beitetrykkr + (1|KOMNR),
+m12beta <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
             data = browse9.7possc,
             family = beta_family())
 
-m13beta <- glmmTMB(andtre ~ log(distvei2+1) + skogkategori + treartgruppe9 + ac + helling + HOH + I(HOH^2) + beitetrykkr + (1|KOMNR),
+m13beta <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + ac + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
             data = browse9.7possc,
             family = beta_family())
 
-m14beta <- glmmTMB(andtre ~ log(distvei2+1) + skogkategori + treartgruppe9 + kant + helling + HOH + I(HOH^2) + beitetrykkr + (1|KOMNR),
+m14beta <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
             data = browse9.7possc,
             family = beta_family())
 
-m15beta <- glmmTMB(andtre ~ log(distvei2+1) + skogkategori + treartgruppe9 + helling + HOH + I(HOH^2) + beitetrykkr + (1|KOMNR),
+m15beta <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
             data = browse9.7possc,
             family = beta_family()) # 2nd best (has distvei, but doesn't converge)
 
-m16beta <- glmmTMB(andtre ~ log(distvei2+1) + skogkategori + treartgruppe9 + HOH + I(HOH^2) + beitetrykkr + (1|KOMNR),
+m16beta <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
             data = browse9.7possc,
             family = beta_family())
 
-m17beta <- glmmTMB(andtre ~ log(distvei2+1) + skogkategori + treartgruppe9 + kant + HOH + I(HOH^2) + beitetrykkr + (1|KOMNR),
+m17beta <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + kant + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
             data = browse9.7possc,
             family = beta_family())
 
-m18beta <- glmmTMB(andtre ~ skogkategori + treartgruppe9 + HOH + I(HOH^2) + beitetrykkr + (1|KOMNR),
+m18beta <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
             data = browse9.7possc,
             family = beta_family()) # BEST (converges)
 
