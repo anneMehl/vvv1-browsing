@@ -102,7 +102,7 @@ gam1 <- gam(proplt ~ disthus + distvei2 + skogkategori + treartgruppe9 + kant + 
              method = "REML")
 
 gam2 <- gam(proplt ~ s(disthus) + s(distvei2) + skogkategori + treartgruppe9 + kant + helling + HOH + browspres_merged,
-             data = browse9.6,
+             data = browse9.5m,
              method = "REML")
 
 ```
@@ -234,7 +234,7 @@ AIC(m0dbin, m8bin)
 ```
 
 
-
+#### Model selection bin (browse9.6sc)
 ```{r}
 library(lme4)
 load("processdata/browse9.6.rda")
@@ -295,6 +295,13 @@ library(effects)
 plot(allEffects(m16bin))
 plot(effect("skogkategori", m16bin))
 
+save(m16bin, file = "m16bin.rda")
+
+```
+
+```{r}
+browse9.6sc <- browse9.6sc[,c(1,3,7,15:17,19:20,25:26,33,40)]
+save(browse9.6sc, file = "browse9.6sc.rda")
 ```
 
 
@@ -303,7 +310,7 @@ plot(effect("skogkategori", m16bin))
 
 ## Beta - Second part of a hurdle model
 
-##### Checking for the cut for disthus (browse9.6)
+##### Checking for the cut for disthus (browse9.5mpos)
 ```{r}
 library(glmmTMB)
 # load("processdata/browse9.6pos.rda")
@@ -354,105 +361,119 @@ m8beta <- glmmTMB(proplt ~ disthus_300 + distvei2 + skogkategori + treartgruppe9
 
 m10beta <- glmmTMB(proplt ~ disthus_200 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
             data = browse9.5mpossc,
-            family = beta_family()) # best!
+            family = beta_family()) 
 
 m11beta <- glmmTMB(proplt ~ disthus_160 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+            data = browse9.5mpossc,
+            family = beta_family())
+
+m12beta <- glmmTMB(proplt ~ disthus + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
             data = browse9.5mpossc,
             family = beta_family())
 
 
 
 # ------ log selection ------
-pvars <- c("distvei2",
+pvars <- c("disthus_200",
            "helling","HOH", "ac", "browspres_merged")
-browse9.5mpossc <- browse9.6pos
+browse9.5mpossc <- browse9.5mpos
 browse9.5mpossc[pvars] <- lapply(browse9.5mpossc[pvars],scale)
 
 # "disthus", "disthus_200","distvei2",
 
-m0abeta <- glmmTMB(proplt ~ disthus + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+m0abeta <- glmmTMB(proplt ~ distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
             data = browse9.5mpossc,
             family = beta_family()) 
 
-m0bbeta <- glmmTMB(proplt ~ disthus_200 + log(distvei2+1) + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+m0bbeta <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+            data = browse9.5mpossc,
+            family = beta_family()) # Best!
+
+m0cbeta <- glmmTMB(proplt ~ disthus_200 + log(distvei2+1) + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
             data = browse9.5mpossc,
             family = beta_family()) 
 
-m0cbeta <- glmmTMB(proplt ~ log(disthus+1) + log(distvei2+1) + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+m0dbeta <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
             data = browse9.5mpossc,
             family = beta_family()) 
-
-m0dbeta <- glmmTMB(proplt ~ log(disthus+1) + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
-            data = browse9.5mpossc,
-            family = beta_family()) 
-
-
 
 ```
 
 
 ```{r}
-AIC(m1beta, m2beta, m3beta, m4beta, m5beta, m6beta, m7beta, m8beta, m10beta, m11beta)
-# cut 200 is the thing!
+AIC(m1beta, m2beta, m3beta, m4beta, m5beta, m6beta, m7beta, m8beta, m10beta, m11beta, m12beta)
+# all are the same (also not significant) -> I suppose that means that disthus is not important?
 AIC(m0abeta, m0bbeta, m0cbeta, m0dbeta, m10beta)
-# m1pbeta is the thing!
+# m0bbeta best!
 
 
 ```
 
-
+##### Model selection (browse9.5mpos)
 ```{r}
 library(glmmTMB)
-load("processdata/browse9.7pos.rda")
+load("processdata/browse9.5m.rda")
+load("processdata/browse9.5mpos.rda")
+load("processdata/browse9.5mpossc.rda")
+
+browse9.5mpos <- browse9.5m[browse9.5m$proplt > 0, ]
+browse9.5mpos$proplt <- ifelse(browse9.5mpos$proplt == 1, 0.99, browse9.5mpos$proplt)
+
 
 pvars <- c(
            "helling","HOH", "ac", "browspres_merged")
-browse9.7possc <- browse9.7pos
-browse9.7possc[pvars] <- lapply(browse9.7possc[pvars],scale)
+browse9.5mpossc <- browse9.5mpos
+browse9.5mpossc[pvars] <- lapply(browse9.5mpossc[pvars],scale)
 
-save(browse9.7pos, file = "browse9.7pos.rda")
+save(browse9.5mpossc, file = "browse9.5mpossc.rda")
 
 
 m12beta <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
-            data = browse9.7possc,
+            data = browse9.5mpossc,
             family = beta_family())
 
 m13beta <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + ac + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
-            data = browse9.7possc,
-            family = beta_family())
+            data = browse9.5mpossc,
+            family = beta_family()) # 2nd best same AIC as Best, but doesn't converge and is not simplest
 
 m14beta <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
-            data = browse9.7possc,
+            data = browse9.5mpossc,
             family = beta_family())
 
 m15beta <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
-            data = browse9.7possc,
-            family = beta_family()) # 2nd best (has distvei, but doesn't converge)
+            data = browse9.5mpossc,
+            family = beta_family()) # BEST
 
 m16beta <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
-            data = browse9.7possc,
-            family = beta_family())
+            data = browse9.5mpossc,
+            family = beta_family()) # 3rd best and one less AIC than Best, and is simplest
 
 m17beta <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + kant + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
-            data = browse9.7possc,
+            data = browse9.5mpossc,
             family = beta_family())
 
 m18beta <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
-            data = browse9.7possc,
-            family = beta_family()) # BEST (converges)
+            data = browse9.5mpossc,
+            family = beta_family()) 
 
 ```
 
 
 ```{r}
-summary(m12beta)
+summary(m16beta)
 
 AIC(m12beta, m13beta, m14beta, m15beta, m16beta, m17beta, m18beta)
-AIC(m15beta, m18beta)
 
 library(effects)
-plot(allEffects(m18beta))
-plot(allEffects(m15beta))
+plot(allEffects(m16beta))
+plot(effect("skogkategori", m16beta))
+
+save(m16beta, file = "m16beta.rda")
 
 ```
 
+
+```{r}
+browse9.5mpossc <- browse9.5mpossc[,c(1,3,7,15:17,19:20,25:26,40)]
+save(browse9.5mpossc, file = "browse9.5mpossc.rda")
+```
