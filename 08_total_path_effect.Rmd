@@ -49,8 +49,8 @@ load("processdata/browse9.4_house.rda")
 # head(browse9.2_dist)
 
 
-# browse9.4pos <- browse9.4[browse9.4$bt100 > 0, ]
-# browse9.4_house_pos <- browse9.4_house[browse9.4_house$bt100 > 0, ]
+browse9.4pos <- browse9.4[browse9.4$bt100 > 0, ]
+browse9.4_house_pos <- browse9.4_house[browse9.4_house$bt100 > 0, ]
 
 # load("processdata/browse9.3_dist.rda")
 
