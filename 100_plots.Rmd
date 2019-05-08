@@ -102,14 +102,16 @@ ggplot(data = browse9.5, aes(log(andtre+1))) +
 
 hist(log(browse9.5$andtre+1))
 
-hist(browse9.5$andtre, breaks = 1000)
+hist(browse9.5mpossc$disthus_500)
 
 hist(browse9.5sc$andtre)
 
-hist(browse9.6$anttre, breaks = 800)
-hist(log(browse9.6$anttre), breaks = 800)
 
-library(gridExtra)
+ggplot(data = browse9.5m, aes(disthus)) +
+  geom_bar()+
+  theme_classic()
+
+"library(gridExtra)
 grid.arrange(fp1, fp2, fp4, fp6, fp7, fp8, fp9, fp10, fp12, nrow = 3)
 
 
@@ -178,6 +180,7 @@ fpb12 <- ggplot(data = browse9.2pos_dist, aes(tretetthet9_trunc)) +
 ggplot(data = browse9.2pos_dist, aes(tretetthet9_trunc)) +
   geom_bar()+
   theme_classic()
+
 
 library(gridExtra)
 grid.arrange(fpb1, fpb2, fpb4, fpb6, fpb7, fpb8, fpb9, fpb10, fpb12, nrow = 3)
