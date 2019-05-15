@@ -107,11 +107,41 @@ hist(browse9.5mpossc$disthus_500)
 hist(browse9.5sc$andtre)
 
 
-ggplot(data = browse9.5m, aes(disthus)) +
+ggplot(data = browse9.4, aes(distvei2_trunc)) +
+  geom_histogram()+
+  theme_classic()
+
+ggplot(data = browse9.5m, aes(treartgruppe9)) +
   geom_bar()+
   theme_classic()
 
-"library(gridExtra)
+ggplot(data = browse9.5m, aes(skogkategori)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(browse9.5m, aes(x = distvei2, color = treartgruppe9)) +
+  geom_histogram(fill="white", bins = 150)+ 
+  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
+  theme_light()+
+  xlim(0, 500)
+
+ggplot(browse9.6, aes(x = proplt, color = treartgruppe9)) +
+  geom_histogram(fill="white", bins = 150)+ 
+  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
+  theme_light()
+ggplot(browse9.5mpos, aes(x = proplt, color = treartgruppe9)) +
+  geom_histogram(fill="white", bins = 150)+ 
+  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
+  theme_light()
+
+ggplot(browse9.6, aes(x = proplt, color = skogkategori)) +
+  geom_histogram(fill="white", bins = 150)+
+  theme_light()
+ggplot(browse9.5mpos, aes(x = proplt, color = skogkategori)) +
+  geom_histogram(fill="white", bins = 150)+
+  theme_light()
+
+ "library(gridExtra)
 grid.arrange(fp1, fp2, fp4, fp6, fp7, fp8, fp9, fp10, fp12, nrow = 3)
 
 
