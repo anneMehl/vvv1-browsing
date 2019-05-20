@@ -126,14 +126,14 @@ plot.gam(gam2, all.terms = TRUE)
 ```{r}
 # load("processdata/browse9.5sc.rda")
 load("processdata/browse9.5m.rda")
-
+load("processdata/browse9.5msc.rda")
 ```
 
+           "distvei2",
 ```{r}
 library(lme4)
 
 pvars <- c("disthus","disthus_500", "disthus_400", "disthus_1000", "disthus_900", "disthus_800", "disthus_700", "disthus_600", "disthus_160", "disthus_300", "disthus_200", "disthus_175", "disthus_350",
-           "distvei2",
            "helling","HOH", "ac", "browspres_merged")
 browse9.5msc <- browse9.5m
 browse9.5msc[pvars] <- lapply(browse9.5msc[pvars],scale)
@@ -237,14 +237,37 @@ AIC(m0dbin, m8bin)
 #### Model selection bin (browse9.6sc)
 ```{r}
 library(lme4)
+load("processdata/browse9.5msc.rda")
+
+m8bin <- glmer(factor(proplt > 0) ~ disthus_400 + distvei2 + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+family = binomial(),
+data = browse9.5msc)
+
+mhusbin <- glmer(factor(proplt > 0) ~ disthus_400 + log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+family = binomial(),
+data = browse9.5msc) # best
+
+m8bbin <- glmer(factor(proplt > 0) ~ disthus_400 + log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+family = binomial(),
+data = browse9.5msc)
+
+AIC(m8bin, m8abin, m8bbin)
+
+save(mhusbin, file = "mhusbin.rda")
+
+
+
+
+
 load("processdata/browse9.6.rda")
 load("processdata/browse9.6sc.rda")
 
-pvars <- c("helling","HOH","ac", "browspres_merged")
+pvars <- c("disthus_400","helling","HOH","ac", "browspres_merged")
 browse9.6sc <- browse9.6
 browse9.6sc[pvars] <- lapply(browse9.6sc[pvars],scale)
 
 save(browse9.6sc, file = "browse9.6sc.rda")
+
 
 
 
