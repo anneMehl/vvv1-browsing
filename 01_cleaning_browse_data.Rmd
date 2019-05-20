@@ -519,7 +519,7 @@ save(browse_9_dist, file = "browse_9_dist.rda")
 
 
 
-# For browse9.2 (for brwosing pressure response)
+# For browse9.2 (for browsing pressure response)
 
 ##### Data structure -> factor levels
 
@@ -1114,6 +1114,9 @@ nrow(na.omit(browse9.5m))
 
 browse9.5m <- na.omit(browse9.5m)
 
+
+browse9.5msc <- browse9.5msc[,c(1,3,7,15:17,19:20,25:26,33,40)]
+save(browse9.5msc, file = "browse9.5msc.rda")
 
 
 
