@@ -4,7 +4,7 @@ make_modelmatrix <- function(mod, dat, focal, isfactor, nvals, whurdle=c("BP", "
   #set to mean value, or set factors to intercept
   colnms <- colnames(mm)
   
-  if(type=="perc"){# & whurdle=="trees"){
+  if(type=="perc"){
     modframe <- mod$frame
     }else{modframe <- mod@frame}
 
@@ -12,6 +12,7 @@ make_modelmatrix <- function(mod, dat, focal, isfactor, nvals, whurdle=c("BP", "
   fcts <- names(modframe)[sapply(modframe, class)=="factor"]
   nofcts <- names(modframe)[sapply(modframe, class)!="factor"]
   focal <- ifelse((focal=="helling" & whurdle=="trees" & type=="perc"), NA, focal)
+  focal <- ifelse((focal=="disthus_400" & whurdle=="trees" & type=="perc"), NA, focal)
   isfactor <- ifelse(is.na(focal), F, isfactor)
   if (!isfactor & !is.na(focal)) nofcts <- nofcts[!grepl(focal, nofcts)]
   for (i in nofcts){
@@ -38,11 +39,12 @@ make_modelmatrix <- function(mod, dat, focal, isfactor, nvals, whurdle=c("BP", "
 bootstrap_focal <- function(mod, focal, isfactor, nb_btstrp, whurdle=c("BP", "trees")[1], type=c("zero", "perc")[1]){
   if (grepl("distvei", focal)) focal <- paste0("log(", focal, " + 1)")
   coef <- fixef(mod)
-  if (type=="perc") coef <- coef[[1]] #whurdle=="trees" & 
+  if (type=="perc") coef <- coef[[1]] 
   mat <- matrix(coef, nrow=length(coef), ncol=nb_btstrp+1, byrow=F)
   focal <- ifelse((focal=="helling" & whurdle=="trees" & type=="perc"), NA, focal)
+  focal <- ifelse((focal=="disthus_400" & whurdle=="trees" & type=="perc"), NA, focal)
   if (!is.na(focal)){
-    if (type=="perc"){ #whurdle=="trees" & 
+    if (type=="perc"){ 
       ses <- sqrt(diag(as.matrix(vcov(mod))[[1]]))
     }else{ses <- sqrt(diag(as.matrix(vcov(mod))))}
     
@@ -63,7 +65,7 @@ bootstrap_focal <- function(mod, focal, isfactor, nb_btstrp, whurdle=c("BP", "tr
         if (i==1) smpl <- c(0, rnorm(nb_btstrp, mean=0, sd=sess[i]))
         if (i>1) smpl <- rbind(smpl, c(0, rnorm(nb_btstrp, mean=0, sd=sess[i])))
       }
-      mat[c(1, grepl(focal, names(ses))),] <- mat[c(1, grepl(focal, names(ses))),]+smpl
+      mat[c(1, grep(focal, names(ses))),] <- mat[c(1, grep(focal, names(ses))),]+smpl
     }
   } 
   return(mat)
@@ -74,6 +76,7 @@ output_function <- function(pred_smpl, isfactor, xvals, plotit, ylab){
     res <- data.frame(var=xvals, point=pred_smpl[,1], mean=apply(pred_smpl, 1, mean), sd=apply(pred_smpl, 1, sd), 
                       CI025=apply(pred_smpl, 1, quantile, probs=0.025), CI975=apply(pred_smpl, 1, quantile, probs=0.975))
     if (plotit) {
+      #res[,"var"] <- exp(res[,"var"])-1
       plot(res[,"var"], res$point, type="l", lwd=2, xlab=focal, ylab=ylab)
       lines(res[,"var"], res$CI975, col="dark grey")
       lines(res[,"var"], res$CI025, col="dark grey")
@@ -95,19 +98,22 @@ output_function <- function(pred_smpl, isfactor, xvals, plotit, ylab){
 
 #focal: a numeric variable or a factor 
 resp_curve <- function(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=T, nb_btstrp=999){
+  road_upper <- 500 #meter
   require(boot)
   require(nlme)
   
-  focal1 <- c("distvei2_trunc",   "skogkategori", "treartgruppe", "kant", "helling", "HOH_scale", "tretetthet9_trunc")
+  focal1 <- c("distvei2_trunc",   "skogkategori", "treartgruppe", "kant", 
+              "helling", "HOH_scale", "tretetthet9_trunc", "disthus_trunc_cut200_scale")
   focal1 <- focal1[grepl(focal, focal1)]
   focal1 <- ifelse(length(focal1)==0, NA, focal1)
-  focal2 <- c("distvei2",   "skogkategori", "treartgruppe", "helling", "HOH", "browspres_merged")
+  focal2 <- c("distvei2",   "skogkategori", "treartgruppe", "helling", "HOH", 
+              "browspres_merged", "disthus_400")
   focal2 <- focal2[grepl(focal, focal2)]
   focal2 <- ifelse(length(focal2)==0, NA, focal2)
     
   isfactor <- ifelse(is.na(focal1), focal2, focal1) %in% c("skogkategori", "treartgruppe", "kant")
 
-  if (!isfactor) {
+  if ((!isfactor) | focal=="disthus") {
     if (!is.na(focal1)){
       rng2 <- rng1 <- c(min(dat1[,focal1], na.rm=T), max(dat1[,focal1], na.rm=T))
       dat1[c(1:nvals),focal1] <- seq(rng1[1], rng1[2], length.out=nvals)
@@ -121,7 +127,20 @@ resp_curve <- function(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2
     }
   }
 
-  if (which_effect=="hurdle2_only"){ #we get this over with first...
+  if (focal=="disthus") {
+    xvals1 <- seq(-6.714585, 11.10379, length.out=nvals)
+    dat1[c(1:nvals),focal1] <- ifelse(xvals1>0.2791458, 0.2791458, xvals1)
+    xvals2 <- seq(-3.980824, 1.59322, length.out=nvals)
+    dat2[c(1:nvals),focal2] <- ifelse(xvals2>0.2791458, 0.2791458, xvals2)
+  }
+
+  if (focal=="distvei") {
+    rng2 <- rng1 <- c(0, road_upper)
+    dat1[c(1:nvals),focal1] <- seq(rng1[1], rng1[2], length.out=nvals)
+    dat2[c(1:nvals),focal2] <- seq(rng2[1], rng2[2], length.out=nvals)
+  }
+  
+  if (focal=="browspres_merged"){ #we get this over with first...
     mm3 <- make_modelmatrix(mod=zeromod2, dat=dat2, focal=focal2, isfactor=isfactor, nvals=nvals, whurdle="trees", type="zero")
     mm4 <- make_modelmatrix(mod=percmod2, dat=dat2, focal=focal2, isfactor=isfactor, nvals=nvals, whurdle="trees", type="perc")
     
@@ -134,14 +153,12 @@ resp_curve <- function(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2
     
     pred_smpl <- predzero_smpl*predperc_smpl
     
-    if (!isfactor) xvals <- mm3[, grep(focal2, colnames(mm3))]
-    if (isfactor) xvals <- levels(dat2[, grep(focal2, names(dat2))])
+    xvals <- mm3[, grep(focal2, colnames(mm3))]
     res <- output_function(pred_smpl, isfactor, xvals, plotit, ylab="perc. large trees")
-     
   } #done with hurlde2 only
   
   
-  if (which_effect!="hurdle2_only"){
+  if (focal!="browspres_merged"){
     mm1 <- make_modelmatrix(mod=zeromod1, dat=dat1, focal=focal1, isfactor=isfactor, nvals=nvals, whurdle="BP", type="zero")
     mm2 <- make_modelmatrix(mod=percmod1, dat=dat1, focal=focal1, isfactor=isfactor, nvals=nvals, whurdle="BP", type="perc")
     
@@ -160,11 +177,12 @@ resp_curve <- function(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2
         if (!class(xvals)=="numeric") xvals <- xvals[,1]
       }
       if (isfactor) xvals <- levels(dat1[, grep(focal1, names(dat1))])
+      if (focal=="disthus") xvals <- xvals1
       res <- output_function(pred_smpl, isfactor, xvals, plotit, ylab="browsing pressure")
     }
     #end of the first hurdle
   
-    if (which_effect=="total"){
+    if (which_effect!="hurdle1_only"){
       #merge ROS and LAUV
       if (!is.na(focal2)) {
         if (focal2=="treartgruppe") {
@@ -178,6 +196,9 @@ resp_curve <- function(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2
       #include first hurdle results...
       toto <- function(x, mm, pred_smpl){
         mm[,which(colnames(mm)=="browspres_merged")] <- pred_smpl[,x]
+        if (which_effect=="hurdle2_only"){
+          mm[,which(colnames(mm)=="browspres_merged")] <- mean(pred_smpl[,1])
+        }
         return(mm)
       }
       if (focal1=="kant"){
@@ -205,6 +226,7 @@ resp_curve <- function(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2
       }
       if (isfactor) xvals <- levels(dat1[, grep(focal1, names(dat1))])
       if (focal1=="treartgruppe") xvals <- levels(dat2[, grep(focal2, names(dat2))])
+      if (focal=="disthus") xvals <- xvals2
       res <- output_function(pred_smpl, isfactor, xvals, plotit, ylab="perc. large trees")
     }
   }
