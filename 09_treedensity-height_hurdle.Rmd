@@ -234,7 +234,7 @@ AIC(m0dbin, m8bin)
 ```
 
 
-#### Model selection bin (browse9.6sc)
+#### Model selection bin (browse9.5msc and browse9.6sc)
 ```{r}
 library(lme4)
 load("processdata/browse9.5msc.rda")
