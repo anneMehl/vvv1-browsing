@@ -268,7 +268,7 @@ m4bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2_trun
 
 m4abin <- glmer(factor(beitetrykkr > 0) ~ log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + helling + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             family = binomial(),
-            data = browse9.2_dist)
+            data = browse9.2_dist) # BEST
 
 # m5bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2+1) + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*veitype2 + (1|KOMNR),
 #             family = binomial(),
@@ -288,16 +288,6 @@ m8bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2_trun
 
 ```
 
-##### browse9.5
-```{r}
-library(lme4)
-m1qbin <- glmer(factor(beitetrykkr > 0) ~ disthus_160 + log(distvei2+1) + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + andtre + (1|KOMNR),
-            family = binomial(),
-            data = browse9.5sc)
-
-library(effects)
-plot(allEffects(m1qbin))
-```
 
 
 ```{r}
@@ -396,7 +386,7 @@ p4 <- plot_model(m4abin, type = c("eff"), transform = NULL, terms = c("HOH_scale
 p5 <- plot_model(m4abin, type = c("eff"), transform = NULL, terms = c("tretetthet9_trunc_scale [all]"))
 # p7 + theme_sjplot()
 
-p6 <- plot_model(m4abin, type = c("eff"), transform = NULL, terms = "distvei2_trunc [0:2500]")
+p6 <- plot_model(m4abeta2, type = c("eff"), transform = NULL, terms = "distvei2_trunc [0:50]")
 # p6 + theme_sjplot()
 
 p7 <- plot_model(m4abin, type = c("eff"), transform = NULL, terms = "skogkategori")
