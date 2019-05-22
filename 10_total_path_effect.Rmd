@@ -50,20 +50,20 @@ dat1 <- browse9.4
 load(paste0(getwd(), "/prop_large_trees_data_models/house_data_models/browse9.5msc.rda"))
 dat2 <- browse9.5msc
 
-load(paste0(getwd(), "/prop_large_trees_data_models/house_data_models/mhusbin.rda"))
-zeromod2 <- mhusbin
+load(paste0(getwd(), "/prop_large_trees_data_models/house_data_models/mhusabin.rda"))
+zeromod2 <- mhusabin
 
-load(paste0(getwd(), "/prop_large_trees_data_models/house_data_models/m16beta.rda"))
-percmod2 <- m16beta
+load(paste0(getwd(), "/prop_large_trees_data_models/house_data_models/m16abeta.rda"))
+percmod2 <- m16abeta
 
 
 ## roads
-load(paste0(getwd(), "/prop_large_trees_data_models/m16bin.rda"))
-zeromod2 <- m16bin
+load(paste0(getwd(), "/prop_large_trees_data_models/m16cbin.rda"))
+zeromod2 <- m16cbin
 # summary(zeromod2)
 
-load(paste0(getwd(), "/prop_large_trees_data_models/m16beta.rda"))
-percmod2 <- m16beta
+load(paste0(getwd(), "/prop_large_trees_data_models/m16abeta.rda"))
+percmod2 <- m16abeta
 # summary(percmod2)
 
 load(paste0(getwd(), "/prop_large_trees_data_models/browse9.6sc.rda"))
@@ -78,12 +78,21 @@ dat2 <- browse9.6sc
 source("function_resp_curve.R")
 
 (focal = c("disthus", "distvei", "skogkategori", "treartgruppe", "kant", 
-           "helling", "HOH", "tretetthet", "browspres_merged")[2])
+           "helling", "HOH", "tretetthet", "browspres_merged")[6])
 
 ```
 
 
 #### Browsing pressure hurdle
+```{r}
+
+source("function_resp_curve.R")
+
+(focal = c("disthus", "distvei", "skogkategori", "treartgruppe", "kant", 
+           "helling", "HOH", "tretetthet", "browspres_merged")[1])
+```
+
+
 ```{R}
 
 h1_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
@@ -115,6 +124,13 @@ h1_tretetthet <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, per
 
 #### Trees hurdle
 ```{r}
+source("function_resp_curve.R")
+
+(focal = c("disthus", "distvei", "skogkategori", "treartgruppe", "kant", 
+           "helling", "HOH", "tretetthet", "browspres_merged")[1])
+```
+
+```{r}
 
 h2_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
                          which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
@@ -140,6 +156,13 @@ h2_browse <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod
 
 
 #### Total and direct effects
+```{r}
+source("function_resp_curve.R")
+
+(focal = c("disthus", "distvei", "skogkategori", "treartgruppe", "kant", 
+           "helling", "HOH", "tretetthet", "browspres_merged")[9])
+```
+
 ```{r}
 
 tt_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
@@ -192,15 +215,16 @@ h1_hoh$var <- h1_hoh$var * 244.7748 + 361.8423
 # Trees
 h2_disthus$var <- h2_disthus$var * 88.5 + 359
 h2_distvei$var <- exp(h2_distvei$var)-1
-h2_hell$var <- h2_hell$var * 19.4 + 18.7
+# h2_hell$var <- h2_hell$var * 19.4 + 18.7
 h2_hoh$var <- h2_hoh$var * 243 + 407
 
 
 # Total
-tt_distvei$var <- exp(tt_distvei$var)-1
-tt_hell$var <- tt_hell$var * 19.4 + 18.7
-tt_hoh$var <- tt_hoh$var * 243 + 407
 tt_disthus$var <- tt_disthus$var * 88.5 + 359
+tt_distvei$var <- exp(tt_distvei$var)-1
+# tt_hell$var <- tt_hell$var * 19.4 + 18.7
+tt_hoh$var <- tt_hoh$var * 243 + 407
+
 
 ```
 
@@ -213,7 +237,7 @@ tt_disthus$var <- tt_disthus$var * 88.5 + 359
 library(ggplot2)
 
 
-# par(mfrow=c(3,3))
+
 bp_disthus <- ggplot(data = h1_disthus, aes(var, point)) +
   geom_line(colour = "#009292", linetype = 1, size = 1)+
   geom_ribbon(aes(ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
@@ -295,6 +319,7 @@ bp_tretetthet <- ggplot(data = h1_tretetthet,aes(var, point)) +
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nTree density") +
   ylab("Browsing pressure (%)\n")
+
 ```
 
 
@@ -321,6 +346,7 @@ t_distvei <- ggplot(data = h2_distvei, aes(var, point)) +
   xlab("\nDistance to road (m)") + 
   ylab("Large trees (%)\n")+
   scale_x_continuous(limits = c(0, 500))
+
 
 
 t_skogkat <- ggplot(data = h2_skogkat,aes(var, point)) +
@@ -372,8 +398,7 @@ t_browse <- ggplot(data = h2_browse,aes(var, point)) +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nBrowsing pressure") +
-  ylab("Large trees (%)\n")+
-  scale_x_continuous(limits = c(0, 40))
+  ylab("Large trees (%)\n")
 ```
 
 
@@ -497,8 +522,7 @@ td_browse <- ggplot() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   scale_color_manual(name = "Effect on large \ntree %", 
-                     values = c("total" = "#009292", "direct" = "#004949"))+
-  scale_x_continuous(limits = c(0, 40))
+                     values = c("total" = "#009292", "direct" = "#004949"))
 
 ```
 
@@ -509,13 +533,27 @@ library(gridExtra)
 
 grid.arrange(bp_tretetthet, bp_distvei, bp_hell, bp_hoh, bp_kant, bp_skogkat, 
              bp_treart,
-             nrow = 3, ncol = 3) # bp_disthus, 
+             nrow = 3, ncol = 3) 
+
+grid.arrange(bp_disthus, bp_tretetthet, bp_distvei, bp_hell, bp_hoh, bp_kant, bp_skogkat, 
+             bp_treart,
+             nrow = 3, ncol = 3) # with disthus
+
 
 grid.arrange(t_browse, t_distvei, t_hell, t_hoh, t_skogkat, 
              t_treart,
-             nrow = 3, ncol = 3) # t_disthus,
+             nrow = 3, ncol = 3) 
+
+grid.arrange(t_disthus,t_browse, t_distvei, t_hell, t_hoh, t_skogkat, 
+             t_treart,
+             nrow = 3, ncol = 3) # with disthus
+
 
 grid.arrange(td_distvei, td_hell, td_kant, td_skogkat, td_treart, td_tretetthet, td_browse, td_hoh,
-             nrow = 3, ncol = 3) # td_disthus, 
+             nrow = 3, ncol = 3) 
+
+grid.arrange(td_disthus,td_distvei, td_hell, td_kant, td_skogkat, td_treart, td_tretetthet, td_browse, td_hoh,
+             nrow = 3, ncol = 3) # with disthus 
+
 ```
 
