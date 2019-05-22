@@ -215,7 +215,7 @@ resp_curve <- function(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2
       predzero_smpl <- do.call("cbind", lpredzero_smpl)
       
       percmat2 <- bootstrap_focal(mod=percmod2, focal=focal2, isfactor=isfactor, nb_btstrp=nb_btstrp, whurdle="trees", type="perc")
-      lpredperc_smpl <- lapply(lmm4, function(x, mat){inv.logit(x %*% mat)*100}, mat=percmat2)
+      lpredperc_smpl <- lapply(lmm4, function(x, mat){inv.logit(x %*% mat)*100}, mat=percmat2) #*100
       predperc_smpl <- do.call("cbind", lpredperc_smpl)
       
       pred_smpl <- predzero_smpl*predperc_smpl
