@@ -1,0 +1,159 @@
+---
+title: "09_total_path_effect"
+author: "anne"
+date: "29 august 2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## Load data and models
+```{r}
+load("processdata/browse9.4.rda")
+load("processdata/browse9.4_house.rda")
+```
+
+```{r}
+library(lme4)
+library(glmmTMB)
+```
+
+
+## Browsing pressure
+#### Houses
+```{r}
+load(paste0(getwd(), "/browsing_pressure_data_models/house_data_models/m1kbin2.rda"))
+zeromod1 <- m1kbin2
+
+load(paste0(getwd(), "/browsing_pressure_data_models/house_data_models/m1ibeta2.rda"))
+percmod1 <- m1ibeta2
+
+load(paste0(getwd(), "/browsing_pressure_data_models/house_data_models/browse9.4_house.rda"))
+dat1 <- browse9.4_house
+```
+
+#### Roads
+```{r}
+load(paste0(getwd(), "/browsing_pressure_data_models/m4abin2.rda"))
+zeromod1 <- m4abin2
+# summary(zeromod1)
+
+load(paste0(getwd(), "/browsing_pressure_data_models/m4abeta2.rda"))
+percmod1 <- m4abeta2 
+# summary(percmod1)
+
+load(paste0(getwd(), "/browsing_pressure_data_models/browse9.4.rda"))
+# head(browse9.4)
+dat1 <- browse9.4
+```
+
+
+
+## Recruits
+#### Houses
+```{r}
+load(paste0(getwd(), "/prop_large_trees_data_models/house_data_models/browse9.5msc.rda"))
+dat2 <- browse9.5msc
+
+load(paste0(getwd(), "/prop_large_trees_data_models/house_data_models/mhusabin.rda"))
+zeromod2 <- mhusabin
+
+load(paste0(getwd(), "/prop_large_trees_data_models/house_data_models/m16abeta.rda"))
+percmod2 <- m16abeta
+```
+
+#### Roads
+```{r}
+load(paste0(getwd(), "/prop_large_trees_data_models/m16cbin.rda"))
+zeromod2 <- m16cbin
+# summary(zeromod2)
+
+load(paste0(getwd(), "/prop_large_trees_data_models/m16abeta.rda"))
+percmod2 <- m16abeta
+# summary(percmod2)
+
+load(paste0(getwd(), "/prop_large_trees_data_models/browse9.6sc.rda"))
+# head(browse9.6sc)
+dat2 <- browse9.6sc
+```
+
+
+
+
+## Load and run function
+```{r}
+source("function_resp_curve.R")
+```
+
+```{r}
+(focal = c("distvei", "skogkategori", "treartgruppe", "kant", 
+           "helling", "HOH", "tretetthet", "browspres_merged", "disthus")[9])
+(focal = c("distvei", "skogkategori", "treartgruppe", "kant", 
+           "helling", "HOH", "tretetthet", "browspres_merged", "disthus")[9])
+```
+
+#### Run function for the different models/ focals and SAVE them
+```{r}
+resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+           which_effect=c("hurdle1_only", "hurdle2_only", "total")[1], nvals=100, plotit=T, nb_btstrp=99)
+
+resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+           which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=T, nb_btstrp=99)
+
+resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+           which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=T, nb_btstrp=99)
+```
+#### Save function data!
+```{r}
+save(hurdle_disthus2, file = "hurdle_disthus2.rda")
+
+
+```
+
+
+
+
+## load function data
+```{r}
+load("output/hurdle_disthus2.rda")
+load("output/hurdle_distvei.rda")
+load("output/hurdle_skogkat.rda")
+load("output/hurdle_kant.rda")
+load("output/hurdle_treart.rda")
+load("output/hurdle_hell.rda")
+load("output/hurdle_hoh.rda")
+load("output/hurdle_tretett.rda")
+
+load("output/total_disthus.rda")
+load("output/total_distvei.rda")
+load("output/total_skogkat.rda")
+load("output/total_kant.rda")
+load("output/total_treart.rda")
+load("output/total_hell.rda")
+
+load("output/direct_disthus.rda")
+load("output/direct_distvei.rda")
+load("output/direct_skogkat.rda")
+load("output/direct_kant.rda")
+load("output/direct_treart.rda")
+load("output/direct_hell.rda")
+load("output/direct_beite.rda")
+
+
+```
+
+
+## Re-scale
+```{r}
+h1_disthus$var <- h1_disthus$var * 27.71453 + 192.2636
+h1_distvei$var <- exp(h1_distvei$var)-1
+h1_hoh$var <- h1_hoh$var * 244.7748 + 361.8423
+
+
+h2_distvei$var <- exp(h2_distvei$var)-1
+```
+
