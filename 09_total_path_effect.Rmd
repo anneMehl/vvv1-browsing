@@ -94,7 +94,7 @@ source("function_resp_curve.R")
 
 ```{r}
 (focal = c("distvei", "skogkategori", "treartgruppe", "kant", 
-           "helling", "HOH", "tretetthet", "browspres_merged", "disthus")[8])
+           "helling", "HOH", "tretetthet", "browspres_merged", "disthus")[9])
 
 ```
 
@@ -106,13 +106,13 @@ bp_tretett <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmo
 recruit_beite <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
 
-total_beite <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+total_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=99)
 ```
 
 #### Save function data!
 ```{r}
-save(bp_tretett, file = "bp_tretett.rda")
+save(total_disthus, file = "total_disthus.rda")
 ```
 
 
@@ -122,30 +122,34 @@ save(bp_tretett, file = "bp_tretett.rda")
 ```{r}
 # Browsing pressure
 load("output/final_function_outputs/bp_disthus.rda")
-load("output/hurdle_distvei.rda")
-load("output/hurdle_skogkat.rda")
-load("output/hurdle_kant.rda")
-load("output/hurdle_treart.rda")
-load("output/hurdle_hell.rda")
-load("output/hurdle_hoh.rda")
-load("output/hurdle_tretett.rda")
+load("output/final_function_outputs/bp_distvei.rda")
+load("output/final_function_outputs/bp_skogkat.rda")
+load("output/final_function_outputs/bp_kant.rda")
+load("output/final_function_outputs/bp_treart.rda")
+load("output/final_function_outputs/bp_hell.rda")
+load("output/final_function_outputs/bp_hoh.rda")
+load("output/final_function_outputs/bp_tretett.rda")
 
 # Recruits
 load("output/final_function_outputs/recruit_disthus.rda")
-load("output/total_distvei.rda")
-load("output/total_skogkat.rda")
-load("output/total_kant.rda")
-load("output/total_treart.rda")
-load("output/total_hell.rda")
+load("output/final_function_outputs/recruit_distvei.rda")
+load("output/final_function_outputs/recruit_skogkat.rda")
+load("output/final_function_outputs/recruit_kant.rda")
+load("output/final_function_outputs/recruit_treart.rda")
+load("output/final_function_outputs/recruit_hell.rda")
+load("output/final_function_outputs/recruit_beite.rda")
+load("output/final_function_outputs/recruit_hoh.rda")
 
 # Total
 load("output/final_function_outputs/total_disthus.rda")
-load("output/direct_distvei.rda")
-load("output/direct_skogkat.rda")
-load("output/direct_kant.rda")
-load("output/direct_treart.rda")
-load("output/direct_hell.rda")
-load("output/direct_beite.rda")
+load("output/final_function_outputs/total_distvei.rda")
+load("output/final_function_outputs/total_skogkat.rda")
+load("output/final_function_outputs/total_kant.rda")
+load("output/final_function_outputs/total_treart.rda")
+load("output/final_function_outputs/total_hell.rda")
+load("output/final_function_outputs/total_beite.rda")
+load("output/final_function_outputs/total_tretett.rda")
+load("output/final_function_outputs/total_hoh.rda")
 
 
 ```
@@ -171,9 +175,12 @@ bp_hoh$var <- bp_hoh$var * 244.7748 + 361.8423
 
 recruit_distvei$var <- exp(recruit_distvei$var)-1
 
+recruit_hoh$var <- recruit_hoh$var * 244.7748 + 361.8423
 
 
 total_distvei$var <- exp(total_distvei$var)-1
+
+total_hoh$var <- total_hoh$var * 244.7748 + 361.8423
 
 ```
 
@@ -324,6 +331,19 @@ ph_hell <- ggplot(data = bp_hell,aes(var, point)) +
   scale_y_continuous(limits = c(10, 30), breaks =  seq(from = 10, to = 30, by = 5))
 
 
+pt_hoh <- ggplot() + 
+  geom_line(data = total_hoh, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = total_hoh, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  geom_line(data = recruit_hoh, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = recruit_hoh, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  xlab("\nAltitude (%)") + 
+  ylab("Recruits (%)\n") +
+  theme_light()+
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
+                     values = c("total" = "#009292", "direct" = "#004949"))
+
 ph_hoh <- ggplot(data = bp_hoh,aes(var, point)) +
   geom_line(colour = "#009292", linetype = 1, size = 1)+
   geom_ribbon(aes(ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
@@ -333,6 +353,18 @@ ph_hoh <- ggplot(data = bp_hoh,aes(var, point)) +
   xlab("\nAltitude (m)") + 
   ylab("Browsing pressure (%)\n")+
   scale_y_continuous(limits = c(10, 30), breaks =  seq(from = 10, to = 30, by = 5))
+
+
+pt_tretett <- ggplot() + 
+  geom_line(data = total_tretett, aes(var, point, color = "indirect"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = total_tretett, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  xlab("\nTree density (%)") + 
+  ylab("Recruits (%)\n") +
+  theme_light()+
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
+                     values = c("indirect" = "#009292"))
 
 
 ph_tretett <- ggplot(data = bp_tretett,aes(var, point)) +
@@ -369,10 +401,10 @@ pt_beite <- ggplot() +
 
 library(gridExtra)
 grid.arrange(ph_treart, ph_disthus, ph_distvei, ph_hell, ph_hoh, ph_kant, ph_skogkat,  ph_tretett,
-          nrow = 2, ncol = 4)
+          nrow = 4, ncol = 2)
 
-grid.arrange(pt_disthus, pt_distvei, pt_hell, pt_kant, pt_skogkat, pt_treart, pt_beite,
-          nrow = 2, ncol = 4)
+grid.arrange(pt_disthus, pt_distvei, pt_beite, pt_treart, pt_skogkat, pt_hell, pt_hoh, pt_kant, pt_tretett,
+          nrow = 5, ncol = 2)
 
 ```
 
