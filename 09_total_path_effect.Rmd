@@ -3,6 +3,8 @@ title: "09_total_path_effect"
 author: "anne"
 date: "29 august 2019"
 output: word_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -26,27 +28,27 @@ library(glmmTMB)
 ## Browsing pressure
 #### Houses
 ```{r}
-load(paste0(getwd(), "/browsing_pressure_data_models/house_data_models/m1kbin2.rda"))
+load("output/m1kbin2.rda")
 zeromod1 <- m1kbin2
 
-load(paste0(getwd(), "/browsing_pressure_data_models/house_data_models/m1ibeta2.rda"))
+load("output/m1ibeta2.rda")
 percmod1 <- m1ibeta2
 
-load(paste0(getwd(), "/browsing_pressure_data_models/house_data_models/browse9.4_house.rda"))
+load("processdata/browse9.4_house.rda")
 dat1 <- browse9.4_house
 ```
 
 #### Roads
 ```{r}
-load(paste0(getwd(), "/browsing_pressure_data_models/m4abin2.rda"))
+load("output/m4abin2.rda")
 zeromod1 <- m4abin2
 # summary(zeromod1)
 
-load(paste0(getwd(), "/browsing_pressure_data_models/m4abeta2.rda"))
+load("output/m4abeta2.rda")
 percmod1 <- m4abeta2 
 # summary(percmod1)
 
-load(paste0(getwd(), "/browsing_pressure_data_models/browse9.4.rda"))
+load("processdata/browse9.4.rda")
 # head(browse9.4)
 dat1 <- browse9.4
 ```
@@ -56,27 +58,28 @@ dat1 <- browse9.4
 ## Recruits
 #### Houses
 ```{r}
-load(paste0(getwd(), "/prop_large_trees_data_models/house_data_models/browse9.5msc.rda"))
-dat2 <- browse9.5msc
-
-load(paste0(getwd(), "/prop_large_trees_data_models/house_data_models/mhusabin.rda"))
+load("output/mhusabin.rda")
 zeromod2 <- mhusabin
 
-load(paste0(getwd(), "/prop_large_trees_data_models/house_data_models/m16abeta.rda"))
+load("output/m16abeta.rda")
 percmod2 <- m16abeta
+
+load("processdata/browse9.5msc.rda")
+dat2 <- browse9.5msc
+
 ```
 
 #### Roads
 ```{r}
-load(paste0(getwd(), "/prop_large_trees_data_models/m16cbin.rda"))
+load("output/m16cbin.rda")
 zeromod2 <- m16cbin
 # summary(zeromod2)
 
-load(paste0(getwd(), "/prop_large_trees_data_models/m16abeta.rda"))
+load("output/m16abeta.rda")
 percmod2 <- m16abeta
 # summary(percmod2)
 
-load(paste0(getwd(), "/prop_large_trees_data_models/browse9.6sc.rda"))
+load("processdata/browse9.6sc.rda")
 # head(browse9.6sc)
 dat2 <- browse9.6sc
 ```
@@ -91,27 +94,25 @@ source("function_resp_curve.R")
 
 ```{r}
 (focal = c("distvei", "skogkategori", "treartgruppe", "kant", 
-           "helling", "HOH", "tretetthet", "browspres_merged", "disthus")[9])
-(focal = c("distvei", "skogkategori", "treartgruppe", "kant", 
-           "helling", "HOH", "tretetthet", "browspres_merged", "disthus")[9])
+           "helling", "HOH", "tretetthet", "browspres_merged", "disthus")[8])
+
 ```
 
 #### Run function for the different models/ focals and SAVE them
 ```{r}
-resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
-           which_effect=c("hurdle1_only", "hurdle2_only", "total")[1], nvals=100, plotit=T, nb_btstrp=99)
+bp_tretett <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+           which_effect=c("hurdle1_only", "hurdle2_only", "total")[1], nvals=100, plotit=F, nb_btstrp=99)
 
-resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
-           which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=T, nb_btstrp=99)
+recruit_beite <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+           which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
 
-resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
-           which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=T, nb_btstrp=99)
+total_beite <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+           which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=99)
 ```
+
 #### Save function data!
 ```{r}
-save(hurdle_disthus2, file = "hurdle_disthus2.rda")
-
-
+save(bp_tretett, file = "bp_tretett.rda")
 ```
 
 
@@ -119,7 +120,8 @@ save(hurdle_disthus2, file = "hurdle_disthus2.rda")
 
 ## load function data
 ```{r}
-load("output/hurdle_disthus2.rda")
+# Browsing pressure
+load("output/final_function_outputs/bp_disthus.rda")
 load("output/hurdle_distvei.rda")
 load("output/hurdle_skogkat.rda")
 load("output/hurdle_kant.rda")
@@ -128,14 +130,16 @@ load("output/hurdle_hell.rda")
 load("output/hurdle_hoh.rda")
 load("output/hurdle_tretett.rda")
 
-load("output/total_disthus.rda")
+# Recruits
+load("output/final_function_outputs/recruit_disthus.rda")
 load("output/total_distvei.rda")
 load("output/total_skogkat.rda")
 load("output/total_kant.rda")
 load("output/total_treart.rda")
 load("output/total_hell.rda")
 
-load("output/direct_disthus.rda")
+# Total
+load("output/final_function_outputs/total_disthus.rda")
 load("output/direct_distvei.rda")
 load("output/direct_skogkat.rda")
 load("output/direct_kant.rda")
@@ -155,12 +159,22 @@ load("output/direct_beite.rda")
 # d$s.x * attr(d$s.x, 'scaled:scale') + attr(d$s.x, 'scaled:center')
 
 
-h1_disthus$var <- h1_disthus$var * 27.71453 + 192.2636
-h1_distvei$var <- exp(h1_distvei$var)-1
-h1_hoh$var <- h1_hoh$var * 244.7748 + 361.8423
+bp_disthus$var <- bp_disthus$var * 27.71453 + 192.2636
+recruit_disthus$var <- recruit_disthus$var * 27.71453 + 192.2636
+total_disthus$var <- total_disthus$var * 27.71453 + 192.2636
 
 
-h2_distvei$var <- exp(h2_distvei$var)-1
+bp_distvei$var <- exp(bp_distvei$var)-1
+
+bp_hoh$var <- bp_hoh$var * 244.7748 + 361.8423
+
+
+recruit_distvei$var <- exp(recruit_distvei$var)-1
+
+
+
+total_distvei$var <- exp(total_distvei$var)-1
+
 ```
 
 
@@ -172,10 +186,10 @@ h2_distvei$var <- exp(h2_distvei$var)-1
 library(ggplot2)
 
 pt_disthus <- ggplot() + 
-  geom_line(data = total_disthus2, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = total_disthus2, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
-  geom_line(data = direct_disthus, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = direct_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  geom_line(data = total_disthus, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = total_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  geom_line(data = recruit_disthus, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = recruit_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   xlab("\nDistance to house (m)") + 
   ylab("Recruits (%)\n") +
   theme_light()+
@@ -184,7 +198,7 @@ pt_disthus <- ggplot() +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
                      values = c("total" = "#009292", "direct" = "#004949"))
 
-ph_disthus <- ggplot(data = hurdle_disthus2, aes(var, point)) +
+ph_disthus <- ggplot(data = bp_disthus, aes(var, point)) +
   geom_line(colour = "#009292", linetype = 1, size = 1)+
   geom_ribbon(aes(ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   theme_light() +
@@ -192,13 +206,13 @@ ph_disthus <- ggplot(data = hurdle_disthus2, aes(var, point)) +
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nDistance to house (m)") + 
   ylab("Browsing pressure (%)\n") +
-  scale_y_continuous(limits = c(10, 30), breaks =  seq(from = 10, to = 30, by = 5))
+  scale_y_continuous(limits = c(10, 25), breaks =  seq(from = 10, to = 25, by = 5))
 
 pt_distvei <- ggplot() + 
   geom_line(data = total_distvei, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = total_distvei, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
-  geom_line(data = direct_distvei, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = direct_distvei, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  geom_line(data = recruit_distvei, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = recruit_distvei, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   xlab("\nDistance to road (m)") + 
   ylab("Recruits (%)\n") +
   theme_light()+
@@ -207,7 +221,7 @@ pt_distvei <- ggplot() +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
                      values = c("total" = "#009292", "direct" = "#004949"))
 
-ph_distvei <- ggplot(data = hurdle_distvei, aes(var, point)) +
+ph_distvei <- ggplot(data = bp_distvei, aes(var, point)) +
   geom_line(colour = "#009292", linetype = 1, size = 1)+
   geom_ribbon(aes(ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   theme_light() +
@@ -220,7 +234,7 @@ ph_distvei <- ggplot(data = hurdle_distvei, aes(var, point)) +
 
 pt_skogkat <- ggplot() +
   geom_pointrange(data = total_skogkat, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "total"), size = 1) +
-  geom_pointrange(data = direct_skogkat, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "direct"), size = 1) +
+  geom_pointrange(data = recruit_skogkat, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "direct"), size = 1) +
   theme_light() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
@@ -230,7 +244,7 @@ pt_skogkat <- ggplot() +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
                      values = c("total" = "#009292", "direct" = "#004949"))
 
-ph_skogkat <- ggplot(data = hurdle_skogkat,aes(var, point)) +
+ph_skogkat <- ggplot(data = bp_skogkat,aes(var, point)) +
   geom_pointrange(aes(ymin = CI025, ymax = CI975), colour = "#009292", size = 1) +
   theme_light() +
   theme(axis.text = element_text(size = 10),
@@ -243,7 +257,7 @@ ph_skogkat <- ggplot(data = hurdle_skogkat,aes(var, point)) +
 
 pt_treart <- ggplot() +
   geom_pointrange(data = total_treart, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "total"), size = 1) +
-  geom_pointrange(data = direct_treart, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "direct"), size = 1) +
+  geom_pointrange(data = recruit_treart, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "direct"), size = 1) +
   theme_light() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
@@ -253,7 +267,7 @@ pt_treart <- ggplot() +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
                      values = c("total" = "#009292", "direct" = "#004949"))
 
-ph_treart <- ggplot(data = hurdle_treart,aes(var, point)) +
+ph_treart <- ggplot(data = bp_treart,aes(var, point)) +
   geom_pointrange(aes(ymin = CI025, ymax = CI975), colour = "#009292", size = 1) +
   theme_light() +
   theme(axis.text = element_text(size = 10),
@@ -266,7 +280,6 @@ ph_treart <- ggplot(data = hurdle_treart,aes(var, point)) +
 
 pt_kant <- ggplot() +
   geom_pointrange(data = total_kant, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "total"), size = 1) +
-  geom_pointrange(data = direct_kant, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "direct"), size = 1) +
   theme_light() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
@@ -276,7 +289,7 @@ pt_kant <- ggplot() +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
                      values = c("total" = "#009292", "direct" = "#004949"))
 
-ph_kant <- ggplot(data = hurdle_kant, aes(var, point)) +
+ph_kant <- ggplot(data = bp_kant, aes(var, point)) +
   geom_pointrange(aes(ymin = CI025, ymax = CI975), colour = "#009292", size = 1) +
   theme_light() +
   theme(axis.text = element_text(size = 10),
@@ -290,8 +303,8 @@ ph_kant <- ggplot(data = hurdle_kant, aes(var, point)) +
 pt_hell <- ggplot() + 
   geom_line(data = total_hell, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = total_hell, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
-  geom_line(data = direct_hell, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = direct_hell, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  geom_line(data = recruit_hell, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = recruit_hell, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   xlab("\nSlope (%)") + 
   ylab("Recruits (%)\n") +
   theme_light()+
@@ -300,7 +313,7 @@ pt_hell <- ggplot() +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
                      values = c("total" = "#009292", "direct" = "#004949"))
 
-ph_hell <- ggplot(data = hurdle_hell,aes(var, point)) +
+ph_hell <- ggplot(data = bp_hell,aes(var, point)) +
   geom_line(colour = "#009292", linetype = 1, size = 1)+
   geom_ribbon(aes(ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   theme_light() +
@@ -311,7 +324,7 @@ ph_hell <- ggplot(data = hurdle_hell,aes(var, point)) +
   scale_y_continuous(limits = c(10, 30), breaks =  seq(from = 10, to = 30, by = 5))
 
 
-ph_hoh <- ggplot(data = hurdle_hoh,aes(var, point)) +
+ph_hoh <- ggplot(data = bp_hoh,aes(var, point)) +
   geom_line(colour = "#009292", linetype = 1, size = 1)+
   geom_ribbon(aes(ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   theme_light() +
@@ -322,7 +335,7 @@ ph_hoh <- ggplot(data = hurdle_hoh,aes(var, point)) +
   scale_y_continuous(limits = c(10, 30), breaks =  seq(from = 10, to = 30, by = 5))
 
 
-ph_tretett <- ggplot(data = hurdle_tretett,aes(var, point)) +
+ph_tretett <- ggplot(data = bp_tretett,aes(var, point)) +
   geom_line(colour = "#009292", linetype = 1, size = 1)+
   geom_ribbon(aes (ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   theme_light() +
@@ -334,27 +347,35 @@ ph_tretett <- ggplot(data = hurdle_tretett,aes(var, point)) +
 
 
 pt_beite <- ggplot() + 
-  geom_line(data = direct_beite, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = direct_beite, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
-  xlab("\nbrowsing pressure (%)") + 
+  geom_line(data = total_beite, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = total_beite, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2)+ 
+  geom_line(data = recruit_beite, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = recruit_beite, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  xlab("\nBrowsing pressure (%)") + 
   ylab("Recruits (%)\n") +
   theme_light()+
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
                      values = c("total" = "#009292", "direct" = "#004949"))
+
+
+```
+#### Plotgrid
+```{r}
 # library(cowplot)
 # plot_grid(p1, p2, p3, p4, p5, p6, p7, p8,
 #           nrow = 3, ncol = 3)
 
 library(gridExtra)
-grid.arrange(ph_tretett, ph_disthus, ph_distvei, ph_hell, ph_hoh, ph_kant, ph_skogkat, ph_treart,
-          nrow = 3, ncol = 3)
+grid.arrange(ph_treart, ph_disthus, ph_distvei, ph_hell, ph_hoh, ph_kant, ph_skogkat,  ph_tretett,
+          nrow = 2, ncol = 4)
 
 grid.arrange(pt_disthus, pt_distvei, pt_hell, pt_kant, pt_skogkat, pt_treart, pt_beite,
-          nrow = 3, ncol = 3)
-
+          nrow = 2, ncol = 4)
 
 ```
+
+
 
 "#004949", "#009292"
