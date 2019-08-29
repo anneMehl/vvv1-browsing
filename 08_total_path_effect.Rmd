@@ -548,6 +548,7 @@ load("output/total_kant.rda")
 load("output/total_treart.rda")
 load("output/total_hell.rda")
 
+load("output/direct_disthus.rda")
 load("output/direct_distvei.rda")
 load("output/direct_skogkat.rda")
 load("output/direct_kant.rda")
@@ -562,6 +563,7 @@ load("output/direct_beite.rda")
 ## rescale
 ```{r}
 
+load("processdata/browse9.2.rda")
 
 attributes(browse9.2$HOH_scale)
 attributes(browse9.2$disthus_trunc_cut200_scale)
@@ -598,11 +600,11 @@ pt_disthus <- ggplot() +
   geom_line(data = direct_disthus, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = direct_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   xlab("\nDistance to house (m)") + 
-  ylab("log(Tree density)\n") +
+  ylab("Recruits (%)\n") +
   theme_light()+
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
-  scale_color_manual(name = "Effect on tree\ndensity", 
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
                      values = c("total" = "#009292", "direct" = "#004949"))
 
 ph_disthus <- ggplot(data = hurdle_disthus2, aes(var, point)) +
@@ -621,11 +623,11 @@ pt_distvei <- ggplot() +
   geom_line(data = direct_distvei, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = direct_distvei, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   xlab("\nDistance to road (m)") + 
-  ylab("log(Tree density)\n") +
+  ylab("Recruits (%)\n") +
   theme_light()+
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
-  scale_color_manual(name = "Effect on tree\ndensity", 
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
                      values = c("total" = "#009292", "direct" = "#004949"))
 
 ph_distvei <- ggplot(data = hurdle_distvei, aes(var, point)) +
@@ -646,9 +648,9 @@ pt_skogkat <- ggplot() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nForest category") + 
-  ylab("log(Tree density)\n") +
+  ylab("Recruits (%)\n") +
   scale_x_discrete(labels = c("Highproductive \nold forest", "Highproductive \nyoung forest", "Lowproductive \nold forest", "Lowproductive \nyoung forest", "Unproductive \nforest"))+
-  scale_color_manual(name = "Effect on tree\ndensity", 
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
                      values = c("total" = "#009292", "direct" = "#004949"))
 
 ph_skogkat <- ggplot(data = hurdle_skogkat,aes(var, point)) +
@@ -669,9 +671,9 @@ pt_treart <- ggplot() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nTree species group") + 
-  ylab("log(Tree density)\n") +
+  ylab("Recruits (%)\n") +
   scale_x_discrete(labels = c("Pine", "Other deciduous \ntrees", "Rowan, aspen, \nwillow")) +
-  scale_color_manual(name = "Effect on tree\ndensity", 
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
                      values = c("total" = "#009292", "direct" = "#004949"))
 
 ph_treart <- ggplot(data = hurdle_treart,aes(var, point)) +
@@ -692,9 +694,9 @@ pt_kant <- ggplot() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nEdge effect") + 
-  ylab("log(Tree density)\n") +
+  ylab("Recruits (%)\n") +
   scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-10m", "Edge information\nmissing")) +
-  scale_color_manual(name = "Effect on tree\ndensity", 
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
                      values = c("total" = "#009292", "direct" = "#004949"))
 
 ph_kant <- ggplot(data = hurdle_kant, aes(var, point)) +
@@ -714,11 +716,11 @@ pt_hell <- ggplot() +
   geom_line(data = direct_hell, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = direct_hell, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   xlab("\nSlope (%)") + 
-  ylab("log(Tree density)\n") +
+  ylab("Recruits (%)\n") +
   theme_light()+
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
-  scale_color_manual(name = "Effect on tree\ndensity", 
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
                      values = c("total" = "#009292", "direct" = "#004949"))
 
 ph_hell <- ggplot(data = hurdle_hell,aes(var, point)) +
@@ -758,11 +760,11 @@ pt_beite <- ggplot() +
   geom_line(data = direct_beite, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = direct_beite, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   xlab("\nbrowsing pressure (%)") + 
-  ylab("log(Tree density)\n") +
+  ylab("Recruits (%)\n") +
   theme_light()+
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
-  scale_color_manual(name = "Effect on tree\ndensity", 
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
                      values = c("total" = "#009292", "direct" = "#004949"))
 # library(cowplot)
 # plot_grid(p1, p2, p3, p4, p5, p6, p7, p8,
