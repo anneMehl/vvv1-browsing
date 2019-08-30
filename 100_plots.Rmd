@@ -32,9 +32,25 @@ hist(log(browse9.2$tretetthet9_trunc))
 ```{r}
 library(ggplot2)
 
-fp1 <- ggplot(data = browse9.4, aes(beitetrykkr)) +
-  geom_histogram(bins = 70)+
-  theme_classic()
+fp1 <- ggplot(data = browse9.4, aes(treartgruppe9)) +
+  geom_bar()+
+  theme_light()+
+  scale_x_discrete(labels = c("deciduous \ntrees", "pine", "RAW")) +
+  xlab("\nTree species groups") + 
+  ylab("Count\n")
+
+fp2 <- ggplot(data = browse9.4, aes(skogkategori)) +
+  geom_bar()+
+  theme_light()+
+  scale_x_discrete(labels = c("Lowproductive \nold forest", "Highproductive \nold forest", "Highproductive \nyoung forest", "Lowproductive \nyoung forest", "Unproductive \nforest")) +
+  xlab("\nForest category") + 
+  ylab("Count\n")
+
+
+library(gridExtra)
+grid.arrange(fp1, fp2,
+          nrow = 1, ncol = 2)
+
 
 ggplot(data = browse0.1, aes(blaabaerdekning)) +
   geom_histogram()+
