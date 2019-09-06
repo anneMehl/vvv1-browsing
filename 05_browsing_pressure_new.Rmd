@@ -518,17 +518,17 @@ p2_below + theme_sjplot()
 library(glmmTMB)
 browse9.2pos_dist <- browse9.2_dist[browse9.2_dist$bt100 > 0, ]
 
-# m2beta <- glmmTMB(bt100 ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
-#             data = browse9.2pos_dist,
-#             family = beta_family())
-# 
-# m3beta <- glmmTMB(bt100 ~ disthus_trunc_scale + log(distvei2+1) + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
-#             data = browse9.2pos_dist,
-#             family = beta_family())
+m2beta <- glmmTMB(bt100 ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+            data = browse9.2pos_dist,
+            family = beta_family())
 
-# m3abeta <- glmmTMB(bt100 ~ log(distvei2+1) + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
-#             data = browse9.2pos_dist,
-#             family = beta_family())
+m3beta <- glmmTMB(bt100 ~ disthus_trunc_scale + log(distvei2+1) + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+            data = browse9.2pos_dist,
+            family = beta_family())
+
+m3abeta <- glmmTMB(bt100 ~ log(distvei2+1) + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+            data = browse9.2pos_dist,
+            family = beta_family())
 
 m4beta <- glmmTMB(bt100 ~ disthus_trunc_scale + log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos_dist,
@@ -553,6 +553,14 @@ save(m4abin, file = "m4bin.rda")
 AIC(m4beta, m6beta)
 # m4(a)beta is the thing!
 
+
+library(AICcmodavg)
+
+Candmods_bin <- list(m4abin2, m16cbin)
+
+
+glmmbin_tab <- aictab(Candmods_bin, modnames = NULL,
+                       second.ord = FALSE, nobs = NULL, sort = TRUE)
 
 ```
 
@@ -579,7 +587,7 @@ Table of estimates:
 ```{r}
 library(sjPlot)
 
-tab_model(m4abeta, transform = NULL, 
+tab_model(m4abeta2, transform = NULL, 
           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
 
 
@@ -588,7 +596,7 @@ tab_model(m4abeta, transform = NULL,
 Forest plot:
 Whiskers are ci, possible to show se instead; Colourblind friendly colours "#004949","#009292"
 ```{r}
-p1_est <- plot_model(m4abeta, type = c("est"), transform = NULL, show.values = TRUE, value.offset = 0.5, 
+p1_est <- plot_model(m4abeta2, type = c("est"), transform = NULL, show.values = TRUE, value.offset = 0.5, 
                  vline.color = "grey", colors = c("#004949", "#009292"),
                  axis.title = "Estimates")
 p1_est + theme_sjplot() + font_size(axis_title.x = 15)
