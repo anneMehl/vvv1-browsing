@@ -496,7 +496,7 @@ m18beta <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + HOH + I(HOH^2) + brow
 
 ```
 
-
+###### AIC selection
 ```{r}
 summary(m16beta)
 
@@ -514,4 +514,29 @@ save(m16beta, file = "m16beta.rda")
 ```{r}
 browse9.5mpossc <- browse9.5mpossc[,c(1,3,7,15:17,19:20,25:26,40)]
 save(browse9.5mpossc, file = "browse9.5mpossc.rda")
+```
+
+
+
+
+
+## Tables
+
+```{r}
+load("output/m16abeta.rda")
+```
+
+
+Table of estimates:
+```{r}
+library(sjPlot)
+
+tab_model(m16cbin, transform = NULL, 
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
+
+
+tab_model(m16abeta, transform = NULL, 
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
+
+
 ```
