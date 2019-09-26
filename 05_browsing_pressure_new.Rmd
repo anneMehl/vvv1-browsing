@@ -321,6 +321,7 @@ m4abin <- glmer(factor(beitetrykkr > 0) ~ log(distvei2_trunc+1) + skogkategori +
 ```{r}
 save(m2bin, file = "output/recentBP_selection/m2bin.rda")
 save(m3bin, file = "output/recentBP_selection/m3bin.rda")
+save(m4bin, file = "output/recentBP_selection/m4bin.rda")
 
 ```
 
@@ -386,7 +387,7 @@ cor((as.matrix(browse9.2_dist[browse9.2_dist$beitetrykkr, c("distvei2", "helling
 Table of estimates:
 ```{r}
 library(sjPlot)
-tab_model(m4abin, transform = NULL, 
+tab_model(m4abin2, transform = NULL, 
           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE,
           show.std = NULL, show.p = TRUE, 
           show.stat = FALSE, show.df = FALSE, show.r2 = TRUE, 
@@ -673,6 +674,13 @@ library(sjPlot)
 
 tab_model(m4abeta2, transform = NULL, 
           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
+
+tab_model(m4abeta2, transform = NULL, 
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE,
+          show.std = NULL, show.p = TRUE, 
+          show.stat = FALSE, show.df = FALSE, show.r2 = TRUE, 
+          show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, 
+          show.dev = FALSE, show.obs = TRUE)
 
 
 ```
