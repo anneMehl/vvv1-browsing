@@ -178,15 +178,23 @@ m1ibin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut300_scale + log(distv
 
 m1jbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut200_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
             family = binomial(),
-            data = browse9.2)
+            data = browse9.2) # second best
+
+m1jbin2 <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut200_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2) 
 
 m1kbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut150_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             family = binomial(),
-            data = browse9.2) # best
+            data = browse9.2) 
 
 m1lbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut175_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
             family = binomial(),
-            data = browse9.2) # Second best
+            data = browse9.2) # best
+
+m1lbin2 <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut175_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2)
 
 m1sbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut100_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
             family = binomial(),
@@ -194,19 +202,19 @@ m1sbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut100_scale + log(distv
 
 
 # ------------ log selection -----------
-m1nbin <- glmer(factor(beitetrykkr > 0) ~ log(disthus+1) + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+m1nbin <- glmer(factor(beitetrykkr > 0) ~ log(disthus+1) + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale +  (1|KOMNR),
             family = binomial(),
             data = browse9.2)
 
-m1oin <- glmer(factor(beitetrykkr > 0) ~ log(disthus+1) + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + distvei2_trunc_scale*skogkategori + (1|KOMNR),
+m1oin <- glmer(factor(beitetrykkr > 0) ~ log(disthus+1) + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale +  (1|KOMNR),
             family = binomial(),
             data = browse9.2)
 
-m1pbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+m1pbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             family = binomial(),
             data = browse9.2) 
 
-m1qbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut175_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+m1qbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut175_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             family = binomial(),
             data = browse9.2) # best
 
@@ -218,9 +226,17 @@ m1rbin <- glmer(factor(beitetrykkr > 0) ~ log(disthus+1) + log(distvei2+1) + sko
 
 
 ```{r}
+
+AIC(m1abin, m1gbin, m1hbin, m1ibin, m1jbin, m1kbin, m1lbin)
+AIC(m1lbin, m1lbin2)
+AIC(m1jbin, m1jbin2)
+
+AIC(m1nbin, m1oin, m1pbin, m1qbin, m1rbin)
+
+
 library(AICcmodavg)
 
-Candmods_bin <- list(m1abin, m1bbin, m1cbin, m1dbin, m1ebin, m1fbin, m1gbin, m1hbin, m1ibin, m1jbin, m1kbin, m1lbin)
+Candmods_bin <- list(m1abin, m1gbin, m1hbin, m1ibin, m1jbin, m1kbin, m1lbin)
 
 
 glmmbin_tab <- aictab(Candmods_bin, modnames = NULL,
@@ -246,6 +262,22 @@ p1_below + theme_sjplot()
 ```{r}
 library(lme4)
 
+m2bin <- glmer(factor(beitetrykkr > 0) ~ log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR), 
+               family = binomial(), 
+               data = browse9.2_dist) # Best
+
+m3bin <- glmer(factor(beitetrykkr > 0) ~ log(distvei2+1) + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR), 
+               family = binomial(), 
+               data = browse9.2_dist)
+
+m4bin <- glmer(factor(beitetrykkr > 0) ~ log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + tretetthet9_trunc_scale + (1|KOMNR), 
+               family = binomial(), 
+               data = browse9.2_dist)
+
+m4abin <- glmer(factor(beitetrykkr > 0) ~ log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + helling + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2_dist) # BEST, just as m2bin but with truncated distvei2
+
 # m2bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
 #             family = binomial(),
 #             data = browse9.2_dist)
@@ -262,13 +294,11 @@ library(lme4)
 #             family = binomial(),
 #             data = browse9.2_dist)
 
-m4bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + helling + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
-            family = binomial(),
-            data = browse9.2_dist)
+# m4bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + helling + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+#             family = binomial(),
+#             data = browse9.2_dist)
 
-m4abin <- glmer(factor(beitetrykkr > 0) ~ log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + helling + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
-            family = binomial(),
-            data = browse9.2_dist) # BEST
+
 
 # m5bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2+1) + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*veitype2 + (1|KOMNR),
 #             family = binomial(),
@@ -278,23 +308,31 @@ m4abin <- glmer(factor(beitetrykkr > 0) ~ log(distvei2_trunc+1) + skogkategori +
 #             family = binomial(),
 #             data = browse9.2_dist)
 
-m7bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2_trunc+1) + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
-            family = binomial(),
-            data = browse9.2_dist)
+# m7bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2_trunc+1) + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+#             family = binomial(),
+#             data = browse9.2_dist)
+# 
+# m8bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2_trunc+1) + veitype2 + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+#             family = binomial(),
+#             data = browse9.2_dist)
 
-m8bin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2_trunc+1) + veitype2 + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
-            family = binomial(),
-            data = browse9.2_dist)
+```
+
+```{r}
+save(m2bin, file = "output/recentBP_selection/m2bin.rda")
+save(m3bin, file = "output/recentBP_selection/m3bin.rda")
 
 ```
 
 
 
 ```{r}
-library(AICcmodavg)
 
+AIC(m2bin, m3bin, m4bin, m4abin2)
 AIC(m4bin, m7bin, m8bin)
 
+
+library(AICcmodavg)
 Candmods_bin <- list(m4bin, m5bin, m6bin, m7bin, m8bin, m9bin, m10bin, m11bin, m12bin)
 
 glmmbin_tab <- aictab(Candmods_bin, modnames = NULL,
@@ -422,86 +460,104 @@ plot_grid(list(p1_below, p6, p1, p5, p7, p2, p3, p4))
 library(glmmTMB)
 browse9.2pos <- browse9.2[browse9.2$bt100 > 0, ]
 
-m1beta <- glmmTMB(bt100 ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+m1beta <- glmmTMB(bt100 ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale +  (1|KOMNR),
             data = browse9.2pos,
             family = beta_family())
 
-m1bbeta <- glmmTMB(bt100 ~ disthus_trunc_cut1000_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+m1bbeta <- glmmTMB(bt100 ~ disthus_trunc_cut1000_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos,
             family = beta_family())
 
-m1cbeta <- glmmTMB(bt100 ~ disthus_trunc_cut900_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+m1cbeta <- glmmTMB(bt100 ~ disthus_trunc_cut900_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos,
             family = beta_family())
 
-m1dbeta <- glmmTMB(bt100 ~ disthus_trunc_cut800_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+m1dbeta <- glmmTMB(bt100 ~ disthus_trunc_cut800_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos,
             family = beta_family())
 
-m1ebeta <- glmmTMB(bt100 ~ disthus_trunc_cut700_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+m1ebeta <- glmmTMB(bt100 ~ disthus_trunc_cut700_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos,
             family = beta_family())
 
-m1fbeta <- glmmTMB(bt100 ~ disthus_trunc_cut600_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+m1fbeta <- glmmTMB(bt100 ~ disthus_trunc_cut600_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos,
             family = beta_family())
 
-m1gbeta <- glmmTMB(bt100 ~ disthus_trunc_cut500_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+m1gbeta <- glmmTMB(bt100 ~ disthus_trunc_cut500_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos,
             family = beta_family())
 
-m1hbeta <- glmmTMB(bt100 ~ disthus_trunc_cut400_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+m1hbeta <- glmmTMB(bt100 ~ disthus_trunc_cut400_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos,
             family = beta_family())
 
-m1ibeta <- glmmTMB(bt100 ~ disthus_trunc_cut200_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+m1ibeta <- glmmTMB(bt100 ~ disthus_trunc_cut200_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos,
             family = beta_family()) # best
 
-m1jbeta <- glmmTMB(bt100 ~ disthus_trunc_cut175_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+m1jbeta <- glmmTMB(bt100 ~ disthus_trunc_cut175_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos,
             family = beta_family())
 
-m1kbeta <- glmmTMB(bt100 ~ disthus_trunc_cut150_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+m1kbeta <- glmmTMB(bt100 ~ disthus_trunc_cut150_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos,
             family = beta_family())
 
-m1lbeta <- glmmTMB(bt100 ~ disthus_trunc_cut190_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+m1lbeta <- glmmTMB(bt100 ~ disthus_trunc_cut190_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos,
-            family = beta_family()) # second best
+            family = beta_family()) 
 
 # ------ log selection ------
-m1mbbeta <- glmmTMB(bt100 ~ log(disthus+1) + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+m1mbbeta <- glmmTMB(bt100 ~ log(disthus+1) + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos,
             family = beta_family())
 
-m1nbeta <- glmmTMB(bt100 ~ log(disthus+1) + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + distvei2_trunc_scale*skogkategori + (1|KOMNR),
+m1nbeta <- glmmTMB(bt100 ~ log(disthus+1) + distvei2_trunc_scale + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos,
             family = beta_family())
 
-m1obeta <- glmmTMB(bt100 ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+m1obeta <- glmmTMB(bt100 ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos,
             family = beta_family()) 
 
-m1pbeta <- glmmTMB(bt100 ~ disthus_trunc_cut175_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+m1pbeta <- glmmTMB(bt100 ~ disthus_trunc_cut200_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos,
-            family = beta_family()) 
-
-m1qbeta <- glmmTMB(bt100 ~ log(disthus+1) + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
-            data = browse9.2pos,
-            family = beta_family()) 
+            family = beta_family()) # Best
 
 
 ```
 
 
 ```{r}
-AIC(m1beta, m1bbeta, m1cbeta, m1dbeta, m1ebeta, m1fbeta, m1gbeta, m1hbeta, m1ibeta, m1jbeta, m1kbeta, m1lbeta)
+AIC(m1gbeta, m1hbeta, m1ibeta, m1jbeta, m1kbeta, m1lbeta)
 # cut200 is the thing!
-AIC(m1mbbeta, m1nbeta, m1obeta, m1pbeta, m1qbeta)
+AIC(m1mbbeta, m1nbeta, m1obeta, m1pbeta)
 # m1pbeta is the thing!
 
+save(m1gbeta, file = "m1gbeta.rda")
+save(m1hbeta, file = "m1hbeta.rda")
+save(m1ibeta, file = "m1ibeta.rda")
+save(m1jbeta, file = "m1jbeta.rda")
+save(m1kbeta, file = "m1kbeta.rda")
+save(m1lbeta, file = "m1lbeta.rda")
 
+save(m1mbbeta, file = "m1mbbeta.rda")
+save(m1nbeta, file = "m1nbeta.rda")
+save(m1obeta, file = "m1obeta.rda")
+save(m1pbeta, file = "m1pbeta.rda")
+
+load("output/recentBP_selection/m1gbeta.rda")
+load("output/recentBP_selection/m1hbeta.rda")
+load("output/recentBP_selection/m1ibeta.rda")
+load("output/recentBP_selection/m1jbeta.rda")
+load("output/recentBP_selection/m1kbeta.rda")
+load("output/recentBP_selection/m1lbeta.rda")
+
+load("output/recentBP_selection/m1mbbeta.rda")
+load("output/recentBP_selection/m1nbeta.rda")
+load("output/recentBP_selection/m1obeta.rda")
+load("output/recentBP_selection/m1pbeta.rda")
 ```
 
 
@@ -518,41 +574,69 @@ p2_below + theme_sjplot()
 library(glmmTMB)
 browse9.2pos_dist <- browse9.2_dist[browse9.2_dist$bt100 > 0, ]
 
-m2beta <- glmmTMB(bt100 ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+m2beta <- glmmTMB(bt100 ~ log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos_dist,
             family = beta_family())
 
-m3beta <- glmmTMB(bt100 ~ disthus_trunc_scale + log(distvei2+1) + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+m3beta <- glmmTMB(bt100 ~ log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos_dist,
             family = beta_family())
 
-m3abeta <- glmmTMB(bt100 ~ log(distvei2+1) + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
-            data = browse9.2pos_dist,
-            family = beta_family())
-
-m4beta <- glmmTMB(bt100 ~ disthus_trunc_scale + log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+m4beta <- glmmTMB(bt100 ~ log(distvei2+1) + skogkategori + treartgruppe + ac_scale + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos_dist,
             family = beta_family())
 
 m4abeta <- glmmTMB(bt100 ~ log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos_dist,
-            family = beta_family())
+            family = beta_family()) # still BEST (full model which is m2beta, but with distvei truncated)
 
-# m5beta <- glmmTMB(bt100 ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*veitype2 + (1|KOMNR),
-#             data = browse9.2pos_dist,
-#             family = beta_family())
-
-m6beta <- glmmTMB(bt100 ~ disthus_trunc_scale + log(distvei2_trunc+1) + veitype2 + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+m5beta <- glmmTMB(bt100 ~ log(distvei2_trunc+1) +  treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             data = browse9.2pos_dist,
             family = beta_family())
 
-save(m4abin, file = "m4bin.rda")
+# m3beta <- glmmTMB(bt100 ~ disthus_trunc_scale + log(distvei2+1) + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+#             data = browse9.2pos_dist,
+#             family = beta_family())
+
+# m3abeta <- glmmTMB(bt100 ~ log(distvei2+1) + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + log(distvei2+1)*skogkategori + (1|KOMNR),
+#             data = browse9.2pos_dist,
+#             family = beta_family())
+
+# m4beta <- glmmTMB(bt100 ~ disthus_trunc_scale + log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+#             data = browse9.2pos_dist,
+#             family = beta_family())
+
+
+
+# m5beta <- glmmTMB(bt100 ~ log(distvei2_trunc+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale +  tretetthet9_trunc_scale + (1|KOMNR),
+#             data = browse9.2pos_dist,
+#             family = beta_family())
+
+# m6beta <- glmmTMB(bt100 ~ disthus_trunc_scale + log(distvei2_trunc+1) + veitype2 + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+#             data = browse9.2pos_dist,
+#             family = beta_family())
+
+
 ```
 
 ```{r}
-AIC(m4beta, m6beta)
+AIC(m4beta, m4abeta, m5beta)
 # m4(a)beta is the thing!
+AIC(m2beta, m3beta, m4beta, m4abeta, testBeta, m5beta)
+AIC(m2beta, m4abeta)
 
+save(m2beta, file = "m2beta.rda")
+save(m3beta, file = "m3beta.rda")
+save(m4beta, file = "m4beta.rda")
+save(m4abeta, file = "output/recentBP_selection/m4abeta.rda")
+save(m5beta, file = "output/recentBP_selection/m5beta.rda")
+save(testBeta, file = "output/recentBP_selection/testBeta.rda")
+
+load("output/recentBP_selection/m2beta.rda")
+load("output/recentBP_selection/m3beta.rda")
+load("output/recentBP_selection/m4beta.rda")
+
+summary(m4abeta)
 
 library(AICcmodavg)
 
