@@ -122,7 +122,7 @@ plot.gam(gam2, all.terms = TRUE)
 
 
 ## Bin - First part of a hurdle model to account for zero inflation
-##### Checking for the cut for disthus (browse9.5m/6)
+##### Checking for the cut for disthus (browse9.5m/6) and best bin-house-model
 ```{r}
 # load("processdata/browse9.5sc.rda")
 load("processdata/browse9.5m.rda")
@@ -133,7 +133,7 @@ load("processdata/browse9.5msc.rda")
 ```{r}
 library(lme4)
 
-pvars <- c("disthus_400", "HOH", "ac") # "disthus","disthus_500", "disthus_1000", "disthus_900", "disthus_800", "disthus_700", "disthus_600", "disthus_160", "disthus_300", "disthus_200", "disthus_175", "disthus_350", "helling", "browspres_merged"
+pvars <- c("disthus_400", "HOH", "ac", "disthus_500", "disthus_300", "disthus") # "disthus","disthus_500", "disthus_1000", "disthus_900", "disthus_800", "disthus_700", "disthus_600", "disthus_160", "disthus_300", "disthus_200", "disthus_175", "disthus_350", "helling", "browspres_merged"
 browse9.5msc <- browse9.5m
 browse9.5msc[pvars] <- lapply(browse9.5msc[pvars],scale)
 
@@ -227,8 +227,18 @@ AIC(m1bin, m2bin, m3bin, m4bin, m5bin, m6bin, m7bin, m8bin, m9bin, m10bin, m11bi
 
 AIC(m0dbin, m8bin)
 
+AIC(m7bin, m8bin, m10bin)
+
 # cut 400 is the thing!
 
+
+```
+
+```{r}
+library(sjPlot)
+
+tab_model(m8bin, transform = NULL, 
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
 
 ```
 
@@ -353,7 +363,7 @@ save(browse9.6sc, file = "browse9.6sc.rda")
 
 ## Beta - Second part of a hurdle model
 
-##### Checking for the cut for disthus (browse9.5mpos)
+##### Checking for the cut for disthus (browse9.5mpos) and best beta-house-model 
 ```{r}
 library(glmmTMB)
 # load("processdata/browse9.6pos.rda")
@@ -404,7 +414,7 @@ m8beta <- glmmTMB(proplt ~ disthus_300 + distvei2 + skogkategori + treartgruppe9
 
 m10beta <- glmmTMB(proplt ~ disthus_200 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
             data = browse9.5mpossc,
-            family = beta_family()) 
+            family = beta_family()) # best
 
 m11beta <- glmmTMB(proplt ~ disthus_160 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
             data = browse9.5mpossc,
@@ -444,13 +454,22 @@ m0dbeta <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + ac + kant + helling +
 
 
 ```{r}
-AIC(m1beta, m2beta, m3beta, m4beta, m5beta, m6beta, m7beta, m8beta, m10beta, m11beta, m12beta)
+AIC(m6beta, m7beta, m8beta, m10beta, m11beta, m12beta)
 # all are the same (also not significant) -> I suppose that means that disthus is not important?
-AIC(m0abeta, m0bbeta, m0cbeta, m0dbeta, m10beta)
+AIC(m10beta, m0bbeta)
 # m0bbeta best!
 
 
 ```
+
+```{r}
+library(sjPlot)
+
+tab_model(m0bbeta, transform = NULL, 
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
+```
+
+
 
 ##### Model selection (browse9.5mpos)
 ```{r}
@@ -507,8 +526,9 @@ m18beta <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + HOH + I(HOH^2) + brow
 ###### AIC selection
 ```{r}
 summary(m16beta)
+load("output/m16abeta.rda")
 
-AIC(m12beta, m13beta, m14beta, m15beta, m16beta, m17beta, m18beta)
+AIC(m12beta, m13beta, m14beta, m15beta, m16beta, m16abeta)
 
 library(effects)
 plot(allEffects(m16beta))
