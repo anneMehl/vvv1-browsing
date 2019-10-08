@@ -568,3 +568,41 @@ tab_model(m16abeta, transform = NULL,
 
 
 ```
+
+## firgures
+```{r}
+p1hus <- plot_model(mhusabin, type = c("eff"), terms = c("disthus_400"))
+# p1hus + theme_light() +
+#   theme(axis.text = element_text(family = "sans", size = 10, color = "grey30"),
+#         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+#   xlab("\nDistance to house") + 
+#   ylab("Tree density (log)\n")
+
+p1 <- plot_model(m16abeta, type = c("eff"), terms = c("distvei2 [0:500]"))
+# p1 + theme_light() +
+#   theme(axis.text = element_text(family = "sans", size = 10, color = "grey30"),
+#         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+#   xlab("\nDistance to road") + 
+#   ylab("Tree density (log)\n")
+
+p2 <- plot_model(m16abeta, type = c("eff"), transform = NULL, terms = c("skogkategori"))
+# p2 + theme_light()
+
+p3 <- plot_model(m16abeta, type = c("eff"), transform = NULL, terms = c("treartgruppe9"))
+# pb3 + theme_sjplot()
+
+# p4 <- plot_model(m16cbin, type = c("eff"), transform = NULL, terms = c("kant"))
+# pb3 + theme_sjplot()
+
+# p5 <- plot_model(m16cbin, type = c("eff"), transform = NULL, terms = c("helling [n=1]"))
+# pb3 + theme_sjplot()
+
+p6 <- plot_model(m16abeta, type = c("eff"), transform = NULL, terms = c("browspres_merged"))
+# pb3 + theme_sjplot()
+
+p7 <- plot_model(m16abeta, type = c("eff"), transform = NULL, terms = c("HOH"))
+# pb3 + theme_sjplot()
+
+library(gridExtra)
+plot_grid(list(p1, p6, p2, p3, p7))
+```
