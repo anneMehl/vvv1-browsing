@@ -294,40 +294,40 @@ p1_est + theme_sjplot()
 log.y = F
 
 ```{r}
-p1hus <- plot_model(mhus, type = c("eff"), terms = c("disthus_trunc_cut200_scale"),
-                 colors = "red", title = "", line.size = 1)
-p1hus + theme_light() +
-  theme(axis.text = element_text(family = "sans", size = 10, color = "grey30"),
-        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
-  xlab("\nDistance to house") + 
-  ylab("Tree density (log)\n")
+p1hus <- plot_model(mhusabin, type = c("eff"), terms = c("disthus_400"))
+# p1hus + theme_light() +
+#   theme(axis.text = element_text(family = "sans", size = 10, color = "grey30"),
+#         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+#   xlab("\nDistance to house") + 
+#   ylab("Tree density (log)\n")
 
-p1 <- plot_model(m13a, type = c("eff"), terms = c("distvei2_trunc [0:2500]"),
-                 colors = "#004949", title = "", line.size = 1)
-p1 + theme_light() +
-  theme(axis.text = element_text(family = "sans", size = 10, color = "grey30"),
-        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
-  xlab("\nDistance to road") + 
-  ylab("Tree density (log)\n")
+p1 <- plot_model(m16abeta, type = c("eff"), terms = c("distvei2 [0:500]"))
+# p1 + theme_light() +
+#   theme(axis.text = element_text(family = "sans", size = 10, color = "grey30"),
+#         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+#   xlab("\nDistance to road") + 
+#   ylab("Tree density (log)\n")
 
-p2 <- plot_model(m13, type = c("eff"), transform = NULL, terms = "skogkategori", 
-                 colors = "Accent", title = "", line.size = 1)
-p2 + theme_light()
+p2 <- plot_model(m16abeta, type = c("eff"), transform = NULL, terms = c("skogkategori"))
+# p2 + theme_light()
 
-p3 <- plot_model(m13, type = c("eff"), transform = NULL, terms = c("treartgruppe"))
+p3 <- plot_model(m16abeta, type = c("eff"), transform = NULL, terms = c("treartgruppe9"))
 # pb3 + theme_sjplot()
 
-p4 <- plot_model(m13, type = c("eff"), transform = NULL, terms = c("kant"))
+# p4 <- plot_model(m16cbin, type = c("eff"), transform = NULL, terms = c("kant"))
 # pb3 + theme_sjplot()
 
-p5 <- plot_model(m13, type = c("eff"), transform = NULL, terms = c("helling [n=1]"))
+# p5 <- plot_model(m16cbin, type = c("eff"), transform = NULL, terms = c("helling [n=1]"))
 # pb3 + theme_sjplot()
 
-p6 <- plot_model(m13, type = c("eff"), transform = NULL, terms = c("beitetrykkr"))
+p6 <- plot_model(m16abeta, type = c("eff"), transform = NULL, terms = c("browspres_merged"))
+# pb3 + theme_sjplot()
+
+p7 <- plot_model(m16abeta, type = c("eff"), transform = NULL, terms = c("HOH"))
 # pb3 + theme_sjplot()
 
 library(gridExtra)
-plot_grid(list(p1, p2, p3, p4, p5, p6))
+plot_grid(list(p1, p6, p2, p3, p7))
 ```
 
 

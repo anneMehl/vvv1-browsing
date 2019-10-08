@@ -401,29 +401,29 @@ p1 <- plot_model(m4abin, type = c("est"), transform = NULL, show.values = TRUE, 
 p1 + theme_sjplot() + font_size(axis_title.x = 15)
 
 ```
-
+## figures bin
 ```{r}
 library(sjPlot)
-p1 <- plot_model(m4abin, type = c("eff"), transform = NULL, terms = c("treartgruppe"),
+p1 <- plot_model(m4abin2, type = c("eff"), transform = NULL, terms = c("treartgruppe9"),
            grid = TRUE)
 # p3 + theme_sjplot()
 
-p2 <- plot_model(m4abin, type = c("eff"), transform = NULL, terms = c("kant"))
+p2 <- plot_model(m4abin2, type = c("eff"), transform = NULL, terms = c("kant"))
 # p4 + theme_sjplot()
 
-p3 <- plot_model(m4abin, type = c("eff"), transform = NULL, terms = c("helling_scale [all]"))
+p3 <- plot_model(m4abin2, type = c("eff"), transform = NULL, terms = c("helling [all]"))
 # p5 + theme_sjplot()
 
-p4 <- plot_model(m4abin, type = c("eff"), transform = NULL, terms = c("HOH_scale [all]"))
+p4 <- plot_model(m4abin2, type = c("eff"), transform = NULL, terms = c("HOH_scale [all]"))
 # p6 + theme_sjplot()
 
-p5 <- plot_model(m4abin, type = c("eff"), transform = NULL, terms = c("tretetthet9_trunc_scale [all]"))
+p5 <- plot_model(m4abin2, type = c("eff"), transform = NULL, terms = c("tretetthet9_trunc [all]"))
 # p7 + theme_sjplot()
 
-p6 <- plot_model(m4abeta2, type = c("eff"), transform = NULL, terms = "distvei2_trunc [0:50]")
+p6 <- plot_model(m4abin2, type = c("eff"), transform = NULL, terms = "distvei2_trunc [0:500]")
 # p6 + theme_sjplot()
 
-p7 <- plot_model(m4abin, type = c("eff"), transform = NULL, terms = "skogkategori")
+p7 <- plot_model(m4abin2, type = c("eff"), transform = NULL, terms = "skogkategori")
 # p7 + theme_sjplot()
 
 # p8 <- plot_model(m4abin, type = c("eff"), transform = NULL, terms = c("disthus_trunc_scale"))
@@ -435,11 +435,12 @@ p7 <- plot_model(m4abin, type = c("eff"), transform = NULL, terms = "skogkategor
 # p10 <- plot_model(m8bin, type = c("eff"), transform = NULL, terms = c("veitype2"))
 # p10 + theme_sjplot()
 
-p1_below <- plot_model(m1kbin, type = c("eff"), transform = NULL, terms = c("disthus_trunc_cut150_scale [all]"),
+p1_house <- plot_model(m1kbin2, type = c("eff"), transform = NULL, terms = c("disthus_trunc_cut200_scale [all]"),
            grid = TRUE)
 
-library(gridExtra)
-plot_grid(list(p1_below, p6, p1, p5, p7, p2, p3, p4))
+
+
+# ggpredict(m1kbin2, terms="skogkategori [all]", ci.lvl = 0.95, type = c("re"), typical_value(x, fun = c(numeric = "median", factor = "mean")))
 
 
 # library(effects)
@@ -693,39 +694,45 @@ p1_est + theme_sjplot() + font_size(axis_title.x = 15)
 ```
 
 
-
+## figures beta
 ```{r}
 # pb1 <- plot_model(m7beta, type = c("eff"), transform = NULL, terms = c("disthus_trunc_scale [all]"))
 # pb1 + theme_sjplot()
 
-pb2 <- plot_model(m4abeta, type = c("eff"), transform = NULL, terms = c("distvei2_trunc [0:500]"))
-pb2 + theme_sjplot()
+load("processdata/browse9.4_house.rda")
+browse9.4_house_pos <- browse9.4_house[browse9.4_house$bt100 > 0, ]
 
-pb3 <- plot_model(m4abeta, type = c("eff"), transform = NULL, terms = c("skogkategori"))
+load("processdata/browse9.4pos.rda")
+
+
+pb2 <- plot_model(m4abeta2, type = c("eff"), transform = NULL, terms = c("distvei2_trunc [0:500]"))
+# pb2 + theme_sjplot()
+
+pb3 <- plot_model(m4abeta2, type = c("eff"), transform = NULL, terms = c("skogkategori"))
 # pb3 + theme_sjplot()
 
-pb4 <- plot_model(m4abeta, type = c("eff"), transform = NULL, terms = c("treartgruppe"),
+pb4 <- plot_model(m4abeta2, type = c("eff"), transform = NULL, terms = c("treartgruppe9"),
                   show.p = TRUE)
 # pb3 + theme_sjplot()
 
-pb5 <- plot_model(m4abeta, type = c("eff"), transform = NULL, terms = c("kant"))
+pb5 <- plot_model(m4abeta2, type = c("eff"), transform = NULL, terms = c("kant"))
 # pb4 + theme_sjplot()
 
-pb6 <- plot_model(m4abeta, type = c("eff"), transform = NULL, terms = c("helling_scale [all]"))
+pb6 <- plot_model(m4abeta2, type = c("eff"), transform = NULL, terms = c("helling [all]"))
 # pb5 + theme_sjplot()
 
-pb7 <- plot_model(m4abeta, type = c("eff"), transform = NULL, terms = c("HOH_scale [all]"))
+pb7 <- plot_model(m4abeta2, type = c("eff"), transform = NULL, terms = c("HOH_scale [all]"))
 # pb6 + theme_sjplot()
 
-pb8 <- plot_model(m4abeta, type = c("eff"), transform = NULL, terms = c("tretetthet9_trunc_scale [all]"))
+pb8 <- plot_model(m4abeta2, type = c("eff"), transform = NULL, terms = c("tretetthet9_trunc [all]"))
 # pb7 + theme_sjplot()
 
 # pb9 <- plot_model(m5beta, type = c("eff"), transform = NULL, terms = c("distvei2 [0:3000]", "veitype2"))
 # pb9 + theme_sjplot()
 
-p2_below <- plot_model(m1ibeta, type = c("eff"), transform = NULL, terms = c("disthus_trunc_cut150_scale [all]"), grid = TRUE)
+p2_house <- plot_model(m1ibeta2, type = c("eff"), transform = NULL, terms = c("disthus_trunc_cut200_scale [all]"), grid = TRUE)
 
-plot_grid(list(p2_below, pb2, pb4, pb8, pb3, pb5, pb6, pb7))
+plot_grid(list(p2_house, pb2, pb4, pb8, pb3, pb5, pb6, pb7))
 
 
 # type = "pred" = Predicted values (marginal effects) for specific model terms. See ggpredict for details.
