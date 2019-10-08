@@ -100,8 +100,8 @@ source("function_resp_curve.R")
 
 #### Run function for the different models/ focals and SAVE them
 ```{r}
-bp_tretett <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
-           which_effect=c("hurdle1_only", "hurdle2_only", "total")[1], nvals=100, plotit=F, nb_btstrp=99)
+recruit_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+           which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
 
 recruit_beite <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
@@ -120,7 +120,7 @@ save(total_disthus, file = "total_disthus.rda")
 
 ## load function data
 ```{r}
-# Browsing pressure
+# Browsing pressure (indirect)
 load("output/final_function_outputs/bp_disthus.rda")
 load("output/final_function_outputs/bp_distvei.rda")
 load("output/final_function_outputs/bp_skogkat.rda")
@@ -130,7 +130,7 @@ load("output/final_function_outputs/bp_hell.rda")
 load("output/final_function_outputs/bp_hoh.rda")
 load("output/final_function_outputs/bp_tretett.rda")
 
-# Recruits
+# Recruits (direct)
 load("output/final_function_outputs/recruit_disthus.rda")
 load("output/final_function_outputs/recruit_distvei.rda")
 load("output/final_function_outputs/recruit_skogkat.rda")
@@ -140,7 +140,7 @@ load("output/final_function_outputs/recruit_hell.rda")
 load("output/final_function_outputs/recruit_beite.rda")
 load("output/final_function_outputs/recruit_hoh.rda")
 
-# Total
+# Total (indirect + direct)
 load("output/final_function_outputs/total_disthus.rda")
 load("output/final_function_outputs/total_distvei.rda")
 load("output/final_function_outputs/total_skogkat.rda")
@@ -162,12 +162,12 @@ load("output/final_function_outputs/total_hoh.rda")
 # 
 # d$s.x * attr(d$s.x, 'scaled:scale') + attr(d$s.x, 'scaled:center')
 
-
+# disthus
 bp_disthus$var <- bp_disthus$var * 27.71453 + 192.2636
-recruit_disthus$var <- recruit_disthus$var * 27.71453 + 192.2636
-total_disthus$var <- total_disthus$var * 27.71453 + 192.2636
+recruit_disthus$var <- recruit_disthus$var * 88.52122 + 358.5594
+total_disthus$var <- total_disthus$var * 88.52122 + 358.5594 
 
-
+# road models
 bp_distvei$var <- exp(bp_distvei$var)-1
 
 bp_hoh$var <- bp_hoh$var * 244.7748 + 361.8423
@@ -217,9 +217,32 @@ tt_hoh$var <- tt_hoh$var * 243 + 407
 ```{r}
 library(ggplot2)
 
+# disthus ----
+pdt_disthus <- ggplot() + 
+  geom_line(data = total_disthus, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = total_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  geom_line(data = recruit_disthus, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = recruit_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  xlab("\nDistance to house (m)") + 
+  ylab("Recruits (%)\n") +
+  theme_light()+
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
+                     values = c("total" = "#009292", "direct" = "#004949"))
+
 pt_disthus <- ggplot() + 
   geom_line(data = total_disthus, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = total_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  xlab("\nDistance to house (m)") + 
+  ylab("Recruits (%)\n") +
+  theme_light()+
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
+                     values = c("total" = "#009292", "direct" = "#004949"))
+
+pd_disthus <- ggplot() + 
   geom_line(data = recruit_disthus, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = recruit_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   xlab("\nDistance to house (m)") + 
@@ -240,9 +263,32 @@ ph_disthus <- ggplot(data = bp_disthus, aes(var, point)) +
   ylab("Browsing pressure (%)\n") +
   scale_y_continuous(limits = c(10, 25), breaks =  seq(from = 10, to = 25, by = 5))
 
+# distvei ----
+pdt_distvei <- ggplot() + 
+  geom_line(data = total_distvei, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = total_distvei, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  geom_line(data = recruit_distvei, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = recruit_distvei, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  xlab("\nDistance to road (m)") + 
+  ylab("Recruits (%)\n") +
+  theme_light()+
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
+                     values = c("total" = "#009292", "direct" = "#004949"))
+
 pt_distvei <- ggplot() + 
   geom_line(data = total_distvei, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = total_distvei, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  xlab("\nDistance to road (m)") + 
+  ylab("Recruits (%)\n") +
+  theme_light()+
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
+                     values = c("total" = "#009292", "direct" = "#004949"))
+
+pd_distvei <- ggplot() + 
   geom_line(data = recruit_distvei, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = recruit_distvei, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   xlab("\nDistance to road (m)") + 
@@ -263,9 +309,31 @@ ph_distvei <- ggplot(data = bp_distvei, aes(var, point)) +
   ylab("Browsing pressure (%)\n") +
   scale_y_continuous(limits = c(10, 30), breaks =  seq(from = 10, to = 30, by = 5))
 
+# skogkat ----
+pdt_skogkat <- ggplot() +
+  geom_pointrange(data = total_skogkat, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "total"), size = 1) +
+  geom_pointrange(data = recruit_skogkat, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "direct"), size = 1) +
+  theme_light() +
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  xlab("\nForest category") + 
+  ylab("Recruits (%)\n") +
+  scale_x_discrete(labels = c("Highproductive \nold forest", "Highproductive \nyoung forest", "Lowproductive \nold forest", "Lowproductive \nyoung forest", "Unproductive \nforest"))+
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
+                     values = c("total" = "#009292", "direct" = "#004949"))
 
 pt_skogkat <- ggplot() +
   geom_pointrange(data = total_skogkat, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "total"), size = 1) +
+  theme_light() +
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  xlab("\nForest category") + 
+  ylab("Recruits (%)\n") +
+  scale_x_discrete(labels = c("Highproductive \nold forest", "Highproductive \nyoung forest", "Lowproductive \nold forest", "Lowproductive \nyoung forest", "Unproductive \nforest"))+
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
+                     values = c("total" = "#009292", "direct" = "#004949"))
+
+pd_skogkat <- ggplot() +
   geom_pointrange(data = recruit_skogkat, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "direct"), size = 1) +
   theme_light() +
   theme(axis.text = element_text(size = 10),
@@ -283,12 +351,34 @@ ph_skogkat <- ggplot(data = bp_skogkat,aes(var, point)) +
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nForest category") + 
   ylab("Browsing pressure (%)\n") +
-  scale_x_discrete(labels = c("Highproductive \nold forest", "Highproductive \nyoung forest", "Lowproductive \nold forest", "Lowproductive \nyoung forest", "Unproductive \nforest"))+
+  scale_x_discrete(labels = c("Highproductive \nold forest", "Highproductive \nyoung forest", "Lowproductive \nold forest", "Lowproductive \nyoung forest", "Unproductive \nforest")) +
   scale_y_continuous(limits = c(5, 50), breaks =  seq(from = 5, to = 50, by = 10))
 
+# treart ----
+pdt_treart <- ggplot() +
+  geom_pointrange(data = total_treart, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "total"), size = 1) +
+  geom_pointrange(data = recruit_treart, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "direct"), size = 1) +
+  theme_light() +
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  xlab("\nTree species group") + 
+  ylab("Recruits (%)\n") +
+  scale_x_discrete(labels = c("Pine", "Other deciduous \ntrees", "Rowan, aspen, \nwillow")) +
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
+                     values = c("total" = "#009292", "direct" = "#004949"))
 
 pt_treart <- ggplot() +
   geom_pointrange(data = total_treart, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "total"), size = 1) +
+  theme_light() +
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  xlab("\nTree species group") + 
+  ylab("Recruits (%)\n") +
+  scale_x_discrete(labels = c("Pine", "Other deciduous \ntrees", "Rowan, aspen, \nwillow")) +
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
+                     values = c("total" = "#009292", "direct" = "#004949"))
+
+pd_treart <- ggplot() +
   geom_pointrange(data = recruit_treart, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "direct"), size = 1) +
   theme_light() +
   theme(axis.text = element_text(size = 10),
@@ -309,9 +399,9 @@ ph_treart <- ggplot(data = bp_treart,aes(var, point)) +
   scale_x_discrete(labels = c("Pine", "Other deciduous \ntrees", "Rowan, aspen, \nwillow")) +
   scale_y_continuous(limits = c(5, 50), breaks =  seq(from = 5, to = 50, by = 10))
 
-
-pt_kant <- ggplot() +
-  geom_pointrange(data = total_kant, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "total"), size = 1) +
+# kant ----
+pdt_kant <- ggplot() +
+  geom_pointrange(data = total_kant, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "indirect"), size = 1) +
   theme_light() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
@@ -319,7 +409,18 @@ pt_kant <- ggplot() +
   ylab("Recruits (%)\n") +
   scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-10m", "Edge information\nmissing")) +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
-                     values = c("total" = "#009292", "direct" = "#004949"))
+                     values = c("total" = "#009292", "indirect" = "#004949"))
+
+pt_kant <- ggplot() +
+  geom_pointrange(data = total_kant, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "indirect"), size = 1) +
+  theme_light() +
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  xlab("\nEdge effect") + 
+  ylab("Recruits (%)\n") +
+  scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-10m", "Edge information\nmissing")) +
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
+                     values = c("total" = "#009292", "indirect" = "#004949"))
 
 ph_kant <- ggplot(data = bp_kant, aes(var, point)) +
   geom_pointrange(aes(ymin = CI025, ymax = CI975), colour = "#009292", size = 1) +
@@ -331,10 +432,32 @@ ph_kant <- ggplot(data = bp_kant, aes(var, point)) +
   scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-10m", "Edge information\nmissing"))+
   scale_y_continuous(limits = c(5, 50), breaks =  seq(from = 5, to = 50, by = 10))
 
+# hell ----
+pdt_hell <- ggplot() + 
+  geom_line(data = total_hell, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = total_hell, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  geom_line(data = recruit_hell, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = recruit_hell, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  xlab("\nSlope (%)") + 
+  ylab("Recruits (%)\n") +
+  theme_light()+
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
+                     values = c("total" = "#009292", "direct" = "#004949"))
 
 pt_hell <- ggplot() + 
   geom_line(data = total_hell, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = total_hell, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  xlab("\nSlope (%)") + 
+  ylab("Recruits (%)\n") +
+  theme_light()+
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
+                     values = c("total" = "#009292", "direct" = "#004949"))
+
+pd_hell <- ggplot() + 
   geom_line(data = recruit_hell, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = recruit_hell, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   xlab("\nSlope (%)") + 
@@ -355,10 +478,32 @@ ph_hell <- ggplot(data = bp_hell,aes(var, point)) +
   ylab("Browsing pressure (%)\n")+
   scale_y_continuous(limits = c(10, 30), breaks =  seq(from = 10, to = 30, by = 5))
 
+# hoh ----
+pdt_hoh <- ggplot() + 
+  geom_line(data = total_hoh, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = total_hoh, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  geom_line(data = recruit_hoh, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = recruit_hoh, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  xlab("\nAltitude (%)") + 
+  ylab("Recruits (%)\n") +
+  theme_light()+
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
+                     values = c("total" = "#009292", "direct" = "#004949"))
 
 pt_hoh <- ggplot() + 
   geom_line(data = total_hoh, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = total_hoh, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  xlab("\nAltitude (%)") + 
+  ylab("Recruits (%)\n") +
+  theme_light()+
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
+                     values = c("total" = "#009292", "direct" = "#004949"))
+
+pd_hoh <- ggplot() + 
   geom_line(data = recruit_hoh, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = recruit_hoh, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   xlab("\nAltitude (%)") + 
@@ -379,6 +524,17 @@ ph_hoh <- ggplot(data = bp_hoh,aes(var, point)) +
   ylab("Browsing pressure (%)\n")+
   scale_y_continuous(limits = c(10, 30), breaks =  seq(from = 10, to = 30, by = 5))
 
+# tretett ----
+pdt_tretett <- ggplot() + 
+  geom_line(data = total_tretett, aes(var, point, color = "indirect"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = total_tretett, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  xlab("\nTree density (%)") + 
+  ylab("Recruits (%)\n") +
+  theme_light()+
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
+                     values = c("total" = "#009292", "indirect" = "#004949"))
 
 pt_tretett <- ggplot() + 
   geom_line(data = total_tretett, aes(var, point, color = "indirect"), linetype = 1, size = 1, show.legend = T) +
@@ -389,8 +545,7 @@ pt_tretett <- ggplot() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
-                     values = c("indirect" = "#009292"))
-
+                     values = c("total" = "#009292", "indirect" = "#004949"))
 
 ph_tretett <- ggplot(data = bp_tretett,aes(var, point)) +
   geom_line(colour = "#009292", linetype = 1, size = 1)+
@@ -402,10 +557,30 @@ ph_tretett <- ggplot(data = bp_tretett,aes(var, point)) +
   ylab("Browsing pressure (%)\n")+
   scale_y_continuous(limits = c(10, 30), breaks =  seq(from = 10, to = 30, by = 5))
 
+# beite ----
+pdt_beite <- ggplot() + 
+  geom_line(data = recruit_beite, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = recruit_beite, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  xlab("\nBrowsing pressure (%)") + 
+  ylab("Recruits (%)\n") +
+  theme_light()+
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
+                     values = c("total" = "#009292", "direct" = "#004949"))
 
 pt_beite <- ggplot() + 
-  geom_line(data = total_beite, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = total_beite, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2)+ 
+  geom_line(data = recruit_beite, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = recruit_beite, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  xlab("\nBrowsing pressure (%)") + 
+  ylab("Recruits (%)\n") +
+  theme_light()+
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  scale_color_manual(name = "Effect on \nRecruits (%)", 
+                     values = c("total" = "#009292", "direct" = "#004949"))
+
+pd_beite <- ggplot() + 
   geom_line(data = recruit_beite, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = recruit_beite, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   xlab("\nBrowsing pressure (%)") + 
@@ -425,11 +600,23 @@ pt_beite <- ggplot() +
 #           nrow = 3, ncol = 3)
 
 library(gridExtra)
+# browsing pressure
 grid.arrange(ph_treart, ph_disthus, ph_distvei, ph_hell, ph_hoh, ph_kant, ph_skogkat,  ph_tretett,
           nrow = 4, ncol = 2)
 
+# direct
+grid.arrange(pd_disthus, pd_distvei, pd_treart, pd_skogkat, pd_hell, pd_hoh, pd_beite,
+          nrow = 4, ncol = 2)
+
+# total
 grid.arrange(pt_disthus, pt_distvei, pt_beite, pt_treart, pt_skogkat, pt_hell, pt_hoh, pt_kant, pt_tretett,
           nrow = 5, ncol = 2)
+
+# direct and total
+grid.arrange(pdt_disthus, pdt_distvei, pdt_beite, pdt_treart, pdt_skogkat, pdt_hell, pdt_hoh, pdt_kant, pdt_tretett,
+          nrow = 5, ncol = 2)
+
+
 
 ```
 
