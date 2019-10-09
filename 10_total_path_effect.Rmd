@@ -155,7 +155,7 @@ load("output/final_function_outputs/total_hoh.rda")
 ```
 
 
-## Re-scale
+## Re-scale (now should already be done for all variables, if the loaded function data is used)
 ```{r}
 # attributes(browse9.2$HOH_scale)
 # attributes(browse9.2$disthus_trunc_cut200_scale)
@@ -221,7 +221,7 @@ library(ggplot2)
 pdt_disthus <- ggplot() + 
   geom_line(data = total_disthus, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = total_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
-  geom_line(data = recruit_disthus, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
+  geom_line(data = recruit_disthus, aes(var, point, color = "direct\n(only on\nprobability)"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = recruit_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   xlab("\nDistance to house (m)") + 
   ylab("Recruits (%)\n") +
@@ -229,7 +229,7 @@ pdt_disthus <- ggplot() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
-                     values = c("total" = "#009292", "direct" = "#004949"))
+                     values = c("total" = "#009292", "direct\n(only on\nprobability)" = "#004949"))
 
 pt_disthus <- ggplot() + 
   geom_line(data = total_disthus, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
@@ -260,8 +260,7 @@ ph_disthus <- ggplot(data = bp_disthus, aes(var, point)) +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nDistance to house (m)") + 
-  ylab("Browsing pressure (%)\n") +
-  scale_y_continuous(limits = c(10, 25), breaks =  seq(from = 10, to = 25, by = 5))
+  ylab("Browsing pressure (%)\n") 
 
 # distvei ----
 pdt_distvei <- ggplot() + 
@@ -306,8 +305,7 @@ ph_distvei <- ggplot(data = bp_distvei, aes(var, point)) +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nDistance to road (m)") + 
-  ylab("Browsing pressure (%)\n") +
-  scale_y_continuous(limits = c(10, 30), breaks =  seq(from = 10, to = 30, by = 5))
+  ylab("Browsing pressure (%)\n") 
 
 # skogkat ----
 pdt_skogkat <- ggplot() +
@@ -351,8 +349,7 @@ ph_skogkat <- ggplot(data = bp_skogkat,aes(var, point)) +
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nForest category") + 
   ylab("Browsing pressure (%)\n") +
-  scale_x_discrete(labels = c("Highproductive \nold forest", "Highproductive \nyoung forest", "Lowproductive \nold forest", "Lowproductive \nyoung forest", "Unproductive \nforest")) +
-  scale_y_continuous(limits = c(5, 50), breaks =  seq(from = 5, to = 50, by = 10))
+  scale_x_discrete(labels = c("Highproductive \nold forest", "Highproductive \nyoung forest", "Lowproductive \nold forest", "Lowproductive \nyoung forest", "Unproductive \nforest")) 
 
 # treart ----
 pdt_treart <- ggplot() +
@@ -396,8 +393,7 @@ ph_treart <- ggplot(data = bp_treart,aes(var, point)) +
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nTree species groups") + 
   ylab("Browsing pressure (%)\n") +
-  scale_x_discrete(labels = c("Pine", "Other deciduous \ntrees", "Rowan, aspen, \nwillow")) +
-  scale_y_continuous(limits = c(5, 50), breaks =  seq(from = 5, to = 50, by = 10))
+  scale_x_discrete(labels = c("Pine", "Other deciduous \ntrees", "Rowan, aspen, \nwillow")) 
 
 # kant ----
 pdt_kant <- ggplot() +
@@ -409,7 +405,7 @@ pdt_kant <- ggplot() +
   ylab("Recruits (%)\n") +
   scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-10m", "Edge information\nmissing")) +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
-                     values = c("total" = "#009292", "indirect" = "#004949"))
+                     values = c("indirect" = "#009292", "direct" = "#004949"))
 
 pt_kant <- ggplot() +
   geom_pointrange(data = total_kant, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "indirect"), size = 1) +
@@ -420,7 +416,7 @@ pt_kant <- ggplot() +
   ylab("Recruits (%)\n") +
   scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-10m", "Edge information\nmissing")) +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
-                     values = c("total" = "#009292", "indirect" = "#004949"))
+                     values = c("indirect" = "#009292", "direct" = "#004949"))
 
 ph_kant <- ggplot(data = bp_kant, aes(var, point)) +
   geom_pointrange(aes(ymin = CI025, ymax = CI975), colour = "#009292", size = 1) +
@@ -429,14 +425,13 @@ ph_kant <- ggplot(data = bp_kant, aes(var, point)) +
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nEdge effect") + 
   ylab("Browsing pressure (%)\n") +
-  scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-10m", "Edge information\nmissing"))+
-  scale_y_continuous(limits = c(5, 50), breaks =  seq(from = 5, to = 50, by = 10))
+  scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-10m", "Edge information\nmissing"))
 
 # hell ----
 pdt_hell <- ggplot() + 
   geom_line(data = total_hell, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = total_hell, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
-  geom_line(data = recruit_hell, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
+  geom_line(data = recruit_hell, aes(var, point, color = "direct\n(only on\nprobability)"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = recruit_hell, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   xlab("\nSlope (%)") + 
   ylab("Recruits (%)\n") +
@@ -444,7 +439,7 @@ pdt_hell <- ggplot() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
-                     values = c("total" = "#009292", "direct" = "#004949"))
+                     values = c("total" = "#009292", "direct\n(only on\nprobability)" = "#004949"))
 
 pt_hell <- ggplot() + 
   geom_line(data = total_hell, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
@@ -458,7 +453,7 @@ pt_hell <- ggplot() +
                      values = c("total" = "#009292", "direct" = "#004949"))
 
 pd_hell <- ggplot() + 
-  geom_line(data = recruit_hell, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
+  geom_line(data = recruit_hell, aes(var, point, color = "direct\n(only on\nprobability)"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = recruit_hell, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   xlab("\nSlope (%)") + 
   ylab("Recruits (%)\n") +
@@ -466,7 +461,7 @@ pd_hell <- ggplot() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
-                     values = c("total" = "#009292", "direct" = "#004949"))
+                     values = c("total" = "#009292", "direct\n(only on\nprobability)" = "#004949"))
 
 ph_hell <- ggplot(data = bp_hell,aes(var, point)) +
   geom_line(colour = "#009292", linetype = 1, size = 1)+
@@ -475,8 +470,7 @@ ph_hell <- ggplot(data = bp_hell,aes(var, point)) +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nSlope (%)") + 
-  ylab("Browsing pressure (%)\n")+
-  scale_y_continuous(limits = c(10, 30), breaks =  seq(from = 10, to = 30, by = 5))
+  ylab("Browsing pressure (%)\n")
 
 # hoh ----
 pdt_hoh <- ggplot() + 
@@ -521,31 +515,30 @@ ph_hoh <- ggplot(data = bp_hoh,aes(var, point)) +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nAltitude (m)") + 
-  ylab("Browsing pressure (%)\n")+
-  scale_y_continuous(limits = c(10, 30), breaks =  seq(from = 10, to = 30, by = 5))
+  ylab("Browsing pressure (%)\n")
 
 # tretett ----
 pdt_tretett <- ggplot() + 
   geom_line(data = total_tretett, aes(var, point, color = "indirect"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = total_tretett, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
-  xlab("\nTree density (%)") + 
+  xlab("\nTree density") + 
   ylab("Recruits (%)\n") +
   theme_light()+
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
-                     values = c("total" = "#009292", "indirect" = "#004949"))
+                     values = c("indirect" = "#009292", "direct" = "#004949"))
 
 pt_tretett <- ggplot() + 
   geom_line(data = total_tretett, aes(var, point, color = "indirect"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = total_tretett, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
-  xlab("\nTree density (%)") + 
+  xlab("\nTree density") + 
   ylab("Recruits (%)\n") +
   theme_light()+
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
-                     values = c("total" = "#009292", "indirect" = "#004949"))
+                     values = c("indirect" = "#009292", "direct" = "#004949"))
 
 ph_tretett <- ggplot(data = bp_tretett,aes(var, point)) +
   geom_line(colour = "#009292", linetype = 1, size = 1)+
@@ -554,8 +547,7 @@ ph_tretett <- ggplot(data = bp_tretett,aes(var, point)) +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nTree density") + 
-  ylab("Browsing pressure (%)\n")+
-  scale_y_continuous(limits = c(10, 30), breaks =  seq(from = 10, to = 30, by = 5))
+  ylab("Browsing pressure (%)\n")
 
 # beite ----
 pdt_beite <- ggplot() + 
@@ -601,7 +593,7 @@ pd_beite <- ggplot() +
 
 library(gridExtra)
 # browsing pressure
-grid.arrange(ph_treart, ph_disthus, ph_distvei, ph_hell, ph_hoh, ph_kant, ph_skogkat,  ph_tretett,
+grid.arrange(ph_disthus, ph_distvei, ph_treart, ph_hell, ph_hoh, ph_kant, ph_skogkat,  ph_tretett,
           nrow = 4, ncol = 2)
 
 # direct
