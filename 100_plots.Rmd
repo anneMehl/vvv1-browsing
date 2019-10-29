@@ -247,17 +247,46 @@ funp1 <- ggplot(browse9.2_dist(x = c(0, 2500)), aes(x = x)) +
 ```
 
 
+load("processdata/browse9.4.rda")
+load("processdata/browse9.6sc.rda")
+```{r}
+
+names(browse9.6sc)
+names(browse9.4)
+
+```
 
 
+```{r}
+library(ggplot2)
 
+ggplot(data = browse9.6sc, aes(kant, proplt, color = treartgruppe9)) +
+  geom_boxplot()+
+  theme_dark()
 
+ggplot(data = browse9.6sc, aes(kant, proplt, color = skogkategori)) +
+  geom_boxplot()+
+  theme_dark()
 
+ggplot(data = browse9.6sc, aes(kant, proplt)) +
+  geom_boxplot()+
+  theme_dark()
 
+```
 
+```{r}
+library(ggplot2)
 
+ggplot(data = browse9.4, aes(kant, beitetrykkr, color = treartgruppe9)) +
+  geom_boxplot()+
+  theme_dark()
 
+ggplot(data = browse9.4, aes(kant, beitetrykkr, color = skogkategori)) +
+  geom_boxplot()+
+  theme_dark()
 
+ggplot(data = browse9.4, aes(kant, beitetrykkr)) +
+  geom_boxplot()+
+  theme_dark()
 
-
-
-
+```
