@@ -228,10 +228,10 @@ AIC(m1nbin, m1oin, m1pbin, m1qbin, m1rbin)
 
 library(AICcmodavg)
 
-Candmods_bin <- list(m1abin, m1gbin, m1hbin, m1ibin, m1jbin, m1kbin, m1lbin)
+candmods_BP_hbin <- list(m1abin, m1gbin, m1hbin, m1ibin, m1jbin, m1kbin, m1lbin)
 
 
-glmmbin_tab <- aictab(Candmods_bin, modnames = NULL,
+glmmbinh_tab <- aictab(candmods_BP_hbin, modnames = NULL,
                        second.ord = TRUE, nobs = NULL, sort = TRUE)
 
 # cut150 is the thing!
@@ -313,13 +313,6 @@ m4abin <- glmer(factor(beitetrykkr > 0) ~ log(distvei2_trunc+1) + skogkategori +
 
 ```
 
-```{r}
-save(m2bin, file = "output/recentBP_selection/m2bin.rda")
-save(m3bin, file = "output/recentBP_selection/m3bin.rda")
-save(m4bin, file = "output/recentBP_selection/m4bin.rda")
-
-```
-
 
 
 ```{r}
@@ -329,13 +322,16 @@ AIC(m4bin, m7bin, m8bin)
 
 
 library(AICcmodavg)
-Candmods_bin <- list(m4bin, m5bin, m6bin, m7bin, m8bin, m9bin, m10bin, m11bin, m12bin)
+candmods_BP_rbin <- list(m4abin2, m3bin, m4bin)
 
-glmmbin_tab <- aictab(Candmods_bin, modnames = NULL,
+glmmbinr_tab <- aictab(candmods_BP_rbin, modnames = NULL,
                        second.ord = TRUE, nobs = NULL, sort = TRUE)
 
 # m4(a)bin is the thing!
 
+modList <- list(l7, l6, l5, l4, b7, b6, b5, b4)
+aics <- sapply(modList, function(x) AIC(pcrfit(reps, 1, 2, x))) 
+akaike.weights(aics)$weights
 
 ```
 
@@ -532,6 +528,17 @@ AIC(m1beta, m1gbeta, m1hbeta, m1ibeta, m1jbeta)
 AIC(m1mbbeta, m1nbeta, m1obeta, m1pbeta)
 # m1pbeta is the thing!
 
+# library(AICcmodavg)
+library(bblme)
+
+# candmods_BP_hbeta <- list(m1beta, m1gbeta, m1hbeta, m1ibeta, m1jbeta)
+# 
+# glmmbin_tab <- aictab(candmods_BP_hbeta, modnames = NULL,
+#                        second.ord = TRUE, nobs = NULL, sort = TRUE, c.hat = 1)
+
+ICtab(m1beta, m1gbeta, m1hbeta, m1ibeta, m1jbeta, type = "AIC", weights = TRUE, delta = TRUE)
+
+
 save(m1gbeta, file = "m1gbeta.rda")
 save(m1hbeta, file = "m1hbeta.rda")
 save(m1ibeta, file = "m1ibeta.rda")
@@ -639,13 +646,16 @@ load("output/recentBP_selection/m4beta.rda")
 
 summary(m4abeta)
 
-library(AICcmodavg)
+# library(AICcmodavg)
+library(bblme)
 
-Candmods_bin <- list(m4abin2, m16cbin)
+# candmods_BP_hbeta <- list(m1beta, m1gbeta, m1hbeta, m1ibeta, m1jbeta)
+# 
+# glmmbin_tab <- aictab(candmods_BP_hbeta, modnames = NULL,
+#                        second.ord = TRUE, nobs = NULL, sort = TRUE, c.hat = 1)
 
-
-glmmbin_tab <- aictab(Candmods_bin, modnames = NULL,
-                       second.ord = FALSE, nobs = NULL, sort = TRUE)
+ICtab(m4abeta, m2beta, m3beta, m4beta, type = "AIC", weights = TRUE, delta = TRUE)
+AIC(m4abeta, m2beta, m3beta, m4beta)
 
 ```
 
