@@ -138,7 +138,7 @@ browse9.5msc <- browse9.5m
 browse9.5msc[pvars] <- lapply(browse9.5msc[pvars],scale)
 
 save(browse9.5msc, file = "browse9.5msc.rda")
-
+load("processdata/browse9.5m.rda")
 
 m1bin <- glmer(factor(proplt > 0) ~ disthus + distvei2 + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = binomial(),
@@ -230,6 +230,17 @@ AIC(m0dbin, m8bin)
 AIC(m7bin, m8bin, m10bin)
 
 # cut 400 is the thing!
+
+library(AICcmodavg)
+# library(bblme)
+
+candmods_R_hbin <- list(m1bin, m7bin, m8bin, m10bin)
+
+glmmbin_tab <- aictab(candmods_R_hbin, modnames = NULL,
+                       second.ord = TRUE, nobs = NULL, sort = TRUE, c.hat = 1)
+
+# ICtab(m4abeta, m2beta, m3beta, m4beta, type = "AIC", weights = TRUE, delta = TRUE)
+# AIC(m4abeta, m2beta, m3beta, m4beta)
 
 
 ```
@@ -334,6 +345,19 @@ data = browse9.6sc)
 AIC(m14bin, m15bin, m16bin, m17bin, m18bin, m19bin, m20bin, m21bin)
 AIC(m14bin, m15bin, m16abin, m17bin, m18bin)
 
+library(AICcmodavg)
+# library(bblme)
+
+candmods_R_rbin <- list(m14bin, m15bin, m16cbin, m17bin, m18bin)
+
+glmmbeta_tab <- aictab(candmods_R_rbin, modnames = NULL,
+                       second.ord = TRUE, nobs = NULL, sort = TRUE, c.hat = 1)
+
+# ICtab(m4abeta, m2beta, m3beta, m4beta, type = "AIC", weights = TRUE, delta = TRUE)
+# AIC(m4abeta, m2beta, m3beta, m4beta)
+
+
+
 summary(m16bin)
 
 library(effects)
@@ -378,6 +402,7 @@ browse9.5mpossc <- browse9.5mpos
 browse9.5mpossc[pvars] <- lapply(browse9.5mpossc[pvars],scale)
 
 save(browse9.5mpossc, file = "browse9.5mpossc.rda")
+load("processdata/browse9.5mpossc.rda")
 
 
 m1beta <- glmmTMB(proplt ~ disthus_1000 + distvei2 + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
@@ -459,6 +484,16 @@ AIC(m6beta, m7beta, m8beta, m10beta, m11beta, m12beta)
 AIC(m10beta, m0bbeta)
 # m0bbeta best!
 
+# library(AICcmodavg)
+library(bblme)
+
+# candmods_R_hbin <- list(m1bin, m7bin, m8bin, m10bin)
+# 
+# glmmbin_tab <- aictab(candmods_R_hbin, modnames = NULL,
+#                        second.ord = TRUE, nobs = NULL, sort = TRUE, c.hat = 1)
+
+ICtab(m0bbeta, m6beta, m7beta, m8beta, m10beta, m11beta, m12beta, type = "AIC", weights = TRUE, delta = TRUE)
+AIC(m0bbeta, m6beta, m7beta, m8beta, m10beta, m11beta, m12beta)
 
 ```
 
@@ -528,7 +563,19 @@ m18beta <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + HOH + I(HOH^2) + brow
 summary(m16beta)
 load("output/m16abeta.rda")
 
-AIC(m12beta, m13beta, m14beta, m15beta, m16beta, m16abeta)
+AIC(m12beta, m13beta, m14beta, m15beta, m16abeta)
+
+# library(AICcmodavg)
+library(bbmle)
+
+# candmods_R_rbin <- list(m14bin, m15bin, m16cbin, m17bin, m18bin)
+# 
+# glmmbeta_tab <- aictab(candmods_R_rbin, modnames = NULL,
+#                        second.ord = TRUE, nobs = NULL, sort = TRUE, c.hat = 1)
+
+ICtab(m12beta, m13beta, m14beta, m15beta, m16abeta, type = "AIC", weights = TRUE, delta = TRUE)
+AIC(m12beta, m13beta, m14beta, m15beta, m16abeta)
+
 
 library(effects)
 plot(allEffects(m16beta))
