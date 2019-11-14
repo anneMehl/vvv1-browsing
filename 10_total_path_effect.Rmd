@@ -74,10 +74,12 @@ dat2 <- browse9.5msc
 load("output/m16cbin.rda")
 zeromod2 <- m16cbin
 # summary(zeromod2)
+zeromod2 <- bin_kant
 
 load("output/m16abeta.rda")
 percmod2 <- m16abeta
 # summary(percmod2)
+percmod2 <- beta_kant
 
 load("processdata/browse9.6sc.rda")
 # head(browse9.6sc)
@@ -94,7 +96,7 @@ source("function_resp_curve.R")
 
 ```{r}
 (focal = c("distvei", "skogkategori", "treartgruppe", "kant", 
-           "helling", "HOH", "tretetthet", "browspres_merged", "disthus")[9])
+           "helling", "HOH", "tretetthet", "browspres_merged", "disthus")[4])
 
 ```
 
@@ -103,10 +105,10 @@ source("function_resp_curve.R")
 recruit_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
 
-recruit_beite <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+recruit_kant <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
 
-total_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+total_kant <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=99)
 ```
 
@@ -407,6 +409,20 @@ pdt_kant <- ggplot() +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
                      values = c("indirect" = "#009292", "direct" = "#004949"))
 
+
+
+pd_kant_TEST <- ggplot() +
+  geom_pointrange(data = recruit_kant, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "direct"), size = 1) +
+  theme_light() +
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  xlab("\nTree species group") + 
+  ylab("Recruits (%)\n") +
+  scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-10m", "Edge information\nmissing"))
+
+
+
+
 pt_kant <- ggplot() +
   geom_pointrange(data = total_kant, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "indirect"), size = 1) +
   theme_light() +
@@ -615,3 +631,84 @@ grid.arrange(pdt_disthus, pdt_distvei, pdt_beite, pdt_treart, pdt_skogkat, pdt_h
 
 
 "#004949", "#009292"
+
+
+## Testing for kant in total/ indirect effect
+```{r}
+# BIN
+library(lme4)
+load("processdata/browse9.6sc.rda")
+
+# m16cbin: glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR), family = binomial(), data = browse9.6sc)
+
+bin_kant <- glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR), 
+                  family = binomial(), 
+                  data = browse9.6sc)
+
+
+# BETA
+library(glmmTMB)
+load("processdata/browse9.5mpossc.rda")
+
+# m16abeta: glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + HOH + I(HOH^2) + browspres_merged + (1|KOMNR), data = browse9.5mpossc, family = beta_family())
+
+beta_kant <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + HOH + I(HOH^2) + kant + (1|KOMNR), data = browse9.5mpossc, family = beta_family())
+
+
+```
+
+
+
+## Testing R2 and AIC weight for best models and model without dist house/ dist road
+```{r}
+
+# HOUSE
+#bin
+library(lme4)
+mhusabin
+
+mhusabin_2 <- glmer(factor(proplt > 0) ~ log(distvei2 + 1) + skogkategori +  
+    treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) + ac + (1 | KOMNR), 
+    family = binomial(), data = browse9.5msc)
+
+# beta
+library(glmmTMB)
+m16abeta
+
+m16abeta_2 <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + HOH + I(HOH^2) + browspres_merged + (1|KOMNR), data = browse9.5mpossc, family = beta_family())
+
+
+# ROAD
+# bin
+library(lme4)
+m16cbin
+
+m16cbin_2 <- glmer(factor(proplt > 0) ~ skogkategori + treartgruppe9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR), family = binomial(), data = browse9.6sc)
+
+
+# beta
+library(glmmTMB)
+m16abeta
+
+m16abeta_2 <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + HOH + I(HOH^2) + browspres_merged + (1|KOMNR), data = browse9.5mpossc, family = beta_family())
+
+```
+
+```{r}
+library(AICcmodavg)
+candmods <- list(m16cbin, m16cbin_2)
+
+glmmbeta_tab <- aictab(candmods, modnames = NULL,
+                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+
+library(bbmle)
+ICtab(m16abeta, m16abeta_2, type = "AIC", weights = TRUE, delta = TRUE)
+AIC(m16abeta, m16abeta_2)
+
+library(sjPlot)
+tab_model(m16cbin_2, transform = NULL, 
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
+
+
+```
+
