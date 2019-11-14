@@ -250,6 +250,8 @@ funp1 <- ggplot(browse9.2_dist(x = c(0, 2500)), aes(x = x)) +
 load("processdata/browse9.4.rda")
 load("processdata/browse9.6sc.rda")
 ```{r}
+load("processdata/browse9.4.rda")
+load("processdata/browse9.6sc.rda")
 
 names(browse9.6sc)
 names(browse9.4)
@@ -262,7 +264,8 @@ library(ggplot2)
 
 ggplot(data = browse9.6sc, aes(kant, proplt, color = treartgruppe9)) +
   geom_boxplot()+
-  theme_dark()
+  theme_dark()+
+  geom_boxplot(outlier.shape = NA) + geom_jitter(width = 0.2)
 
 ggplot(data = browse9.6sc, aes(kant, proplt, color = skogkategori)) +
   geom_boxplot()+
