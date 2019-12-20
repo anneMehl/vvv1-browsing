@@ -72,6 +72,20 @@ hglm1 <- glm(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + kan
 
 
 # zero inflated
+
+f3 <- formula(beitetrykkr ~ distvei1 + skogkategori + treartgruppe + region + kant + helling + HOH + tretetthet)
+
+f5 <- formula(proplt ~ log(distvei2 + 1) + skogkategori + treartgruppe9 + HOH +  
+    I(HOH^2) + browspres_merged)
+
+zinbdata <- browse9.6sc
+
+zinbdata$proplt <- zinbdata$proplt*100
+zinbdata$proplt <- as.integer(zinbdata$proplt)
+
+zinbTest <- zeroinfl(f5, dist = "negbin", 
+              data = zinbdata)
+
 z3a <- zeroinfl(f3, dist = "negbin", 
               data = browse9bro_dist)
 
@@ -84,9 +98,18 @@ z3c <- zeroinfl(f4, dist = "negbin",
 z3d <- zeroinfl(f3, dist = "poisson", 
               data = browse9bro_dist)
 
+zinbTest2 <- glmmTMB(f5, data = zinbdata, family = nbinom1(), ziformula = ~0,
+  dispformula = ~1, weights = NULL, offset = NULL,
+  contrasts = NULL, na.action = na.fail, se = TRUE,
+  verbose = FALSE, doFit = TRUE, control = glmmTMBControl(),
+  REML = FALSE)
 
+summary(zinbTest)
+predictedZINB <- predict(zinbTest)
+plot(predictedZINB)
 
-
+plot_model(zinbTest2, type = c("eff"))
+plot(allEffects(zinbTest2))
 
 ## These are glms that can be used instead of hurdle, so its possible to use effect plots. But it only works for poisson....
 # H1btest <- glm(factor(beitetrykkr > 0) ~ distvei3 + disthus + region + skogkategori + kant + helling + hohkatb + treartgruppe, data = browse_91,
