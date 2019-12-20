@@ -74,12 +74,14 @@ dat2 <- browse9.5msc
 load("output/m16cbin.rda")
 zeromod2 <- m16cbin
 # summary(zeromod2)
-zeromod2 <- bin_kant
+# zeromod2 <- bin_kant
 
-load("output/m16abeta.rda")
-percmod2 <- m16abeta
+# load("output/m16abeta.rda")
+# percmod2 <- m16abeta
+percmod2 <- m3betaroad
+
 # summary(percmod2)
-percmod2 <- beta_kant
+# percmod2 <- beta_kant
 
 load("processdata/browse9.6sc.rda")
 # head(browse9.6sc)
@@ -96,14 +98,14 @@ source("function_resp_curve.R")
 
 ```{r}
 (focal = c("distvei", "skogkategori", "treartgruppe", "kant", 
-           "helling", "HOH", "tretetthet", "browspres_merged", "disthus")[4])
+           "helling", "HOH", "tretetthet", "browspres_merged", "disthus")[8])
 
 ```
 
 #### Run function for the different models/ focals and SAVE them
 ```{r}
 recruit_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
-           which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
+           which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=T, nb_btstrp=99)
 
 recruit_kant <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
