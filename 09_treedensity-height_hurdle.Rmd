@@ -254,7 +254,7 @@ tab_model(m8bin, transform = NULL,
 ```
 
 
-#### Model selection bin (browse9.5msc and browse9.6sc)
+#### Model selection bin (browse9.5msc (house) and browse9.6sc (road))
 ```{r}
 library(lme4)
 load("processdata/browse9.5msc.rda")
@@ -293,7 +293,7 @@ browse9.6sc[pvars] <- lapply(browse9.6sc[pvars],scale)
 save(browse9.6sc, file = "browse9.6sc.rda")
 
 
-
+## Roads bin
 
 m14bin <- glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = binomial(),
@@ -341,6 +341,8 @@ data = browse9.6sc)
 
 ```
 
+
+#### AIC selection
 ```{r}
 AIC(m14bin, m15bin, m16bin, m17bin, m18bin, m19bin, m20bin, m21bin)
 AIC(m14bin, m15bin, m16abin, m17bin, m18bin)
@@ -506,7 +508,7 @@ tab_model(m0bbeta, transform = NULL,
 
 
 
-##### Model selection (browse9.5mpos)
+##### Model selection (browse9.5mpos (house!!))
 ```{r}
 library(glmmTMB)
 load("processdata/browse9.5m.rda")
@@ -592,6 +594,38 @@ save(browse9.5mpossc, file = "browse9.5mpossc.rda")
 ```
 
 
+## Model selection beta roads
+```{r}
+library(glmmTMB)
+
+load("processdata/browse9.6sc.rda")
+browse9.6scpos <- browse9.6sc[browse9.6sc$proplt > 0, ]
+
+m1betaroad <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+            data = browse9.6scpos,
+            family = beta_family())
+
+m2betaroad <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+            data = browse9.6scpos,
+            family = beta_family())
+
+m3betaroad <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + ac + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+            data = browse9.6scpos,
+            family = beta_family())
+
+m4betaroad <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + ac + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+            data = browse9.6scpos,
+            family = beta_family())
+
+
+```
+
+```{r}
+AIC(m1betaroad, m2betaroad, m3betaroad, m4betaroad)
+
+library(bbmle)
+ICtab(m1betaroad, m2betaroad, m3betaroad, m4betaroad, type = "AIC", weights = TRUE, delta = TRUE)
+```
 
 
 
@@ -652,4 +686,49 @@ p7 <- plot_model(m16abeta, type = c("eff"), transform = NULL, terms = c("HOH"))
 
 library(gridExtra)
 plot_grid(list(p1, p6, p2, p3, p7))
+```
+
+
+
+#### Testing for a regional effect
+```{r}
+library(lme4)
+load("processdata/browse9.5m_region.rda")
+pvars <- c("disthus_400",
+           "helling","HOH", "browspres_merged", "ac")
+browse9.5m_regionsc <- browse9.5m_region
+browse9.5m_regionsc[pvars] <- lapply(browse9.5m_regionsc[pvars],scale)
+
+##### House
+# bin
+mhusabin_reg <- glmer(factor(proplt > 0) ~ disthus_400 + log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + region + (1|KOMNR),
+family = binomial(),
+data = browse9.5m_regionsc)
+
+# beta
+m0bbeta_region <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + region + (1|KOMNR),
+            data = browse9.5mpossc,
+            family = beta_family()) 
+
+
+
+##### Roads
+
+load("processdata/browse9.6_region.rda")
+load("processdata/browse9.6sc_region.rda")
+
+pvars <- c("disthus_400","HOH","ac" ) #  "helling", "browspres_merged", "ac" 
+browse9.6sc_region <- browse9.6_region
+browse9.6sc_region[pvars] <- lapply(browse9.6sc_region[pvars],scale)
+
+save(browse9.6sc_region, file = "browse9.6sc_region.rda")
+
+# bin
+m16cbin_region <- glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + helling + HOH + I(HOH^2) +  ac + region +  (1|KOMNR),
+family = binomial(),
+data = browse9.6sc)
+
+# beta
+
+
 ```
