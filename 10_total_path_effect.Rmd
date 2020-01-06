@@ -13,12 +13,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 
-## Load data and models
-```{r}
-load("processdata/browse9.4.rda")
-load("processdata/browse9.4_house.rda")
-```
-
 ```{r}
 library(lme4)
 library(glmmTMB)
@@ -61,8 +55,8 @@ dat1 <- browse9.4
 load("output/mhusabin.rda")
 zeromod2 <- mhusabin
 
-load("output/m16abeta.rda")
-percmod2 <- m16abeta
+load("output/m16abeta_house.rda")
+percmod2 <- m16abeta_house
 
 load("processdata/browse9.5msc.rda")
 dat2 <- browse9.5msc
@@ -71,17 +65,14 @@ dat2 <- browse9.5msc
 
 #### Roads
 ```{r}
-load("output/m16cbin.rda")
-zeromod2 <- m16cbin
-# summary(zeromod2)
-# zeromod2 <- bin_kant
+load("output/m2bin_roads.rda")
+zeromod2 <- m2bin_roads
+# summary(m2bin_roads)
 
-# load("output/m16abeta.rda")
-# percmod2 <- m16abeta
+
+load("output/m3betaroad.rda")
 percmod2 <- m3betaroad
 
-# summary(percmod2)
-# percmod2 <- beta_kant
 
 load("processdata/browse9.6sc.rda")
 # head(browse9.6sc)
@@ -98,7 +89,7 @@ source("function_resp_curve.R")
 
 ```{r}
 (focal = c("distvei", "skogkategori", "treartgruppe", "kant", 
-           "helling", "HOH", "tretetthet", "browspres_merged", "disthus")[8])
+           "helling", "HOH", "tretetthet", "browspres_merged", "disthus")[1])
 
 ```
 
@@ -107,11 +98,11 @@ source("function_resp_curve.R")
 recruit_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=T, nb_btstrp=99)
 
-recruit_kant <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
-           which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
+recruit_distvei <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+           which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=T, nb_btstrp=99)
 
-total_kant <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
-           which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=99)
+total_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+           which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=T, nb_btstrp=99)
 ```
 
 #### Save function data!
