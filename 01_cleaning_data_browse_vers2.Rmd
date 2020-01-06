@@ -171,23 +171,37 @@ save(browse9.5, file = "browse9.5.rda")
 save(browse9.5m, file = "browse9.5m.rda")
 
 
+##### Subset on different cuts for disthus
+browse9.6 <- browse9.5m[ which(browse9.5m$disthus > 400), ]
+save(browse9.6, file = "browse9.6.rda")
 
-
-## TEst for difference between regions
-browse9.5m_region <- browse9.5m
-browse9.5m_region <- browse9.5m[,c(1:3,7,14:20,25:26,33,40)]
-save(browse9.5m_region, file = "browse9.5m_region.rda")
-
-# Subset on different cuts for disthus
-browse9.6_region <- browse9.5m_region[ which(browse9.5m_region$disthus > 400), ]
-save(browse9.6_region, file = "browse9.6_region.rda")
-
-browse9.7pos <- browse9.6pos[ which(browse9.6pos$disthus > 200), ]
-save(browse9.7pos, file = "browse9.7pos.rda")
 
 ```
 
+## TEST for difference between regions
+```{r}
+##### House
+load("processdata/browse9.5msc.rda")
+browse9.5m_region <- browse9.5m
+browse9.5m_region <- browse9.5m_region[,c(1:3,7,14:20,25:26,33,40)]
 
+pvars <- c("disthus_400", "HOH")
+browse9.5m_regionsc <- browse9.5m_region
+browse9.5m_regionsc[pvars] <- lapply(browse9.5m_regionsc[pvars],scale)
+
+save(browse9.5m_regionsc, file = "browse9.5m_regionsc.rda")
+
+##### Road
+load("processdata/browse9.6.rda")
+browse9.6_region <- browse9.6
+browse9.6_region <- browse9.6_region[,c(1:3,7,14:20,25:26,33,40)]
+
+pvars <- c("HOH","ac" ) #  "helling", "browspres_merged", "ac" 
+browse9.6_regionsc <- browse9.6_region
+browse9.6_regionsc[pvars] <- lapply(browse9.6_regionsc[pvars],scale)
+
+save(browse9.6_regionsc, file = "browse9.6_regionsc.rda")
+```
 
 
 ## browse9.5m
