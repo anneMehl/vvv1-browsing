@@ -89,25 +89,25 @@ source("function_resp_curve.R")
 
 ```{r}
 (focal = c("distvei", "skogkategori", "treartgruppe", "kant", 
-           "helling", "HOH", "tretetthet", "browspres_merged", "disthus")[1])
+           "helling", "HOH", "tretetthet", "browspres_merged", "disthus")[8])
 
 ```
 
 #### Run function for the different models/ focals and SAVE them
 ```{r}
-recruit_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
-           which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=T, nb_btstrp=99)
+recruit_bp <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+           which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
 
 recruit_distvei <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=T, nb_btstrp=99)
 
-total_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
-           which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=T, nb_btstrp=99)
+total_bp <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+           which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=99)
 ```
 
 #### Save function data!
 ```{r}
-save(total_disthus, file = "total_disthus.rda")
+save(total_bp, file = "total_bp.rda")
 ```
 
 
