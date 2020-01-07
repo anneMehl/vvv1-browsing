@@ -742,6 +742,8 @@ AIC(m16beta_house, m16beta_house_reg)
 #                   df       AIC
 # m16beta_house     12 -809.5930
 # m16beta_house_reg 25 -872.8844
+library(bbmle)
+ICtab(m16beta_house, m16beta_house_reg, type = "AIC", weights = TRUE, delta = TRUE)
 
 # Plots
 library(sjPlot)
