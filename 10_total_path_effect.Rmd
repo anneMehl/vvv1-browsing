@@ -55,8 +55,16 @@ dat1 <- browse9.4
 load("output/mhusabin.rda")
 zeromod2 <- mhusabin
 
+# mhusabin <- glmer(factor(proplt > 0) ~ disthus_400 + log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+# family = binomial(),
+# data = browse9.5msc)
+
 load("output/m16abeta_house.rda")
 percmod2 <- m16abeta_house
+
+# m16beta_house <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+#             data = browse9.5mpossc,
+#             family = beta_family())
 
 load("processdata/browse9.5msc.rda")
 dat2 <- browse9.5msc
@@ -69,10 +77,16 @@ load("output/m2bin_roads.rda")
 zeromod2 <- m2bin_roads
 # summary(m2bin_roads)
 
+# m2bin_roads <- glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+# family = binomial(),
+# data = browse9.6sc)
 
 load("output/m3betaroad.rda")
 percmod2 <- m3betaroad
 
+# m3betaroad <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + ac + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+#             data = browse9.6scpos,
+#             family = beta_family())
 
 load("processdata/browse9.6sc.rda")
 # head(browse9.6sc)
@@ -655,48 +669,84 @@ beta_kant <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + H
 ## Testing R2 and AIC weight for best models and model without dist house/ dist road
 ```{r}
 
-# HOUSE
+# HOUSE ----
+load("processdata/browse9.5msc.rda")
+load("processdata/browse9.5mpossc.rda")
 #bin
 library(lme4)
-mhusabin
+load("output/mhusabin.rda")
 
-mhusabin_2 <- glmer(factor(proplt > 0) ~ log(distvei2 + 1) + skogkategori +  
-    treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) + ac + (1 | KOMNR), 
-    family = binomial(), data = browse9.5msc)
+mhusabin_2 <- glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+family = binomial(),
+data = browse9.5msc)
+
+#       K     AICc Delta_AICc AICcWt Cum.Wt       LL
+# Mod1 17 14213.08       0.00   0.97   0.97 -7089.51
+# Mod2 16 14220.23       7.15   0.03   1.00 -7094.09
+# Mod 1 = mhusabin
 
 # beta
 library(glmmTMB)
-m16abeta
+load("output/m16abeta_house.rda")
 
-m16abeta_2 <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + HOH + I(HOH^2) + browspres_merged + (1|KOMNR), data = browse9.5mpossc, family = beta_family())
+m16abeta_house2 <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+            data = browse9.5mpossc,
+            family = beta_family())
 
+#                 dAIC df weight
+# m16abeta_house   0.0 12 0.5   
+# m16abeta_house2  0.0 12 0.5   
+# > AIC(m16abeta_house, m16abeta_house2)
+#                 df      AIC
+# m16abeta_house  12 -809.593
+# m16abeta_house2 12 -809.593
+# The original model is already without distance to houses...
 
-# ROAD
+# ROAD ----
+load("processdata/browse9.6sc.rda")
+load("processdata/browse9.6scpos.rda")
 # bin
 library(lme4)
-m16cbin
+load("output/m2bin_roads.rda")
 
-m16cbin_2 <- glmer(factor(proplt > 0) ~ skogkategori + treartgruppe9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR), family = binomial(), data = browse9.6sc)
+m2bin_roads2 <- glmer(factor(proplt > 0) ~ skogkategori + treartgruppe9 + browspres_merged + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+family = binomial(),
+data = browse9.6sc)
 
+#       K     AICc Delta_AICc AICcWt Cum.Wt       LL
+# Mod1 13 10902.98        0.0      1      1 -5438.47
+# Mod2 12 10917.68       14.7      0      1 -5446.82
+# Mod 1 = m2bin_roads
 
 # beta
 library(glmmTMB)
-m16abeta
+load("output/m3betaroad.rda")
 
-m16abeta_2 <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + HOH + I(HOH^2) + browspres_merged + (1|KOMNR), data = browse9.5mpossc, family = beta_family())
+m3betaroad2 <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + ac + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+            data = browse9.6scpos,
+            family = beta_family())
+
+#             dAIC df weight
+# m3betaroad   0.0 13 0.5   
+# m3betaroad2  0.0 13 0.5   
+# > AIC(m3betaroad, m3betaroad2)
+#             df       AIC
+# m3betaroad  13 -603.6964
+# m3betaroad2 13 -603.6964
+# The original model is already without distance to roads...
 
 ```
 
 ```{r}
 library(AICcmodavg)
-candmods <- list(m16cbin, m16cbin_2)
+candmods <- list(mhusabin, mhusabin_2)
 
 glmmbeta_tab <- aictab(candmods, modnames = NULL,
-                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+                       second.ord = FALSE, nobs = NULL, sort = TRUE)
 
 library(bbmle)
-ICtab(m16abeta, m16abeta_2, type = "AIC", weights = TRUE, delta = TRUE)
-AIC(m16abeta, m16abeta_2)
+ICtab(m3betaroad, m3betaroad2, type = "AIC", weights = TRUE, delta = TRUE)
+AIC(m3betaroad, m3betaroad2)
 
 library(sjPlot)
 tab_model(m16cbin_2, transform = NULL, 
