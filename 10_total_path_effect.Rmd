@@ -89,7 +89,7 @@ source("function_resp_curve.R")
 
 ```{r}
 (focal = c("distvei", "skogkategori", "treartgruppe", "kant", 
-           "helling", "HOH", "tretetthet", "browspres_merged", "disthus")[8])
+           "helling", "HOH", "tretetthet", "browspres_merged", "disthus")[7])
 
 ```
 
@@ -101,13 +101,13 @@ recruit_bp <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmo
 recruit_distvei <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=T, nb_btstrp=99)
 
-total_bp <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+total_tretett <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=99)
 ```
 
 #### Save function data!
 ```{r}
-save(total_bp, file = "total_bp.rda")
+save(total_tretett, file = "total_tretett.rda")
 ```
 
 
@@ -126,25 +126,25 @@ load("output/final_function_outputs/bp_hoh.rda")
 load("output/final_function_outputs/bp_tretett.rda")
 
 # Recruits (direct)
-load("output/final_function_outputs/recruit_disthus.rda")
-load("output/final_function_outputs/recruit_distvei.rda")
-load("output/final_function_outputs/recruit_skogkat.rda")
-load("output/final_function_outputs/recruit_kant.rda")
-load("output/final_function_outputs/recruit_treart.rda")
-load("output/final_function_outputs/recruit_hell.rda")
-load("output/final_function_outputs/recruit_beite.rda")
-load("output/final_function_outputs/recruit_hoh.rda")
+load("output/final_function_outputs/06012020/recruit_disthus.rda")
+load("output/final_function_outputs/06012020/recruit_distvei.rda")
+load("output/final_function_outputs/06012020/recruit_skogkat.rda")
+load("output/final_function_outputs/06012020/recruit_kant.rda")
+load("output/final_function_outputs/06012020/recruit_treart.rda")
+load("output/final_function_outputs/06012020/recruit_hell.rda")
+load("output/final_function_outputs/06012020/recruit_bp.rda")
+load("output/final_function_outputs/06012020/recruit_hoh.rda")
 
 # Total (indirect + direct)
-load("output/final_function_outputs/total_disthus.rda")
-load("output/final_function_outputs/total_distvei.rda")
-load("output/final_function_outputs/total_skogkat.rda")
-load("output/final_function_outputs/total_kant.rda")
-load("output/final_function_outputs/total_treart.rda")
-load("output/final_function_outputs/total_hell.rda")
-load("output/final_function_outputs/total_beite.rda")
-load("output/final_function_outputs/total_tretett.rda")
-load("output/final_function_outputs/total_hoh.rda")
+load("output/final_function_outputs/06012020/total_disthus.rda")
+load("output/final_function_outputs/06012020/total_distvei.rda")
+load("output/final_function_outputs/06012020/total_skogkat.rda")
+load("output/final_function_outputs/06012020/total_kant.rda")
+load("output/final_function_outputs/06012020/total_treart.rda")
+load("output/final_function_outputs/06012020/total_hell.rda")
+load("output/final_function_outputs/06012020/total_bp.rda")
+load("output/final_function_outputs/06012020/total_tretett.rda")
+load("output/final_function_outputs/06012020/total_hoh.rda")
 
 
 ```
@@ -170,12 +170,12 @@ bp_hoh$var <- bp_hoh$var * 244.7748 + 361.8423
 
 recruit_distvei$var <- exp(recruit_distvei$var)-1
 
-recruit_hoh$var <- recruit_hoh$var * 244.7748 + 361.8423
+recruit_HOH$var <- recruit_HOH$var * 244.7748 + 361.8423
 
 
 total_distvei$var <- exp(total_distvei$var)-1
 
-total_hoh$var <- total_hoh$var * 244.7748 + 361.8423
+total_HOH$var <- total_HOH$var * 244.7748 + 361.8423
 
 ```
 
@@ -215,9 +215,9 @@ library(ggplot2)
 # disthus ----
 pdt_disthus <- ggplot() + 
   geom_line(data = total_disthus, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = total_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
-  geom_line(data = recruit_disthus, aes(var, point, color = "direct\n(only on\nprobability)"), linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = recruit_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  geom_ribbon(data = total_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 0, alpha = 0.2) +
+  geom_line(data = recruit_disthus, aes(var, point, color = "direct\n(only on\nprobability)"), linetype = 2, size = 1, show.legend = T) +
+  geom_ribbon(data = recruit_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 0, alpha = 0.2) +
   xlab("\nDistance to house (m)") + 
   ylab("Recruits (%)\n") +
   theme_light()+
@@ -260,16 +260,16 @@ ph_disthus <- ggplot(data = bp_disthus, aes(var, point)) +
 # distvei ----
 pdt_distvei <- ggplot() + 
   geom_line(data = total_distvei, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = total_distvei, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
-  geom_line(data = recruit_distvei, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = recruit_distvei, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  geom_ribbon(data = total_distvei, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 0, alpha = 0.2) +
+  geom_line(data = recruit_distvei, aes(var, point, color = "direct\n(only on\nprobability)"), linetype = 2, size = 1, show.legend = T) +
+  geom_ribbon(data = recruit_distvei, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 0, alpha = 0.2) +
   xlab("\nDistance to road (m)") + 
   ylab("Recruits (%)\n") +
   theme_light()+
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
-                     values = c("total" = "#009292", "direct" = "#004949"))
+                     values = c("total" = "#009292", "direct\n(only on\nprobability" = "#004949"))
 
 pt_distvei <- ggplot() + 
   geom_line(data = total_distvei, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
@@ -304,9 +304,9 @@ ph_distvei <- ggplot(data = bp_distvei, aes(var, point)) +
 
 # skogkat ----
 pdt_skogkat <- ggplot() +
-  geom_pointrange(data = total_skogkat, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "total"), size = 1) +
   geom_pointrange(data = recruit_skogkat, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "direct"), size = 1) +
   theme_light() +
+  geom_pointrange(data = total_skogkat, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "total"), size = 1) +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nForest category") + 
@@ -348,8 +348,8 @@ ph_skogkat <- ggplot(data = bp_skogkat,aes(var, point)) +
 
 # treart ----
 pdt_treart <- ggplot() +
-  geom_pointrange(data = total_treart, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "total"), size = 1) +
   geom_pointrange(data = recruit_treart, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "direct"), size = 1) +
+  geom_pointrange(data = total_treart, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "total"), size = 1) +
   theme_light() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
@@ -439,9 +439,9 @@ ph_kant <- ggplot(data = bp_kant, aes(var, point)) +
 # hell ----
 pdt_hell <- ggplot() + 
   geom_line(data = total_hell, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = total_hell, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
-  geom_line(data = recruit_hell, aes(var, point, color = "direct\n(only on\nprobability)"), linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = recruit_hell, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  geom_ribbon(data = total_hell, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 0, alpha = 0.2) +
+  geom_line(data = recruit_hell, aes(var, point, color = "direct\n(only on\nprobability)"), linetype = 2, size = 1, show.legend = T) +
+  geom_ribbon(data = recruit_hell, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 0, alpha = 0.2) +
   xlab("\nSlope (%)") + 
   ylab("Recruits (%)\n") +
   theme_light()+
@@ -483,10 +483,10 @@ ph_hell <- ggplot(data = bp_hell,aes(var, point)) +
 
 # hoh ----
 pdt_hoh <- ggplot() + 
-  geom_line(data = total_hoh, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = total_hoh, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
-  geom_line(data = recruit_hoh, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = recruit_hoh, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  geom_line(data = total_HOH, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = total_HOH, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 0, alpha = 0.2) +
+  geom_line(data = recruit_HOH, aes(var, point, color = "direct"), linetype = 2, size = 1, show.legend = T) +
+  geom_ribbon(data = recruit_HOH, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 0, alpha = 0.2) +
   xlab("\nAltitude (%)") + 
   ylab("Recruits (%)\n") +
   theme_light()+
@@ -529,7 +529,7 @@ ph_hoh <- ggplot(data = bp_hoh,aes(var, point)) +
 # tretett ----
 pdt_tretett <- ggplot() + 
   geom_line(data = total_tretett, aes(var, point, color = "indirect"), linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = total_tretett, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  geom_ribbon(data = total_tretett, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 0, alpha = 0.2) +
   xlab("\nTree density") + 
   ylab("Recruits (%)\n") +
   theme_light()+
@@ -560,8 +560,8 @@ ph_tretett <- ggplot(data = bp_tretett,aes(var, point)) +
 
 # beite ----
 pdt_beite <- ggplot() + 
-  geom_line(data = recruit_beite, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = recruit_beite, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  geom_line(data = recruit_bp, aes(var, point, color = "direct"), linetype = 2, size = 1, show.legend = T) +
+  geom_ribbon(data = recruit_bp, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 0, alpha = 0.2) +
   xlab("\nBrowsing pressure (%)") + 
   ylab("Recruits (%)\n") +
   theme_light()+
