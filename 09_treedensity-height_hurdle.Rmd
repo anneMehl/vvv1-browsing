@@ -590,6 +590,7 @@ library(glmmTMB)
 
 load("processdata/browse9.6sc.rda")
 browse9.6scpos <- browse9.6sc[browse9.6sc$proplt > 0, ]
+save(browse9.6scpos, file = "browse9.6scpos.rda")
 
 m1betaroad <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + ac + kant + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
             data = browse9.6scpos,
@@ -702,7 +703,7 @@ plot_grid(list(p1, p6, p2, p3, p7))
 #### Testing for a regional effect
 ```{r}
 ##### House #############################################
-# bin
+## bin
 library(lme4)
 load("processdata/browse9.5m_regionsc.rda")
 
@@ -710,25 +711,35 @@ mhusabin_reg <- glmer(factor(proplt > 0) ~ disthus_400 + log(distvei2+1) + skogk
 family = binomial(),
 data = browse9.5m_regionsc)
 
+save(mhusabin_reg, file = "mhusabin_reg.rda")
+
 summary(mhusabin_reg)
 
-# AIC
+# AIC ----
 AIC(mhusabin, mhusabin_reg)
 #             df      AIC
 # mhusabin     17 14213.03
 # mhusabin_reg 30 14182.70
 
+library(AICcmodavg)
+candmods <- list(mhusabin, mhusabin_reg)
+
+glmmbeta_tab <- aictab(candmods, modnames = NULL,
+                       second.ord = FALSE, nobs = NULL, sort = TRUE)
+#       K      AIC Delta_AIC AICWt Cum.Wt       LL
+# Mod2 30 14182.70      0.00     1      1 -7061.35
+# Mod1 17 14213.03     30.32     0      1 -7089.51
+
 # Plots
 library(sjPlot)
-p1husbin <- plot_model(mhusabin_reg, type = c("eff"), transform = NULL, terms = c("disthus_400"))
+# p1husbin <- plot_model(mhusabin_reg, type = c("eff"), transform = NULL, terms = c("disthus_400"))
 
 p2husbin <- plot_model(mhusabin_reg, type = c("eff"), transform = NULL, terms = c("region"))
 
 
-# beta
+## beta
 library(glmmTMB)
-load("processdata/browse9.5m_regionsc.rda")
-browse9.5m_regionscpos <- browse9.5m_regionsc[browse9.5m_regionsc$proplt > 0, ]
+load("processdata/browse9.5m_regionscpos.rda")
 browse9.5m_regionscpos$proplt <- ifelse(browse9.5m_regionscpos$proplt == 1, 0.99, browse9.5m_regionscpos$proplt)
 
 m16beta_house_reg <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + HOH + I(HOH^2) + browspres_merged + region + (1|KOMNR),
@@ -737,22 +748,27 @@ m16beta_house_reg <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgru
 
 summary(m16beta_house_reg)
 
-# AIC
-AIC(m16beta_house, m16beta_house_reg)
+# AIC ----
+AIC(m16abeta_house, m16beta_house_reg)
 #                   df       AIC
 # m16beta_house     12 -809.5930
 # m16beta_house_reg 25 -872.8844
 library(bbmle)
-ICtab(m16beta_house, m16beta_house_reg, type = "AIC", weights = TRUE, delta = TRUE)
+ICtab(m16abeta_house, m16beta_house_reg, type = "AIC", weights = TRUE, delta = TRUE)
+#                   dAIC df weight
+# m16beta_house_reg  0.0 25 1     
+# m16abeta_house    63.3 12 <0.001
 
 # Plots
 library(sjPlot)
-p1husbeta <- plot_model(m16beta_house_reg, type = c("eff"), transform = NULL, terms = c("distvei2 [0:500]"))
+# p1husbeta <- plot_model(m16beta_house_reg, type = c("eff"), transform = NULL, terms = c("distvei2 [0:500]"))
 
 p2husbeta <- plot_model(m16beta_house_reg, type = c("eff"), transform = NULL, terms = c("region"))
 
+
+
 ##### Roads ###########################################
-# bin
+## bin
 library(lme4)
 load("processdata/browse9.6_regionsc.rda")
 
@@ -762,24 +778,34 @@ data = browse9.6_regionsc)
 
 summary(m2bin_roads_reg)
 
-# AIC
+# AIC ----
 AIC(m2bin_roads, m2bin_roads_reg)
 #                 df      AIC
 # m2bin_roads     13 10902.94
 # m2bin_roads_reg 26 10885.19
 
+library(AICcmodavg)
+candmods <- list(m2bin_roads, m2bin_roads_reg)
+
+glmmbeta_tab <- aictab(candmods, modnames = NULL,
+                       second.ord = FALSE, nobs = NULL, sort = TRUE)
+#       K      AIC Delta_AIC AICWt Cum.Wt       LL
+# Mod2 26 10885.19      0.00     1      1 -5416.59
+# Mod1 13 10902.94     17.75     0      1 -5438.47
+
 # Plots
 library(sjPlot)
-p1roadbin <- plot_model(m2bin_roads_reg, type = c("eff"), transform = NULL, terms = c("distvei2 [0:500]"))
+# p1roadbin <- plot_model(m2bin_roads_reg, type = c("eff"), transform = NULL, terms = c("distvei2 [0:500]"))
 
 p2roadbin <- plot_model(m2bin_roads_reg, type = c("eff"), transform = NULL, terms = c("region"))
 
 
 
-# beta
+## beta
 library(glmmTMB)
-load("processdata/browse9.6_regionsc.rda")
-browse9.6_regionscpos <- browse9.6_regionsc[browse9.6_regionsc$proplt > 0, ]
+load("processdata/browse9.6_regionscpos.rda")
+save(browse9.6_regionscpos, file = "browse9.6_regionscpos.rda")
+
 browse9.6_regionscpos$proplt <- ifelse(browse9.6_regionscpos$proplt == 1, 0.99, browse9.6_regionscpos$proplt)
 
 m3betaroad_reg <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + ac + helling + HOH + I(HOH^2) + browspres_merged + region + (1|KOMNR),
@@ -788,11 +814,17 @@ m3betaroad_reg <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + ac + helling +
 
 summary(m3betaroad_reg)
 
-# AIC
+# AIC ----
 AIC(m3betaroad, m3betaroad_reg)
 #                df       AIC
 # m3betaroad     13 -603.6964
 # m3betaroad_reg 26 -671.3960
+
+library(bbmle)
+ICtab(m3betaroad, m3betaroad_reg, type = "AIC", weights = TRUE, delta = TRUE)
+#                dAIC df weight
+# m3betaroad_reg  0.0 26 1     
+# m3betaroad     67.7 13 <0.001
 
 # Plots
 library(sjPlot)
