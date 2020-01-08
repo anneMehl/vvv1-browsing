@@ -97,3 +97,10 @@ allEffects(m1)
 
 ```
 
+
+## To test for skrewness/ data distribution!
+```{r}
+library(fitdistrplus)
+descdist(browse9.6sc$proplt, discrete=FALSE, boot=500)
+```
+
