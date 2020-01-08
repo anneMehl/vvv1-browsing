@@ -191,6 +191,24 @@ browse9.5m_regionsc[pvars] <- lapply(browse9.5m_regionsc[pvars],scale)
 
 save(browse9.5m_regionsc, file = "browse9.5m_regionsc.rda")
 
+## Subset municipalities ----
+hedmark <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Hedmark", ]
+agder <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Agder", ]
+buskerud <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Buskerud", ]
+hordaland <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Hordaland", ]
+more_og_romsdal <- browse9.5m_regionsc[browse9.5m_regionsc$region == "More og Romsdal", ]
+nord_trondelag <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Nord-Trondelag", ]
+nordland <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Nordland", ]
+oppland <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Oppland", ]
+ostfold_akershus <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Ostfold-Akershus", ]
+rogaland <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Rogaland", ]
+sogn_og_fjordane <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Sogn og Fjordane", ]
+sor_trondelag <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Sor-Trondelag", ]
+troms <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Troms", ]
+vestfold_telemark <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Vestfold-Telemark", ]
+
+
+
 ##### Road
 load("processdata/browse9.6.rda")
 browse9.6_region <- browse9.6
