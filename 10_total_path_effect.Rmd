@@ -73,6 +73,9 @@ dat2 <- browse9.5msc
 
 #### Roads
 ```{r}
+library(fitdistrplus)
+descdist(browse9.6sc$proplt, discrete=FALSE, boot=500)
+
 load("output/m2bin_roads.rda")
 zeromod2 <- m2bin_roads
 # summary(m2bin_roads)
@@ -190,6 +193,9 @@ recruit_HOH$var <- recruit_HOH$var * 244.7748 + 361.8423
 total_distvei$var <- exp(total_distvei$var)-1
 
 total_HOH$var <- total_HOH$var * 244.7748 + 361.8423
+
+
+
 
 ```
 
@@ -412,7 +418,7 @@ pdt_kant <- ggplot() +
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nEdge effect") + 
   ylab("Recruits (%)\n") +
-  scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-10m", "Edge information\nmissing")) +
+  scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-20m", "Edge information\nmissing")) +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
                      values = c("indirect" = "#009292", "direct" = "#004949"))
 
@@ -425,7 +431,7 @@ pd_kant_TEST <- ggplot() +
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nTree species group") + 
   ylab("Recruits (%)\n") +
-  scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-10m", "Edge information\nmissing"))
+  scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-20m", "Edge information\nmissing"))
 
 
 
@@ -437,7 +443,7 @@ pt_kant <- ggplot() +
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nEdge effect") + 
   ylab("Recruits (%)\n") +
-  scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-10m", "Edge information\nmissing")) +
+  scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-20m", "Edge information\nmissing")) +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
                      values = c("indirect" = "#009292", "direct" = "#004949"))
 
@@ -448,7 +454,7 @@ ph_kant <- ggplot(data = bp_kant, aes(var, point)) +
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nEdge effect") + 
   ylab("Browsing pressure (%)\n") +
-  scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-10m", "Edge information\nmissing"))
+  scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-20m", "Edge information\nmissing"))
 
 # hell ----
 pdt_hell <- ggplot() + 
