@@ -713,9 +713,19 @@ mhusabin_reg <- glmer(factor(proplt > 0) ~ disthus_400 + log(distvei2+1) + skogk
 family = binomial(),
 data = browse9.5m_regionsc)
 
+mhusabin_reg2 <- glmer(factor(proplt > 0) ~ disthus_400 + log(distvei2+1) + browspres_merged + region + disthus_400:region + (1|KOMNR),
+family = binomial(),
+data = browse9.5m_regionsc)
+
+# mhusabin_reg3 <- glmer(factor(proplt > 0) ~ disthus_400 + log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + region + (1|KOMNR),
+# family = binomial(),
+# data = agder)
+
 save(mhusabin_reg, file = "mhusabin_reg.rda")
+save(mhusabin_reg2, file = "mhusabin_reg2.rda")
 
 summary(mhusabin_reg)
+summary(mhusabin_reg2)
 
 # AIC ----
 AIC(mhusabin, mhusabin_reg)
@@ -724,7 +734,7 @@ AIC(mhusabin, mhusabin_reg)
 # mhusabin_reg 30 14182.70
 
 library(AICcmodavg)
-candmods <- list(mhusabin, mhusabin_reg)
+candmods <- list(mhusabin, mhusabin_reg, mhusabin_reg2)
 
 glmmbeta_tab <- aictab(candmods, modnames = NULL,
                        second.ord = FALSE, nobs = NULL, sort = TRUE)
@@ -734,16 +744,21 @@ glmmbeta_tab <- aictab(candmods, modnames = NULL,
 
 # Plots
 library(sjPlot)
-# p1husbin <- plot_model(mhusabin_reg, type = c("eff"), transform = NULL, terms = c("disthus_400"))
+p1husbin <- plot_model(mhusabin_reg, type = c("est"), transform = NULL, show.values = TRUE, value.offset = 0.5, 
+                 vline.color = "grey", colors = c("#004949", "#009292"),
+                 axis.title = "Estimates")
 
 p2husbin <- plot_model(mhusabin_reg, type = c("eff"), transform = NULL, terms = c("region"))
+
+p3husbin <- plot_model(mhusabin_reg, type = c("eff"), transform = NULL, terms = c("disthus_400", "region [Sor-Trondelag, Sogn og Fjordane]"))
 
 
 ## beta
 library(glmmTMB)
 load("processdata/browse9.5m_regionsc.rda")
+load("processdata/browse9.5m_regionscpos.rda")
 browse9.5m_regionscpos <- browse9.5m_regionsc[browse9.5m_regionsc$proplt > 0, ]
-browse9.5m_regionscpos$proplt <- ifelse(browse9.5m_regionscpos$proplt == 1, 0.99, browse9.5m_regionscpos$proplt)
+# browse9.5m_regionscpos$proplt <- ifelse(browse9.5m_regionscpos$proplt == 1, 0.99, browse9.5m_regionscpos$proplt)
 save(browse9.5m_regionscpos, file = "browse9.5m_regionscpos.rda")
 load("output/m16beta_house_reg.rda")
 load("output/m16abeta_house.rda")
@@ -755,6 +770,7 @@ m16beta_house_reg <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgru
 save(m16beta_house_reg, file = "m16beta_house_reg.rda")
 
 summary(m16beta_house_reg)
+summary(m16beta_house_reg2)
 
 # AIC ----
 AIC(m16abeta_house, m16beta_house_reg)
@@ -762,7 +778,7 @@ AIC(m16abeta_house, m16beta_house_reg)
 # m16beta_house     12 -809.5930
 # m16beta_house_reg 25 -872.8844
 library(bbmle)
-ICtab(m16abeta_house, m16beta_house_reg, type = "AIC", weights = TRUE, delta = TRUE)
+ICtab(m16abeta_house, m16beta_house_reg, m16beta_house_reg2, type = "AIC", weights = TRUE, delta = TRUE)
 #                   dAIC df weight
 # m16beta_house_reg  0.0 25 1     
 # m16abeta_house    63.3 12 <0.001
@@ -773,6 +789,7 @@ library(sjPlot)
 
 p2husbeta <- plot_model(m16beta_house_reg, type = c("eff"), transform = NULL, terms = c("region"))
 
+p3husbeta <- plot_model(m16beta_house_reg2, type = c("eff"), transform = NULL, terms = c("distvei2 [0:500]", "region [Sor-Trondelag, Sogn og Fjordane]"))
 
 
 ##### Roads ###########################################
@@ -784,9 +801,15 @@ m2bin_roads_reg <- glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + t
 family = binomial(),
 data = browse9.6_regionsc)
 
+m2bin_roads_reg2 <- glmer(factor(proplt > 0) ~ log(distvei2+1) + browspres_merged + region + log(distvei2+1):region + (1|KOMNR),
+family = binomial(),
+data = browse9.6_regionsc)
+
 save(m2bin_roads_reg, file = "m2bin_roads_reg.rda")
+save(m2bin_roads_reg2, file = "m2bin_roads_reg2.rda")
 
 summary(m2bin_roads_reg)
+summary(m2bin_roads_reg2)
 
 # AIC ----
 AIC(m2bin_roads, m2bin_roads_reg)
@@ -809,7 +832,7 @@ library(sjPlot)
 
 p2roadbin <- plot_model(m2bin_roads_reg, type = c("eff"), transform = NULL, terms = c("region"))
 
-
+p3roadbin <- plot_model(m2bin_roads_reg2, type = c("eff"), transform = NULL, terms = c("distvei2 [0:500]", "region [Sor-Trondelag, Sogn og Fjordane]"))
 
 ## beta
 library(glmmTMB)
