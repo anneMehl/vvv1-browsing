@@ -161,8 +161,8 @@ save(browse9.5msc, file = "browse9.5msc.rda")
 browse9.6 <- browse9.5m[ which(browse9.5m$disthus > 400), ]
 save(browse9.6, file = "browse9.6.rda")
 
-browse9.7pos <- browse9.6pos[ which(browse9.6pos$disthus > 200), ]
-save(browse9.7pos, file = "browse9.7pos.rda")
+# browse9.7pos <- browse9.6pos[ which(browse9.6pos$disthus > 200), ]
+# save(browse9.7pos, file = "browse9.7pos.rda")
 
 
 
@@ -170,10 +170,6 @@ save(browse9.5, file = "browse9.5.rda")
 
 save(browse9.5m, file = "browse9.5m.rda")
 
-
-##### Subset on different cuts for disthus
-browse9.6 <- browse9.5m[ which(browse9.5m$disthus > 400), ]
-save(browse9.6, file = "browse9.6.rda")
 
 
 ```
