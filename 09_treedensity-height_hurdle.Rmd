@@ -248,7 +248,7 @@ m8bbin_house <- glmer(factor(proplt > 0) ~ disthus_400 + log(distvei2+1) + skogk
 family = binomial(),
 data = browse9.5msc)
 
-AIC(m8bin, m8abin, m8bbin)
+AIC(m8bin_house, mhusbin, m8bbin_house)
 
 save(mhusbin, file = "mhusbin.rda")
 save(mhusabin, file = "mhusabin.rda")
@@ -258,25 +258,19 @@ save(mhusabin, file = "mhusabin.rda")
 ###### AIC selection threshold distance to house, log or not and house model selection
 ```{r}
 
-AIC(m1bin, m2bin, m3bin, m4bin, m5bin, m6bin, m7bin, m8bin, m9bin, m10bin, m11bin, m12bin, m13bin)
+AIC(m7bin_house, m8bin_house, m10bin_house) # cut 400 is the thing!
 
-AIC(m0dbin, m8bin)
+AIC(m8bin_house, mhusbin, m8bbin_house)
 
-AIC(m7bin, m8bin, m10bin)
 
-# cut 400 is the thing!
 
 library(AICcmodavg)
-# library(bblme)
 
-candmods_R_hbin <- list(m1bin, m7bin, m8bin, m10bin)
+
+candmods_R_hbin <- list(m8bin_house, mhusbin, m8bbin_house)
 
 glmmbin_tab <- aictab(candmods_R_hbin, modnames = NULL,
                        second.ord = TRUE, nobs = NULL, sort = TRUE, c.hat = 1)
-
-# ICtab(m4abeta, m2beta, m3beta, m4beta, type = "AIC", weights = TRUE, delta = TRUE)
-# AIC(m4abeta, m2beta, m3beta, m4beta)
-
 
 ```
 
@@ -399,12 +393,6 @@ AIC(m0abeta_house, m0bbeta_house, m0cbeta_house, m0dbeta_house)
 
 ```
 
-```{r}
-library(sjPlot)
-
-tab_model(m0bbeta, transform = NULL, 
-          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
-```
 
 
 
@@ -478,6 +466,9 @@ ICtab(m12beta_house, m13beta_house, m14beta_house, m15beta_house, m16beta_house,
 AIC(m12beta, m13beta, m14beta, m15beta, m16abeta)
 
 
+ICtab(m12beta_house, m13beta_house, m15beta_house, m16beta_house, type = "AIC", weights = TRUE, delta = TRUE)
+AIC(m12beta_house, m13beta_house, m15beta_house, m16beta_house)
+
 library(effects)
 plot(allEffects(m16beta))
 plot(effect("skogkategori", m16beta))
@@ -498,6 +489,15 @@ m17beta_house   4.3 15 0.031
 ```{r}
 browse9.5mpossc <- browse9.5mpossc[,c(1,3,7,15:17,19:20,25:26,40)]
 save(browse9.5mpossc, file = "browse9.5mpossc.rda")
+```
+
+```{r}
+library(sjPlot)
+load("output/m16abeta_house.rda")
+
+tab_model(m16abeta_house, transform = NULL, 
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
+
 ```
 
 
@@ -654,7 +654,7 @@ tab_model(m16abeta, transform = NULL,
 
 ```
 
-## firgures
+## figures
 ```{r}
 p1hus <- plot_model(mhusabin, type = c("eff"), terms = c("disthus_400"))
 # p1hus + theme_light() +
