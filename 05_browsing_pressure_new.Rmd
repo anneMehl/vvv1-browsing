@@ -14,7 +14,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Load data
 ```{r}
-
 load("processdata/browse9.2.rda")
 load("processdata/browse9.2_dist.rda")
 load("processdata/browse9.2pos_dist.rda")
@@ -134,10 +133,12 @@ plot.gam(gam2, all.terms = TRUE)
 
 
 
-## Bin - First part of a hurdle model to account for zero inflation
 
+######################################################################
+## Bin - First part of a hurdle model to account for zero inflation###
+######################################################################
 
-##### Checking for the cut for disthus (browse9.2) and best bin-house-model
+##### Checking for the cut for disthus and log-selection
 ```{r}
 library(lme4)
 m1abin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
@@ -187,6 +188,10 @@ m1kbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut150_scale + log(distv
 m1lbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut175_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             family = binomial(),
             data = browse9.2) # best
+
+m1lbin2 <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut175_scale + log(distvei2+1) + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
+            family = binomial(),
+            data = browse9.2)
 
 m1sbin <- glmer(factor(beitetrykkr > 0) ~ disthus_trunc_cut100_scale + log(distvei2+1) + skogkategori + treartgruppe + ac_scale + kant + helling_scale + HOH_scale + I(HOH_scale^2) + tretetthet9_trunc_scale + (1|KOMNR),
             family = binomial(),
@@ -253,7 +258,7 @@ tab_model(m1lbin, transform = NULL,
 
 ```
 
-##### Model selection bin (roads)
+##### Model selection BIN (roads)
 ```{r}
 library(lme4)
 
