@@ -498,6 +498,7 @@ load("output/m16abeta_house.rda")
 tab_model(m16abeta_house, transform = NULL, 
           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
 
+
 ```
 
 
@@ -559,13 +560,11 @@ glmmbeta_tab <- aictab(candmods_R_rbin, modnames = NULL,
 
 
 
-summary(m16bin)
+library(sjPlot)
 
-library(effects)
-plot(allEffects(m16cbin))
-plot(effect("skogkategori", m16bin))
+tab_model(m2bin_roads, transform = NULL, 
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
 
-save(m16bin, file = "m16bin.rda")
 
 ```
     K     AICc Delta_AICc AICcWt Cum.Wt       LL
@@ -619,12 +618,25 @@ m5betaroad <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + helling + HOH + I(
 ```{r}
 save(m3betaroad, file = "m3betaroad.rda")
 
-AIC(m1betaroad, m2betaroad, m3betaroad, m4betaroad)
+AIC(m1betaroad, m2betaroad, m3betaroad, m4betaroad, m5betaroad)
 
 library(bbmle)
-ICtab(m1betaroad, m2betaroad, m3betaroad, m4betaroad, type = "AIC", weights = TRUE, delta = TRUE)
+ICtab(m1betaroad, m2betaroad, m3betaroad, m4betaroad, m5betaroad, type = "AIC", weights = TRUE, delta = TRUE, base = TRUE)
 ```
 
+           df       AIC
+m1betaroad 17 -599.5613
+m2betaroad 16 -601.0889
+m3betaroad 13 -603.6964
+m4betaroad 14 -602.1769
+m5betaroad 12 -603.3233
+
+           dAIC df weight
+m3betaroad  0.0 13 0.371 
+m5betaroad  0.4 12 0.308 
+m4betaroad  1.5 14 0.174 
+m2betaroad  2.6 16 0.101 
+m1betaroad  4.1 17 0.047 
 
 
 
@@ -648,7 +660,7 @@ tab_model(m16cbin, transform = NULL,
           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
 
 
-tab_model(m16abeta, transform = NULL, 
+tab_model(m3betaroad, transform = NULL, 
           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
 
 
@@ -656,40 +668,40 @@ tab_model(m16abeta, transform = NULL,
 
 ## figures
 ```{r}
-p1hus <- plot_model(mhusabin, type = c("eff"), terms = c("disthus_400"))
+p1hus <- plot_model(m16abeta_house, type = c("eff"), terms = c("disthus_400"))
 # p1hus + theme_light() +
 #   theme(axis.text = element_text(family = "sans", size = 10, color = "grey30"),
 #         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
 #   xlab("\nDistance to house") + 
 #   ylab("Tree density (log)\n")
 
-p1 <- plot_model(m16abeta, type = c("eff"), terms = c("distvei2 [0:500]"))
+p1 <- plot_model(m3betaroad, type = c("eff"), terms = c("distvei2 [0:500]"))
 # p1 + theme_light() +
 #   theme(axis.text = element_text(family = "sans", size = 10, color = "grey30"),
 #         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
 #   xlab("\nDistance to road") + 
 #   ylab("Tree density (log)\n")
 
-p2 <- plot_model(m16abeta, type = c("eff"), transform = NULL, terms = c("skogkategori"))
+p2 <- plot_model(m3betaroad, type = c("eff"), transform = NULL, terms = c("skogkategori"))
 # p2 + theme_light()
 
-p3 <- plot_model(m16abeta, type = c("eff"), transform = NULL, terms = c("treartgruppe9"))
+p3 <- plot_model(m3betaroad, type = c("eff"), transform = NULL, terms = c("treartgruppe9"))
 # pb3 + theme_sjplot()
 
 # p4 <- plot_model(m16cbin, type = c("eff"), transform = NULL, terms = c("kant"))
 # pb3 + theme_sjplot()
 
-# p5 <- plot_model(m16cbin, type = c("eff"), transform = NULL, terms = c("helling [n=1]"))
+p5 <- plot_model(m3betaroad, type = c("eff"), transform = NULL, terms = c("helling [n=1]"))
 # pb3 + theme_sjplot()
 
-p6 <- plot_model(m16abeta, type = c("eff"), transform = NULL, terms = c("browspres_merged"))
+p6 <- plot_model(m3betaroad, type = c("eff"), transform = NULL, terms = c("browspres_merged"))
 # pb3 + theme_sjplot()
 
-p7 <- plot_model(m16abeta, type = c("eff"), transform = NULL, terms = c("HOH"))
+p7 <- plot_model(m3betaroad, type = c("eff"), transform = NULL, terms = c("HOH"))
 # pb3 + theme_sjplot()
 
 library(gridExtra)
-plot_grid(list(p1, p6, p2, p3, p7))
+plot_grid(list(p6, p2, p3, p5, p7))
 ```
 
 
@@ -697,16 +709,49 @@ plot_grid(list(p1, p6, p2, p3, p7))
 
 
 ########################################################
-## Additional post-hoc testing for regional effects ###
+## Additional post-hocs                            ###
 ######################################################
 
-#### Testing for a regional effect
+
+##### Testing for kant in total/ indirect effect
+```{r}
+# BIN
+library(lme4)
+load("processdata/browse9.6sc.rda")
+
+# m2bin_roads <- glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+# family = binomial(),
+# data = browse9.6sc)
+
+bin_kant <- glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR), 
+                  family = binomial(), 
+                  data = browse9.6sc)
+
+summary(bin_kant)
+
+# BETA
+library(glmmTMB)
+load("processdata/browse9.6scpos.rda")
+
+# m3betaroad <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + ac + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+#             data = browse9.6scpos,
+#             family = beta_family())
+
+beta_kant <- glmmTMB(proplt ~  skogkategori + treartgruppe9 + HOH + I(HOH^2) + kant + (1|KOMNR), data = browse9.6scpos, family = beta_family())
+
+summary(beta_kant)
+
+```
+
+
+
+##### Testing for a regional effect/ interaction region:distvei
 ```{r}
 ##### House #############################################
 ## bin
 library(lme4)
 load("processdata/browse9.5m_regionsc.rda")
-load("output/mhusabin_reg.rda")
+load("output/mhusabin_reg2.rda")
 load("output/mhusabin.rda")
 
 mhusabin_reg <- glmer(factor(proplt > 0) ~ disthus_400 + log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + region + (1|KOMNR),
@@ -717,9 +762,6 @@ mhusabin_reg2 <- glmer(factor(proplt > 0) ~ disthus_400 + log(distvei2+1) + brow
 family = binomial(),
 data = browse9.5m_regionsc)
 
-# mhusabin_reg3 <- glmer(factor(proplt > 0) ~ disthus_400 + log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + region + (1|KOMNR),
-# family = binomial(),
-# data = agder)
 
 save(mhusabin_reg, file = "mhusabin_reg.rda")
 save(mhusabin_reg2, file = "mhusabin_reg2.rda")
@@ -744,22 +786,18 @@ glmmbeta_tab <- aictab(candmods, modnames = NULL,
 
 # Plots
 library(sjPlot)
-p1husbin <- plot_model(mhusabin_reg, type = c("est"), transform = NULL, show.values = TRUE, value.offset = 0.5, 
-                 vline.color = "grey", colors = c("#004949", "#009292"),
-                 axis.title = "Estimates")
+tab_model(mhusabin_reg2)
 
-p2husbin <- plot_model(mhusabin_reg, type = c("eff"), transform = NULL, terms = c("region"))
+plot_model(mhusabin_reg, type = c("eff"), transform = NULL, terms = c("region"))
 
-p3husbin <- plot_model(mhusabin_reg, type = c("eff"), transform = NULL, terms = c("disthus_400", "region [Sor-Trondelag, Sogn og Fjordane]"))
+plot_model(mhusabin_reg2, type = c("eff"), transform = NULL, terms = c("disthus_400", "region [Sor-Trondelag, Sogn og Fjordane]"))
 
 
 ## beta
 library(glmmTMB)
 load("processdata/browse9.5m_regionsc.rda")
 load("processdata/browse9.5m_regionscpos.rda")
-browse9.5m_regionscpos <- browse9.5m_regionsc[browse9.5m_regionsc$proplt > 0, ]
-# browse9.5m_regionscpos$proplt <- ifelse(browse9.5m_regionscpos$proplt == 1, 0.99, browse9.5m_regionscpos$proplt)
-save(browse9.5m_regionscpos, file = "browse9.5m_regionscpos.rda")
+
 load("output/m16beta_house_reg.rda")
 load("output/m16abeta_house.rda")
 
@@ -770,7 +808,7 @@ m16beta_house_reg <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgru
 save(m16beta_house_reg, file = "m16beta_house_reg.rda")
 
 summary(m16beta_house_reg)
-summary(m16beta_house_reg2)
+
 
 # AIC ----
 AIC(m16abeta_house, m16beta_house_reg)
@@ -785,17 +823,19 @@ ICtab(m16abeta_house, m16beta_house_reg, m16beta_house_reg2, type = "AIC", weigh
 
 # Plots
 library(sjPlot)
-# p1husbeta <- plot_model(m16beta_house_reg, type = c("eff"), transform = NULL, terms = c("distvei2 [0:500]"))
+tab_model(m16beta_house_reg)
 
-p2husbeta <- plot_model(m16beta_house_reg, type = c("eff"), transform = NULL, terms = c("region"))
+plot_model(m16beta_house_reg, type = c("eff"), transform = NULL, terms = c("region"))
 
-p3husbeta <- plot_model(m16beta_house_reg2, type = c("eff"), transform = NULL, terms = c("distvei2 [0:500]", "region [Sor-Trondelag, Sogn og Fjordane]"))
+
 
 
 ##### Roads ###########################################
 ## bin
 library(lme4)
 load("processdata/browse9.6_regionsc.rda")
+load("output/m2bin_roads.rda")
+load("output/m2bin_roads_reg.rda")
 
 m2bin_roads_reg <- glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + helling + HOH + I(HOH^2) + ac + region + (1|KOMNR),
 family = binomial(),
@@ -828,22 +868,22 @@ glmmbeta_tab <- aictab(candmods, modnames = NULL,
 
 # Plots
 library(sjPlot)
-# p1roadbin <- plot_model(m2bin_roads_reg, type = c("eff"), transform = NULL, terms = c("distvei2 [0:500]"))
+tab_model(m2bin_roads_reg2)
 
-p2roadbin <- plot_model(m2bin_roads_reg, type = c("eff"), transform = NULL, terms = c("region"))
+plot_model(m2bin_roads_reg, type = c("eff"), transform = NULL, terms = c("region"))
 
-p3roadbin <- plot_model(m2bin_roads_reg2, type = c("eff"), transform = NULL, terms = c("distvei2 [0:500]", "region [Sor-Trondelag, Sogn og Fjordane]"))
+plot_model(m2bin_roads_reg2, type = c("eff"), transform = NULL, terms = c("distvei2 [0:500]", "region [Sor-Trondelag]"))
 
 ## beta
 library(glmmTMB)
 load("processdata/browse9.6_regionscpos.rda")
-save(browse9.6_regionscpos, file = "browse9.6_regionscpos.rda")
+load("output/m3betaroad_reg.rda")
 
-browse9.6_regionscpos$proplt <- ifelse(browse9.6_regionscpos$proplt == 1, 0.99, browse9.6_regionscpos$proplt)
 
 m3betaroad_reg <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + ac + helling + HOH + I(HOH^2) + browspres_merged + region + (1|KOMNR),
             data = browse9.6_regionscpos,
             family = beta_family())
+
 
 save(m3betaroad_reg, file = "m3betaroad_reg.rda")
 
@@ -863,9 +903,7 @@ ICtab(m3betaroad, m3betaroad_reg, type = "AIC", weights = TRUE, delta = TRUE)
 
 # Plots
 library(sjPlot)
-# p1roadbeta <- plot_model(m0bbeta_house_reg, type = c("eff"), transform = NULL, terms = c("distvei2 [0:500]"))
-
-p2roadbeta <- plot_model(m3betaroad_reg, type = c("eff"), transform = NULL, terms = c("region"))
-
+tab_model(m3betaroad_reg)
+plot_model(m3betaroad_reg, type = c("eff"), transform = NULL, terms = c("region"))
 
 ```

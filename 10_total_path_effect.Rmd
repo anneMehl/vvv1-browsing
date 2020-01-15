@@ -12,12 +12,17 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-
+## Load libraries
 ```{r}
 library(lme4)
 library(glmmTMB)
 ```
 
+
+
+## Load data and model
+** To load the data/ models to make the house plots, load chunks: Browsing pressure - Houses and Recruits - Houses **
+** To load the data/ models to make the road plots, load chunks: Browsing pressure - Roads and Recruits - Roads **
 
 ## Browsing pressure
 #### Houses
@@ -101,33 +106,34 @@ dat2 <- browse9.6sc
 source("function_resp_curve_13012020.R")
 ```
 
+#### Select focal variable
 ```{r}
 (focal = c("distvei", "skogkategori", "treartgruppe", "kant", 
-           "helling", "HOH", "tretetthet", "browspres_merged", "disthus")[1])
+           "helling", "HOH", "tretetthet", "browspres_merged", "disthus")[5])
 
 ```
 
 #### Run function for the different models/ focals and SAVE them
 ```{r}
-recruit_distvei <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+recruit_hell <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
 
 recruit_distvei <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=T, nb_btstrp=99)
 
-total_distvei <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+total_hell <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=99)
 ```
 
 #### Save function data!
 ```{r}
-save(total_distvei, file = "total_distvei.rda")
+save(total_hell, file = "total_hell.rda")
 ```
 
 
 
 
-## load function data
+## load function data (These are the final function outputs)
 ```{r}
 # Browsing pressure (indirect)
 load("output/final_function_outputs/bp_disthus.rda")
@@ -196,37 +202,14 @@ total_HOH$var <- total_HOH$var * 244.7748 + 361.8423
 
 ```
 
-```{r}
-
-d$s.x * attr(d$s.x, 'scaled:scale') + attr(d$s.x, 'scaled:center')
-
-
-# BP
-h1_disthus$var <- h1_disthus$var * 27.71453 + 192.2636
-h1_distvei$var <- exp(h1_distvei$var)-1
-h1_hoh$var <- h1_hoh$var * 244.7748 + 361.8423
-
-
-# Trees
-h2_disthus$var <- h2_disthus$var * 88.5 + 359
-h2_distvei$var <- exp(h2_distvei$var)-1
-# h2_hell$var <- h2_hell$var * 19.4 + 18.7
-h2_hoh$var <- h2_hoh$var * 243 + 407
-
-
-# Total
-tt_disthus$var <- tt_disthus$var * 88.5 + 359
-tt_distvei$var <- exp(tt_distvei$var)-1
-# tt_hell$var <- tt_hell$var * 19.4 + 18.7
-tt_hoh$var <- tt_hoh$var * 243 + 407
-
-
-```
 
 
 
 ## Plots
+** pdt = Plot Direct and Total effects recruits, pt = Plot Total effects only recruits, pd = Plot Direct effects only recruits, ph = Plot Hurdle (browsing pressure) **
+
 ```{r}
+# load ggplot library ----
 library(ggplot2)
 
 # disthus ----
@@ -433,7 +416,7 @@ ph_treart <- ggplot(data = bp_treart,aes(var, point)) +
 
 # kant ----
 pdt_kant <- ggplot() +
-  geom_pointrange(data = total_kant, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "indirect"), size = 1) +
+  geom_pointrange(data = total_kant, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "indirect (only\non probability)"), size = 1) +
   theme_light() +
   theme(axis.text = element_text(size = 14),
         axis.title.y = element_blank(),
@@ -444,7 +427,7 @@ pdt_kant <- ggplot() +
   xlab("\nEdge effect") +
   scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-20m", "Edge information\nmissing")) +
   scale_color_manual(name = "Effect on Recruits (%)", 
-                     values = c("indirect" = "#009292", "direct" = "#004949"))
+                     values = c("indirect (only\non probability)" = "#009292", "direct" = "#004949"))
 
 
 
@@ -488,7 +471,7 @@ ph_kant <- ggplot(data = bp_kant, aes(var, point)) +
 pdt_hell <- ggplot() + 
   geom_line(data = total_hell, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = total_hell, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 0, alpha = 0.2) +
-  geom_line(data = recruit_hell, aes(var, point, color = "direct (only\non probability)"), linetype = 2, size = 1, show.legend = T) +
+  geom_line(data = recruit_hell, aes(var, point, color = "direct"), linetype = 2, size = 1, show.legend = T) +
   geom_ribbon(data = recruit_hell, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 0, alpha = 0.2) +
   xlab("\nSlope (%)") +
   theme_light()+
@@ -499,7 +482,7 @@ pdt_hell <- ggplot() +
         legend.text = element_text(size = 14),
         legend.title = element_text(size = 14)) +
   scale_color_manual(name = "Effect on Recruits (%)", 
-                     values = c("total" = "#009292", "direct (only\non probability)" = "#004949"))
+                     values = c("total" = "#009292", "direct" = "#004949"))
 
 pt_hell <- ggplot() + 
   geom_line(data = total_hell, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
@@ -670,19 +653,17 @@ pd_beite <- ggplot() +
 ```
 #### Plotgrid
 ```{r}
-# library(cowplot)
-# plot_grid(p1, p2, p3, p4, p5, p6, p7, p8,
-#           nrow = 3, ncol = 3)
 
 library(gridExtra)
-## browsing pressure
+
+## browsing pressure #############
 # alle
 grid.arrange(ph_disthus, ph_distvei, ph_treart, ph_hell, ph_hoh, ph_kant, ph_skogkat,  ph_tretett,
           nrow = 4, ncol = 2)
 # disthus and distvei
 grid.arrange(ph_disthus, ph_distvei,
           nrow = 1, ncol = 2)
-# ggsave("test.tiff", units="cm", width=15, height=10, dpi=300, compression = 'lzw')
+
 # rest
 grid.arrange(ph_treart, ph_hell, ph_hoh, ph_kant, ph_skogkat,  ph_tretett,
           nrow = 3, ncol = 2)
@@ -695,7 +676,7 @@ grid.arrange(pd_disthus, pd_distvei, pd_treart, pd_skogkat, pd_hell, pd_hoh, pd_
 grid.arrange(pt_disthus, pt_distvei, pt_beite, pt_treart, pt_skogkat, pt_hell, pt_hoh, pt_kant, pt_tretett,
           nrow = 5, ncol = 2)
 
-## direct and total
+## recruits direct and total ###############
 # alle
 grid.arrange(pdt_disthus, pdt_distvei, pdt_beite, pdt_treart, pdt_skogkat, pdt_hell, pdt_hoh, pdt_kant, pdt_tretett,
           nrow = 5, ncol = 2)
@@ -710,36 +691,12 @@ grid.arrange(pdt_beite, pdt_treart, pdt_skogkat, pdt_hell, pdt_hoh, pdt_kant, pd
 
 
 
-"#004949", "#009292"
-
-
-## Testing for kant in total/ indirect effect
-```{r}
-# BIN
-library(lme4)
-load("processdata/browse9.6sc.rda")
-
-# m16cbin: glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR), family = binomial(), data = browse9.6sc)
-
-bin_kant <- glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR), 
-                  family = binomial(), 
-                  data = browse9.6sc)
-
-
-# BETA
-library(glmmTMB)
-load("processdata/browse9.5mpossc.rda")
-
-# m16abeta: glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + HOH + I(HOH^2) + browspres_merged + (1|KOMNR), data = browse9.5mpossc, family = beta_family())
-
-beta_kant <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + HOH + I(HOH^2) + kant + (1|KOMNR), data = browse9.5mpossc, family = beta_family())
-
-
-```
 
 
 
-## Testing R2 and AIC weight for best models and model without dist house/ dist road
+
+
+## Testing AIC weight for best models and model without dist house/ dist road
 ```{r}
 
 # HOUSE ----
@@ -821,9 +778,7 @@ library(bbmle)
 ICtab(m3betaroad, m3betaroad2, type = "AIC", weights = TRUE, delta = TRUE)
 AIC(m3betaroad, m3betaroad2)
 
-library(sjPlot)
-tab_model(m16cbin_2, transform = NULL, 
-          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
+
 
 
 ```
