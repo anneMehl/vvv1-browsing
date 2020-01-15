@@ -11,9 +11,8 @@ make_modelmatrix <- function(mod, dat, focal, isfactor, nvals, whurdle=c("BP", "
   modframe <- modframe[,-1]
   fcts <- names(modframe)[sapply(modframe, class)=="factor"]
   nofcts <- names(modframe)[sapply(modframe, class)!="factor"]
-  focal <- ifelse((focal=="helling" & whurdle=="trees" & type=="perc"), NA, focal)
   focal <- ifelse((focal=="disthus_400" & whurdle=="trees" & type=="perc"), NA, focal)
-  focal <- ifelse((grepl("distvei", focal) & whurdle=="trees" & type=="perc"), NA, focal) #added 13-01-2020
+  focal <- ifelse((grepl("distvei", focal) & whurdle=="trees" & type=="perc"), NA, focal) #added 13-01-2020, removed helling 15-01-2020
   isfactor <- ifelse(is.na(focal), F, isfactor)
   if (!isfactor & !is.na(focal)) nofcts <- nofcts[!grepl(focal, nofcts)]
   for (i in nofcts){
@@ -42,9 +41,8 @@ bootstrap_focal <- function(mod, focal, isfactor, nb_btstrp, whurdle=c("BP", "tr
   coef <- fixef(mod)
   if (type=="perc") coef <- coef[[1]] 
   mat <- matrix(coef, nrow=length(coef), ncol=nb_btstrp+1, byrow=F)
-  focal <- ifelse((focal=="helling" & whurdle=="trees" & type=="perc"), NA, focal)
   focal <- ifelse((focal=="disthus_400" & whurdle=="trees" & type=="perc"), NA, focal)
-  focal <- ifelse((grepl("distvei", focal) & whurdle=="trees" & type=="perc"), NA, focal) #added 13-01-2020
+  focal <- ifelse((grepl("distvei", focal) & whurdle=="trees" & type=="perc"), NA, focal) #added 13-01-2020, removed helling 15-01-2020
   if (!is.na(focal)){
     if (type=="perc"){ 
       ses <- sqrt(diag(as.matrix(vcov(mod))[[1]]))
