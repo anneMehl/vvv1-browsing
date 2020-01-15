@@ -1,0 +1,260 @@
+---
+title: "01_cleaning_data_browse_vers2"
+author: "anne"
+date: "20 desember 2019"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## For browse9.5 (tree height classes, not tree density)
+
+```{r}
+load("browse9.5.rda")
+```
+
+##### Subsetting on 9th and 10th cycle
+```{r}
+browse0.1_910 <- split(browse0.1, browse0.1$takst)
+
+browse9.1 <- browse0.1_910[['9']]
+summary(browse9.1)
+
+# save(browse9.1, file = "browse9.1.rda")
+load("processdata/browse9.1.rda")
+load("processdata/browse9.5.rda")
+
+browse9.1 <- browse9.1[,c(1:5,7:9,15:24,34:36,40:45,51,59,62:67,74,76:79,88:90,99:105,112:115)]
+
+# browse9.2$x <- NULL
+
+
+browse9.5 <- browse9.1
+browse9.5 <- browse9.5[,c(1:3,5:8,19:24,36,41:43,48,50:54)]
+browse9.5 <- subset(browse9.5, select = -c(27:32,34:36))
+
+
+save(browse9.5, file = "browse9.5.rda")
+
+```
+
+##### Explore NAs 
+```{r}
+
+nrow(browse9.5)
+nrow(na.omit(browse9.5))
+
+
+browse9.5$distvei2[is.na(browse9.5$distvei2)] <- 2218
+browse9.5$disthus[is.na(browse9.5$disthus)] <- 3000
+
+browse9.5 <- na.omit(browse9.5)
+
+
+# save(browse9.5, file = "browse9.5.rda")
+load("processdata/browse9.5.rda")
+load("processdata/browse9.5msc.rda")
+
+```
+
+
+```{r}
+library(ggplot2)
+
+ggplot(data = browse9.5, aes(skogkategori)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9.5, aes(kant)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9.5m, aes(treartgruppe9)) +
+  geom_bar()+
+  theme_classic()
+
+ggplot(data = browse9.5, aes(region)) +
+  geom_bar()+
+  theme_classic()
+
+
+```
+
+
+```{r}
+
+browse9.5$skogkategori <- factor(browse9.5$skogkategori, levels = c("Lavproduktiv_eldreskog", "Høyproduktiv_eldreskog", "Høyproduktiv_ungskog",  "Lavproduktiv_ungskog", "Uproduktiv_skog"))
+browse9.5$kant <- factor(browse9.5$kant, levels = c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant")) 
+browse9.5$treartgruppe9 <- factor(browse9.5$treartgruppe9, levels = c("LAUV", "FURU"))
+
+browse9.5$region <- factor(browse9.5$region, levels = c("Hedmark", "Agder", "Buskerud", "Hordaland",  "More og Romsdal", "Nord-Trondelag", "Nordland", "Oppland", "Ostfold-Akershus", "Rogaland", "Sogn og Fjordane", "Sor-Trondelag", "Troms", "Vestfold-Telemark"))
+
+
+
+```
+
+```{r}
+
+browse9.5$beitetrykkr <- as.integer(round(browse9.5$beitetrykk9))
+browse9.5$bt100 <- browse9.5$beitetrykkr/100
+```
+
+```{r}
+save(browse9.5, file = "browse9.5.rda")
+
+save(browse9.6, file = "browse9.6.rda")
+```
+
+
+##### Subsets and new variable(s)
+```{r}
+
+# Creating new variable proportion large trees "proplt" 
+load("processdata/browse9.5.rda")
+browse9.5 <- as.data.frame(browse9.5)
+
+tmp1 <- browse9.5[browse9.5$treartgruppe9 == "FURU", ]
+tmp2 <- browse9.5[browse9.5$treartgruppe9 == "LAUV", ]
+tmp3 <- browse9.5[browse9.5$treartgruppe9 == "ROS", ]
+browse9.5m <-  browse9.5[browse9.5$treartgruppe9 != "FURU", ]
+browse9.5m <-  browse9.5m[!duplicated(browse9.5m$FLATEID), ]
+browse9.5m$treartgruppe9 <-  "LAUV"
+browse9.5m <- rbind(browse9.5m, tmp1)
+browse9.5m$rosTD <- tmp3$tretetthet9[match(browse9.5m$FLATEID, tmp3$FLATEID)]
+browse9.5m$rosBP <- tmp3$beitetrykkr [match(browse9.5m$FLATEID, tmp3$FLATEID)]
+browse9.5m$lauvTD <- tmp2$tretetthet9[match(browse9.5m$FLATEID, tmp2$FLATEID)]
+browse9.5m$lauvBP <- tmp2$beitetrykkr [match(browse9.5m$FLATEID, tmp2$FLATEID)]
+
+browse9.5m$rosTD <- ifelse(is.na(browse9.5m$rosTD), 0, browse9.5m$rosTD)
+browse9.5m$rosBP <- ifelse(is.na(browse9.5m$rosBP), 0, browse9.5m$rosBP)
+browse9.5m$lauvTD <- ifelse(is.na(browse9.5m$lauvTD), 0, browse9.5m$lauvTD)
+browse9.5m$lauvBP <- ifelse(is.na(browse9.5m$lauvBP), 0, browse9.5m$lauvBP)
+  
+browse9.5m$browspres_merged <- browse9.5m$beitetrykkr
+browse9.5m$browspres_merged[browse9.5m$treartgruppe9 == "LAUV"] <- (browse9.5m$lauvTD[browse9.5m$treartgruppe9 == "LAUV"] * browse9.5m$lauvBP[browse9.5m$treartgruppe9 == "LAUV"] + browse9.5m$rosTD[browse9.5m$treartgruppe9 == "LAUV"] * browse9.5m$rosBP[browse9.5m$treartgruppe9 == "LAUV"])/ (browse9.5m$lauvTD[browse9.5m$treartgruppe9 == "LAUV"] + browse9.5m$rosTD[browse9.5m$treartgruppe9 == "LAUV"])
+
+nrow(browse9.5m)
+nrow(na.omit(browse9.5m))
+
+browse9.5m <- as.data.frame(browse9.5m)
+
+browse9.5m <- browse9.5m[,c(1:24,29)]
+
+
+browse9.5m$proplt <- ifelse(browse9.5m$treartgruppe9 == "FURU", (browse9.5m$Furu_0_25_PRHA + browse9.5m$Furu_25_49_PRHA)/(browse9.5m$Furu_0_PRHA + browse9.5m$Furu_0_25_PRHA + browse9.5m$Furu_25_49_PRHA), (browse9.5m$Lauv_0_25_PRHA + browse9.5m$Lauv_25_49_PRHA)/ (browse9.5m$Lauv_0_PRHA + browse9.5m$Lauv_0_25_PRHA + browse9.5m$Lauv_25_49_PRHA))
+
+
+nrow(browse9.5m)
+nrow(na.omit(browse9.5m))
+
+browse9.5m <- na.omit(browse9.5m)
+
+browse9.5msc <- browse9.5msc[,c(1,3,7,15:17,19:20,25:26,33,40)]
+save(browse9.5msc, file = "browse9.5msc.rda")
+
+
+# Subset on different cuts for disthus
+browse9.6 <- browse9.5m[ which(browse9.5m$disthus > 400), ]
+save(browse9.6, file = "browse9.6.rda")
+
+# browse9.7pos <- browse9.6pos[ which(browse9.6pos$disthus > 200), ]
+# save(browse9.7pos, file = "browse9.7pos.rda")
+
+
+
+save(browse9.5, file = "browse9.5.rda")
+
+save(browse9.5m, file = "browse9.5m.rda")
+
+
+
+```
+
+## TEST for difference between regions
+```{r}
+##### House
+load("processdata/browse9.5msc.rda")
+browse9.5m_region <- browse9.5m
+browse9.5m_region <- browse9.5m_region[,c(1:3,7,14:20,25:26,33,40)]
+
+pvars <- c("disthus_400", "HOH")
+browse9.5m_regionsc <- browse9.5m_region
+browse9.5m_regionsc[pvars] <- lapply(browse9.5m_regionsc[pvars],scale)
+
+save(browse9.5m_regionsc, file = "browse9.5m_regionsc.rda")
+
+## Subset municipalities ----
+hedmark <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Hedmark", ]
+agder <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Agder", ]
+buskerud <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Buskerud", ]
+hordaland <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Hordaland", ]
+more_og_romsdal <- browse9.5m_regionsc[browse9.5m_regionsc$region == "More og Romsdal", ]
+nord_trondelag <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Nord-Trondelag", ]
+nordland <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Nordland", ]
+oppland <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Oppland", ]
+ostfold_akershus <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Ostfold-Akershus", ]
+rogaland <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Rogaland", ]
+sogn_og_fjordane <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Sogn og Fjordane", ]
+sor_trondelag <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Sor-Trondelag", ]
+troms <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Troms", ]
+vestfold_telemark <- browse9.5m_regionsc[browse9.5m_regionsc$region == "Vestfold-Telemark", ]
+
+
+
+##### Road
+load("processdata/browse9.6.rda")
+browse9.6_region <- browse9.6
+browse9.6_region <- browse9.6_region[,c(1:3,7,14:20,25:26,33,40)]
+
+pvars <- c("HOH","ac" ) #  "helling", "browspres_merged", "ac" 
+browse9.6_regionsc <- browse9.6_region
+browse9.6_regionsc[pvars] <- lapply(browse9.6_regionsc[pvars],scale)
+
+save(browse9.6_regionsc, file = "browse9.6_regionsc.rda")
+```
+
+
+## browse9.5m
+
+##### threshold cuts disthus
+```{r}
+browse9.5m$disthus_1000 <- ifelse(browse9.5m$disthus >= 1000, 1000, browse9.5m$disthus)
+# browse9.5m$disthus_cut950 <- ifelse(browse9.5m$disthus >= 950, 950, browse9.5m$disthus)
+browse9.5m$disthus_900 <- ifelse(browse9.5m$disthus >= 900, 900, browse9.5m$disthus)
+# browse9.5m$disthus_cut850 <- ifelse(browse9.5m$disthus >= 850, 850, browse9.5m$disthus)
+browse9.5m$disthus_800 <- ifelse(browse9.5m$disthus >= 800, 800, browse9.5m$disthus)
+# browse9.5m$disthus_cut750 <- ifelse(browse9.5m$disthus >= 750, 750, browse9.5m$disthus)
+browse9.5m$disthus_700 <- ifelse(browse9.5m$disthus >= 700, 700, browse9.5m$disthus)
+# browse9.5m$disthus_cut650 <- ifelse(browse9.5m$disthus >= 650, 650, browse9.5m$disthus)
+browse9.5m$disthus_600 <- ifelse(browse9.5m$disthus >= 600, 600, browse9.5m$disthus)
+browse9.5m$disthus_500 <- ifelse(browse9.5m$disthus >= 500, 500, browse9.5m$disthus)
+browse9.5m$disthus_400 <- ifelse(browse9.5m$disthus >= 400, 400, browse9.5m$disthus)
+browse9.5m$disthus_350 <- ifelse(browse9.5m$disthus >= 350, 350, browse9.5m$disthus)
+browse9.5m$disthus_300 <- ifelse(browse9.5m$disthus >= 300, 300, browse9.5m$disthus)
+browse9.5m$disthus_200 <- ifelse(browse9.5m$disthus >= 200, 200, browse9.5m$disthus)
+# browse9.5m$disthus_150 <- ifelse(browse9.5m$disthus >= 150, 150, browse9.5m$disthus)
+browse9.5m$disthus_175 <- ifelse(browse9.5m$disthus >= 175, 175, browse9.5m$disthus)
+browse9.5m$disthus_160 <- ifelse(browse9.5m$disthus >= 160, 160, browse9.5m$disthus)
+# browse9.5m$disthus_190 <- ifelse(browse9.5m$disthus >= 190, 190, browse9.5m$disthus)
+# browse9.2$disthus_trunc_cut1000 <- ifelse(browse9.2$disthus_trunc >= 1000, 1000, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut900 <- ifelse(browse9.2$disthus_trunc >= 900, 900, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut800 <- ifelse(browse9.2$disthus_trunc >= 800, 800, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut700 <- ifelse(browse9.2$disthus_trunc >= 700, 700, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut600 <- ifelse(browse9.2$disthus_trunc >= 600, 600, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut500 <- ifelse(browse9.2$disthus_trunc >= 500, 500, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut400 <- ifelse(browse9.2$disthus_trunc >= 400, 400, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut300 <- ifelse(browse9.2$disthus_trunc >= 300, 300, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut200 <- ifelse(browse9.2$disthus_trunc >= 200, 200, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut150 <- ifelse(browse9.2$disthus_trunc >= 150, 150, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut175 <- ifelse(browse9.2$disthus_trunc >= 175, 175, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut160 <- ifelse(browse9.2$disthus_trunc >= 160, 160, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut190 <- ifelse(browse9.2$disthus_trunc >= 190, 190, browse9.2$disthus_trunc)
+# browse9.2$disthus_trunc_cut100 <- ifelse(browse9.2$disthus_trunc >= 100, 100, browse9.2$disthus_trunc)
+
+save(browse9.5m, file = "browse9.5m.rda")
