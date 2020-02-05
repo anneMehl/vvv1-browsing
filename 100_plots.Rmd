@@ -275,6 +275,11 @@ ggplot(data = browse9.6sc, aes(kant, proplt)) +
   geom_boxplot()+
   theme_dark()
 
+ggplot(data = browse9.5m, aes(treartgruppe9, tretetthet9)) +
+  geom_col()+
+  theme_dark() +
+scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
+
 ```
 
 ```{r}
@@ -293,3 +298,65 @@ ggplot(data = browse9.4, aes(kant, beitetrykkr)) +
   theme_dark()
 
 ```
+
+
+## Mean number of pine and deciduous trees for the recruits dataset
+```{r}
+# library(tidyverse)
+# mean_by_species <- browse9.5m %>% 
+#   group_by(treartgruppe9) %>% 
+#   summarize(averaged.density = mean(tretetthet9))
+
+# without tidyverse
+mean(browse9.5m$tretetthet9[browse9.5m$treartgruppe9 == "FURU"])
+mean(browse9.5m$tretetthet9[browse9.5m$treartgruppe9 == "LAUV"])
+
+mean(browse9.5m$proplt[browse9.5m$treartgruppe9 == "FURU"])
+mean(browse9.5m$proplt[browse9.5m$treartgruppe9 == "LAUV"])
+
+tapply(x$points, x$Players, FUN=sum)
+aggregate(x$points, by=list(Players=x$Players), FUN=sum)
+```
+
+
+
+## % of plots within 100m from roads/ houses (for how much of the forest lies within these areas)
+```{r}
+browse9.5msc$FLATEID <- as.factor(browse9.5msc$FLATEID)
+# browse9.5msc$FLATEID <- as.integer(browse9.5msc$FLATEID)
+
+
+unique(browse9.5msc$FLATEID)
+sum(browse9.5msc$FLATEID[browse9.5msc$distvei2 <= "100"])
+
+library(plyr)
+count(browse9.5msc, c("FLATEID", "distvei2 <= 100"))
+
+
+
+```
+
+
+## Number of study plots in original (houses) vs. reduced (roads) dataset
+```{r}
+# recruits
+# original
+browse9.5msc$FLATEID <- as.factor(browse9.5msc$FLATEID)
+str(levels(browse9.5msc$FLATEID)) 
+unique(browse9.5msc$FLATEID)
+# reduced
+browse9.6sc$FLATEID <- as.factor(browse9.6sc$FLATEID)
+str(levels(browse9.6sc$FLATEID))
+
+
+# browseing
+# original
+browse9.2$FLATEID <- as.factor(browse9.2$FLATEID)
+str(levels(browse9.2$FLATEID))
+
+# reduced
+browse9.2_dist$FLATEID <- as.factor(browse9.2_dist$FLATEID)
+str(levels(browse9.2_dist$FLATEID))
+
+```
+
