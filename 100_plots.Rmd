@@ -322,16 +322,25 @@ aggregate(x$points, by=list(Players=x$Players), FUN=sum)
 
 ## % of plots within 100m from roads/ houses (for how much of the forest lies within these areas)
 ```{r}
+
+## Browsing
+browse9.2$FLATEID <- as.factor(browse9.2$FLATEID)
+
+uni_road <- unique(browse9.2$FLATEID[browse9.2$distvei2 <= "100"])
+uni_road <- as.data.frame(uni_road) # 28
+
+uni_house <- unique(browse9.2$FLATEID[browse9.2$disthus_cut400 <= "100"])
+uni_house <- as.data.frame(uni_house) # 1
+
+
+## Recruits
 browse9.5msc$FLATEID <- as.factor(browse9.5msc$FLATEID)
-# browse9.5msc$FLATEID <- as.integer(browse9.5msc$FLATEID)
 
+uni_road <- unique(browse9.5msc$FLATEID[browse9.5msc$distvei2 <= "100"])
+uni_road <- as.data.frame(uni_road) # 24
 
-unique(browse9.5msc$FLATEID)
-sum(browse9.5msc$FLATEID[browse9.5msc$distvei2 <= "100"])
-
-library(plyr)
-count(browse9.5msc, c("FLATEID", "distvei2 <= 100"))
-
+uni_house <- unique(browse9.5msc$FLATEID[browse9.5msc$disthus_400 <= "100"])
+uni_house <- as.data.frame(uni_house) # alle
 
 
 ```
@@ -341,6 +350,8 @@ count(browse9.5msc, c("FLATEID", "distvei2 <= 100"))
 ```{r}
 # recruits
 # original
+browse9.5msc$FLATEID <- droplevels(browse9.5msc$FLATEID)
+browse9.5msc$treartgruppe9 <- droplevels(browse9.5msc$treartgruppe9)
 browse9.5msc$FLATEID <- as.factor(browse9.5msc$FLATEID)
 str(levels(browse9.5msc$FLATEID)) 
 unique(browse9.5msc$FLATEID)
