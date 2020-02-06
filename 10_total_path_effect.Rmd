@@ -21,8 +21,8 @@ library(glmmTMB)
 
 
 ## Load data and model
-** To load the data/ models to make the house plots, load chunks: Browsing pressure - Houses and Recruits - Houses **
-** To load the data/ models to make the road plots, load chunks: Browsing pressure - Roads and Recruits - Roads **
+** To load the data/ models to make the HOUSE plots, load chunks: Browsing pressure - Houses and Recruits - Houses **
+** To load the data/ models to make the ROAD plots, load chunks: Browsing pressure - Roads and Recruits - Roads **
 
 ## Browsing pressure
 #### Houses
@@ -109,19 +109,19 @@ source("function_resp_curve_13012020.R")
 #### Select focal variable
 ```{r}
 (focal = c("distvei", "skogkategori", "treartgruppe", "kant", 
-           "helling", "HOH", "tretetthet", "browspres_merged", "disthus")[5])
+           "helling", "HOH", "tretetthet", "browspres_merged", "disthus")[9])
 
 ```
 
 #### Run function for the different models/ focals and SAVE them
 ```{r}
-recruit_hell <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
-           which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
+bp_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+           which_effect=c("hurdle1_only", "hurdle2_only", "total")[1], nvals=100, plotit=F, nb_btstrp=99)
 
-recruit_distvei <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+recruit_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=T, nb_btstrp=99)
 
-total_hell <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+total_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=99)
 ```
 
@@ -214,20 +214,27 @@ library(ggplot2)
 
 # disthus ----
 pdt_disthus <- ggplot() + 
-  geom_line(data = total_disthus, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = total_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 0, alpha = 0.2) +
-  geom_line(data = recruit_disthus, aes(var, point, color = "direct (only\non probability)"), linetype = 2, size = 1, show.legend = T) +
-  geom_ribbon(data = recruit_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 0, alpha = 0.2) +
+  geom_line(data = total_disthus, aes(var, point, color = "total", linetype = "total"), size =
+              1.5, show.legend = T) +
+  geom_ribbon(data = total_disthus, aes(x = var, ymin = CI025, ymax = CI975), 
+              colour = "#004949", linetype = 0, alpha = 0.2) +
+  geom_line(data = recruit_disthus, aes(var, point, color = "direct (only\non probability)",
+                                        linetype = "direct (only\non probability)"), 
+            size = 1.5, show.legend = T) +
+  geom_ribbon(data = recruit_disthus, aes(x = var, ymin = CI025, ymax = CI975), 
+              colour = "#004949", linetype = 0, alpha = 0.2) +
+  scale_linetype_manual("Effect on Recruits (%)",
+                        values = c("direct (only\non probability)" = 3,"total" = 1)) +
   xlab("\nDistance to house (m)") + 
   ylab("Recruits (%)\n") +
   theme_light()+
-  theme(axis.text = element_text(size = 14),
+  theme(axis.text = element_text(size = 16), # face = "bold"
         axis.title = element_text(family = "sans", size = 20),
-        legend.position = "bottom",
-        legend.text = element_text(size = 14),
-        legend.title = element_text(size = 14)) +
+        legend.position = c(0.8, 0.9),
+        legend.text = element_text(size = 16),
+        legend.title = element_text(size = 16)) +
   scale_color_manual(name = "Effect on Recruits (%)", 
-                     values = c("total" = "#009292", "direct (only\non probability)" = "#004949"))
+                     values = c("total" = "#009292", "direct (only\non probability)" = "#004949")) 
 
 pt_disthus <- ggplot() + 
   geom_line(data = total_disthus, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
