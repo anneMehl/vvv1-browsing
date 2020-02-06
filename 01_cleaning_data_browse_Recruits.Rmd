@@ -17,6 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 load("browse9.5.rda")
+load("rawdata/browse0.1.rda")
 ```
 
 ##### Subsetting on 9th and 10th cycle
@@ -50,6 +51,10 @@ save(browse9.5, file = "browse9.5.rda")
 nrow(browse9.5)
 nrow(na.omit(browse9.5))
 
+sum(is.na(browse9.5$beitetrykk9))
+sum(is.na(browse9.5$tretetthet9))
+
+summary(browse9.5)
 
 browse9.5$distvei2[is.na(browse9.5$distvei2)] <- 2218
 browse9.5$disthus[is.na(browse9.5$disthus)] <- 3000
@@ -60,6 +65,15 @@ browse9.5 <- na.omit(browse9.5)
 # save(browse9.5, file = "browse9.5.rda")
 load("processdata/browse9.5.rda")
 load("processdata/browse9.5msc.rda")
+
+
+# browse9.5$FLATEID <- as.factor(browse9.5$FLATEID)
+# str(levels(browse9.5$FLATEID)) 
+# unique(browse9.5$FLATEID)
+# 
+browse9.5m$FLATEID <- as.factor(browse9.5m$FLATEID)
+str(levels(browse9.5m$FLATEID))
+unique(browse9.5m$FLATEID)
 
 ```
 
@@ -139,8 +153,18 @@ browse9.5m$lauvBP <- ifelse(is.na(browse9.5m$lauvBP), 0, browse9.5m$lauvBP)
 browse9.5m$browspres_merged <- browse9.5m$beitetrykkr
 browse9.5m$browspres_merged[browse9.5m$treartgruppe9 == "LAUV"] <- (browse9.5m$lauvTD[browse9.5m$treartgruppe9 == "LAUV"] * browse9.5m$lauvBP[browse9.5m$treartgruppe9 == "LAUV"] + browse9.5m$rosTD[browse9.5m$treartgruppe9 == "LAUV"] * browse9.5m$rosBP[browse9.5m$treartgruppe9 == "LAUV"])/ (browse9.5m$lauvTD[browse9.5m$treartgruppe9 == "LAUV"] + browse9.5m$rosTD[browse9.5m$treartgruppe9 == "LAUV"])
 
+browse9.5m$distvei2[is.na(browse9.5m$distvei2)] <- 2218
+browse9.5m$disthus[is.na(browse9.5m$disthus)] <- 3000
+
+
+
 nrow(browse9.5m)
 nrow(na.omit(browse9.5m))
+
+summary(browse9.5m)
+
+sum(is.na(browse9.5m$beitetrykkr))
+
 
 browse9.5m <- as.data.frame(browse9.5m)
 
