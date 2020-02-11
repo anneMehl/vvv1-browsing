@@ -322,25 +322,20 @@ aggregate(x$points, by=list(Players=x$Players), FUN=sum)
 
 ## % of plots within 100m from roads/ houses (for how much of the forest lies within these areas)
 ```{r}
+load("processdata/browse9.2.rda")
+load("processdata/browse9.5msc.rda")
 
 ## Browsing
-browse9.2$FLATEID <- as.factor(browse9.2$FLATEID)
 
-uni_road <- unique(browse9.2$FLATEID[browse9.2$distvei2 <= "100"])
-uni_road <- as.data.frame(uni_road) # 28
-
-uni_house <- unique(browse9.2$FLATEID[browse9.2$disthus_cut400 <= "100"])
-uni_house <- as.data.frame(uni_house) # 1
+length(levels(as.factor(browse9.2$FLATEID[browse9.2$distvei2 <= "200"]))) # 4908 (total: 11561), 42.45307 %
+length(levels(as.factor(browse9.2$FLATEID[browse9.2$disthus_cut400 <= "200"]))) # 754, 6.521927 %
 
 
 ## Recruits
-browse9.5msc$FLATEID <- as.factor(browse9.5msc$FLATEID)
-
-uni_road <- unique(browse9.5msc$FLATEID[browse9.5msc$distvei2 <= "100"])
-uni_road <- as.data.frame(uni_road) # 24
-
-uni_house <- unique(browse9.5msc$FLATEID[browse9.5msc$disthus_400 <= "100"])
-uni_house <- as.data.frame(uni_house) # alle
+# rescale
+browse9.5msc$disthus_400 <- browse9.5msc$disthus_400 * 88.52122 + 358.5594
+length(levels(as.factor(browse9.5msc$FLATEID[browse9.5msc$distvei2 <= "200"]))) # 2465 (total: 10027), 24.58362 %
+length(levels(as.factor(browse9.5msc$FLATEID[browse9.5msc$disthus_400 <= "200"]))) # 677, 6.75177
 
 
 ```
@@ -350,24 +345,22 @@ uni_house <- as.data.frame(uni_house) # alle
 ```{r}
 # recruits
 # original
-browse9.5msc$FLATEID <- droplevels(browse9.5msc$FLATEID)
-browse9.5msc$treartgruppe9 <- droplevels(browse9.5msc$treartgruppe9)
 browse9.5msc$FLATEID <- as.factor(browse9.5msc$FLATEID)
-str(levels(browse9.5msc$FLATEID)) 
+length(levels(browse9.5msc$FLATEID)) 
 unique(browse9.5msc$FLATEID)
 # reduced
 browse9.6sc$FLATEID <- as.factor(browse9.6sc$FLATEID)
-str(levels(browse9.6sc$FLATEID))
+length(levels(browse9.6sc$FLATEID))
 
 
 # browseing
 # original
 browse9.2$FLATEID <- as.factor(browse9.2$FLATEID)
-str(levels(browse9.2$FLATEID))
+length(levels(browse9.2$FLATEID))
 
 # reduced
 browse9.2_dist$FLATEID <- as.factor(browse9.2_dist$FLATEID)
-str(levels(browse9.2_dist$FLATEID))
+length(levels(browse9.2_dist$FLATEID))
 
 ```
 
