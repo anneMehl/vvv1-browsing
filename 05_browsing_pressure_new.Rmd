@@ -405,27 +405,66 @@ p1 + theme_sjplot() + font_size(axis_title.x = 15)
 ## figures bin
 ```{r}
 library(sjPlot)
+library(ggplot2)
 p1 <- plot_model(m4abin2, type = c("eff"), transform = NULL, terms = c("treartgruppe9"),
            grid = TRUE)
-# p3 + theme_sjplot()
+p1 <- p1 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Tree species group\n") +
+  ylab("Browsing pressure (%)\n")
+
 
 p2 <- plot_model(m4abin2, type = c("eff"), transform = NULL, terms = c("kant"))
-# p4 + theme_sjplot()
+p2 <- p2 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Edge effects\n") +
+  ylab("Browsing pressure (%)\n") +
+  label_angle(angle.x = 45, base.theme = theme_sjplot())
 
 p3 <- plot_model(m4abin2, type = c("eff"), transform = NULL, terms = c("helling [all]"))
-# p5 + theme_sjplot()
+p3 <- p3 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Slope\n") +
+  ylab("Browsing pressure (%)\n")
 
 p4 <- plot_model(m4abin2, type = c("eff"), transform = NULL, terms = c("HOH_scale [all]"))
-# p6 + theme_sjplot()
+p4 <- p4 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Altitude\n") +
+  ylab("Browsing pressure (%)\n")
 
 p5 <- plot_model(m4abin2, type = c("eff"), transform = NULL, terms = c("tretetthet9_trunc [all]"))
-# p7 + theme_sjplot()
+p5 <- p5 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Tree density\n") +
+  ylab("Browsing pressure (%)\n")
 
 p6 <- plot_model(m4abin2, type = c("eff"), transform = NULL, terms = "distvei2_trunc [0:500]")
-# p6 + theme_sjplot()
+p6 <- p6 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Distance to roads\n") +
+  ylab("Browsing pressure (%)\n")
 
 p7 <- plot_model(m4abin2, type = c("eff"), transform = NULL, terms = "skogkategori")
-# p7 + theme_sjplot()
+p7 <- p7 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Forest category\n") +
+  ylab("Browsing pressure (%)\n") +
+  label_angle(angle.x = 45, base.theme = theme_sjplot())
 
 # p8 <- plot_model(m4abin, type = c("eff"), transform = NULL, terms = c("disthus_trunc_scale"))
 # p7 + theme_sjplot()
@@ -438,8 +477,17 @@ p7 <- plot_model(m4abin2, type = c("eff"), transform = NULL, terms = "skogkatego
 
 p1_house <- plot_model(m1kbin2, type = c("eff"), transform = NULL, terms = c("disthus_trunc_cut200_scale [all]"),
            grid = TRUE)
+p1_house <- p1_house + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Distance to houses\n") +
+  ylab("Browsing pressure (%)\n")
 
 
+library(gridExtra)
+grid.arrange(p1_house, p6, p1, p5, p7, p2, p3, p4,
+          nrow = 4, ncol = 2)
 
 # ggpredict(m1kbin2, terms="skogkategori [all]", ci.lvl = 0.95, type = c("re"), typical_value(x, fun = c(numeric = "median", factor = "mean")))
 
@@ -711,44 +759,91 @@ p1_est + theme_sjplot() + font_size(axis_title.x = 15)
 
 ## figures beta
 ```{r}
-# pb1 <- plot_model(m7beta, type = c("eff"), transform = NULL, terms = c("disthus_trunc_scale [all]"))
-# pb1 + theme_sjplot()
-
-load("processdata/browse9.4_house.rda")
-browse9.4_house_pos <- browse9.4_house[browse9.4_house$bt100 > 0, ]
+library(sjPlot)
+library(ggplot2)
 
 load("processdata/browse9.4pos.rda")
 
-
 pb2 <- plot_model(m4abeta2, type = c("eff"), transform = NULL, terms = c("distvei2_trunc [0:500]"))
-# pb2 + theme_sjplot()
+pb2 <- pb2 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Distance to roads\n") +
+  ylab("Browsing pressure\n")
+
 
 pb3 <- plot_model(m4abeta2, type = c("eff"), transform = NULL, terms = c("skogkategori"))
-# pb3 + theme_sjplot()
+pb3 <- pb3 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Forest category\n") +
+  ylab("Browsing pressure\n") + 
+  label_angle(angle.x = 45, base.theme = theme_sjplot())
+
 
 pb4 <- plot_model(m4abeta2, type = c("eff"), transform = NULL, terms = c("treartgruppe9"),
                   show.p = TRUE)
-# pb3 + theme_sjplot()
+pb4 <- pb4 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Tree species group\n") +
+  ylab("Browsing pressure\n")
+
 
 pb5 <- plot_model(m4abeta2, type = c("eff"), transform = NULL, terms = c("kant"))
-# pb4 + theme_sjplot()
+pb5 <- pb5 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Edge effects\n") +
+  ylab("Browsing pressure\n") + 
+  label_angle(angle.x = 45, base.theme = theme_sjplot())
+
 
 pb6 <- plot_model(m4abeta2, type = c("eff"), transform = NULL, terms = c("helling [all]"))
-# pb5 + theme_sjplot()
+pb6 <- pb6 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Slope\n") +
+  ylab("Browsing pressure\n")
 
 pb7 <- plot_model(m4abeta2, type = c("eff"), transform = NULL, terms = c("HOH_scale [all]"))
-# pb6 + theme_sjplot()
+pb7 <- pb7 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Altitude\n") +
+  ylab("Browsing pressure\n")
 
 pb8 <- plot_model(m4abeta2, type = c("eff"), transform = NULL, terms = c("tretetthet9_trunc [all]"))
-# pb7 + theme_sjplot()
+pb8 <- pb8 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Tree density\n") +
+  ylab("Browsing pressure\n")
 
 # pb9 <- plot_model(m5beta, type = c("eff"), transform = NULL, terms = c("distvei2 [0:3000]", "veitype2"))
 # pb9 + theme_sjplot()
 
+browse9.4_house_pos <- browse9.4_house[browse9.4_house$bt100 > 0, ]
+
 p2_house <- plot_model(m1ibeta2, type = c("eff"), transform = NULL, terms = c("disthus_trunc_cut200_scale [all]"), grid = TRUE)
+p2_house <- p2_house + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Distance to houses\n") +
+  ylab("Browsing pressure\n")
 
-plot_grid(list(p2_house, pb2, pb4, pb8, pb3, pb5, pb6, pb7))
 
+library(gridExtra)
+grid.arrange(p2_house, pb2, pb4, pb8, pb3, pb5, pb6, pb7,
+          nrow = 4, ncol = 2)
 
 # type = "pred" = Predicted values (marginal effects) for specific model terms. See ggpredict for details.
 # type = "eff" = Similar to type = "pred", however, discrete predictors are held constant at their proportions (not reference level). See ggeffect for details. ggeffect() computes marginal effects by internally calling Effect. Effect constructs an "eff" object for a term (usually a high-order term), absorbing the lower-order terms marginal to the term in question, and averaging over other terms in the model.
