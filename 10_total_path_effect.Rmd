@@ -212,15 +212,15 @@ library(ggplot2)
 
 # colour blind friendly palettes:
 # The palette with grey:
-cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+cbPalette <- c("#999999", "#009E73", "#56B4E9", "#E69F00", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 # The palette with black:
 # cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
 # To use for fills, add
-  scale_fill_manual(values=cbPalette)
+  # scale_fill_manual(values=cbPalette)
 
 # To use for line and point colors, add
-  scale_colour_manual(values=cbPalette)
+  # scale_colour_manual(values=cbPalette)
 
   
   
@@ -232,7 +232,7 @@ pdt_disthus <- ggplot() +
                                         linetype = "direct (only\non probability)"), 
             size = 1.5, show.legend = T) +
     
-    geom_ribbon(data = total_disthus, aes(x = var, ymin = CI025, ymax = CI975), linetype = 0, alpha = 0.2, show.legend = F, fill = "#E69F00") +
+    geom_ribbon(data = total_disthus, aes(x = var, ymin = CI025, ymax = CI975), linetype = 0, alpha = 0.2, show.legend = F, fill = "#009E73") +
   geom_line(data = total_disthus, aes(var, point, color = "total", linetype = "total"), size =
               1.5, show.legend = T) +
   
@@ -241,16 +241,17 @@ pdt_disthus <- ggplot() +
   xlab("\nDistance to house (m)") + 
   ylab("Recruits (%)\n") +
   theme_light()+
-  theme(axis.text = element_text(size = 20), # face = "bold"
-        axis.title = element_text(family = "sans", size = 20),
+  theme(axis.text = element_text(size = 50), # face = "bold"
+        axis.title = element_text(family = "sans", size = 50),
         legend.position = c(0.7, 0.9),
-        legend.text = element_text(size = 20),
-        legend.title = element_text(size = 20)) +
+        legend.text = element_text(size = 30),
+        legend.title = element_text(size = 40)) +
   scale_color_manual(name = "Effect on Recruits (%)", 
                      values = cbPalette) +
-    scale_fill_manual(values = "#E69F00")
-
+    scale_fill_manual(values = "#009E73")
+#,legend.title = element_text(size = 50)
   
+
 pt_disthus <- ggplot() + 
   geom_line(data = total_disthus, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = total_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
@@ -275,17 +276,17 @@ pd_disthus <- ggplot() +
 
 ph_disthus <- ggplot() +
   geom_ribbon(data = bp_disthus, aes(x = var, ymin = CI025, ymax = CI975), show.legend = F, 
-              fill = "#E69F00", linetype = 0, alpha = 0.2) + 
-  geom_line(data = bp_disthus, aes(var, point),colour = "#E69F00", linetype = 1, size = 1.5)+
+              fill = "#0072B2", linetype = 0, alpha = 0.2) + 
+  geom_line(data = bp_disthus, aes(var, point),colour = "#0072B2", linetype = 1, size = 1.5)+
   theme_light() +
-  theme(axis.text = element_text(size = 20),
-        axis.title = element_text(family = "sans", size = 20),
+  theme(axis.text = element_text(size = 50),
+        axis.title = element_text(family = "sans", size = 50),
         legend.position = c(0.7, 0.9),
-        legend.text = element_text(size = 20),
-        legend.title = element_text(size = 20)) +
+        legend.text = element_text(size = 30),
+        legend.title = element_text(size = 40)) +
   xlab("Distance to house (m)\n") + 
   ylab("Browsing pressure (%)\n") +
-    scale_fill_manual(values = "#E69F00")
+    scale_fill_manual(values = "#0072B2")
 
 # distvei ----
 pdt_distvei <- ggplot() + 
@@ -299,22 +300,22 @@ pdt_distvei <- ggplot() +
   geom_line(data = total_distvei, aes(var, point, color = "total", linetype = "total"), 
             size = 1.5, show.legend = T) +
   geom_ribbon(data = total_distvei, aes(x = var, ymin = CI025, ymax = CI975), 
-              fill = "#E69F00", linetype = 0, alpha = 0.2, show.legend = F) +
+              fill = "#009E73", linetype = 0, alpha = 0.2, show.legend = F) +
   
   scale_linetype_manual("Effect on Recruits (%)",
                         values = c("direct (only\non probability)" = 3,"total" = 1)) +
   xlab("\nDistance to road (m)") + 
   ylab("") +
   theme_light()+
-  theme(axis.text = element_text(size = 20), # face = "bold"
-        axis.title = element_text(family = "sans", size = 20),
+  theme(axis.text = element_text(size = 50), # face = "bold"
+        axis.title = element_text(family = "sans", size = 50),
         legend.position = c(0.7, 0.9),
-        legend.text = element_text(size = 20),
-        legend.title = element_text(size = 20)) +
+        legend.text = element_text(size = 30),
+        legend.title = element_text(size = 40)) +
   scale_color_manual(name = "Effect on Recruits (%)", 
                      values = cbPalette) +
-    scale_fill_manual(values = "#E69F00")
-
+    scale_fill_manual(values = "#009E73")
+#,legend.title = element_text(size = 50)
 
 pt_distvei <- ggplot() + 
   geom_line(data = total_distvei, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
@@ -340,17 +341,17 @@ pd_distvei <- ggplot() +
 
 ph_distvei <- ggplot() +
   geom_ribbon(data = bp_distvei, aes(x = var, ymin = CI025, ymax = CI975), show.legend = F, 
-              fill = "#E69F00", linetype = 0, alpha = 0.2) + 
-  geom_line(data = bp_distvei, aes(var, point),colour = "#E69F00", linetype = 1, size = 1.5)+
+              fill = "#0072B2", linetype = 0, alpha = 0.2) + 
+  geom_line(data = bp_distvei, aes(var, point),colour = "#0072B2", linetype = 1, size = 1.5)+
   theme_light() +
-  theme(axis.text = element_text(size = 20),
-        axis.title = element_text(family = "sans", size = 20),
+  theme(axis.text = element_text(size = 50),
+        axis.title = element_text(family = "sans", size = 50),
         legend.position = c(0.7, 0.9),
-        legend.text = element_text(size = 20),
-        legend.title = element_text(size = 20)) +
+        legend.text = element_text(size = 30),
+        legend.title = element_text(size = 40)) +
   xlab("Distance to road (m)\n") + 
   ylab("") +
-    scale_fill_manual(values = "#E69F00")
+    scale_fill_manual(values = "#0072B2")
 
 
 
@@ -361,11 +362,12 @@ pdt_skogkat <- ggplot() +
   
   geom_pointrange(data = total_skogkat, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "total"), size = 1, position = position_nudge(-0.1, -0.1)) +
   
-  theme(axis.text = element_text(size = 20), # face = "bold"
-        axis.title = element_text(family = "sans", size = 20),
-        legend.position = c(0.8, 0.9),
-        legend.text = element_text(size = 20),
-        legend.title = element_text(size = 20)) +
+  theme(axis.text.x = element_text(size = 50, angle = 45, vjust = 1, hjust = 1), # face = "bold"
+        axis.text.y = element_text(size = 50),
+        axis.title = element_text(family = "sans", size = 50),
+        legend.position = c(0.7, 0.9),
+        legend.text = element_text(size = 30),
+        legend.title = element_text(size = 40)) +
   xlab("Forest category\n") + 
   ylab("Recruits (%)\n") +
   scale_x_discrete(labels = c("Highproductive \nold forest", "Highproductive \nyoung forest", "Lowproductive \nold forest", "Lowproductive \nyoung forest", "Unproductive \nforest"))+
@@ -395,16 +397,16 @@ pd_skogkat <- ggplot() +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
                      values = c("total" = "#009292", "direct" = "#004949"))
 
+
 ph_skogkat <- ggplot(data = bp_skogkat,aes(var, point)) +
-  geom_pointrange(aes(ymin = CI025, ymax = CI975), colour = "#E69F00", size = 1.5) +
+  geom_pointrange(aes(ymin = CI025, ymax = CI975), colour = "#0072B2", size = 1.5) +
   theme_light() +
-  theme(axis.text = element_text(size = 20),
-        axis.title = element_text(family = "sans", size = 20),
-        legend.position = c(0.7, 0.9),
-        legend.text = element_text(size = 20),
-        legend.title = element_text(size = 20)) +
+  theme(axis.text.x = element_text(size = 50, angle = 45, vjust = 1, hjust = 1),
+        axis.text.y = element_text(size = 50),
+        axis.title = element_text(family = "sans", size = 50),
+        legend.position = c(0.7, 0.9)) +
   xlab("Forest category\n") + 
-  ylab("Browsing pressure (%)\n") +
+  ylab("") +
   scale_x_discrete(labels = c("Highproductive \nold forest", "Highproductive \nyoung forest", "Lowproductive \nold forest", "Lowproductive \nyoung forest", "Unproductive \nforest")) 
 
 
@@ -415,11 +417,11 @@ pdt_treart <- ggplot() +
   geom_pointrange(data = total_treart, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "total"), size = 1, position = position_nudge(-0.1, -0.1)) +
   
   theme_light() +
-  theme(axis.text = element_text(size = 20), # face = "bold"
-        axis.title = element_text(family = "sans", size = 20),
+  theme(axis.text = element_text(size = 50), # face = "bold"
+        axis.title = element_text(family = "sans", size = 50),
         legend.position = c(0.5, 0.9),
-        legend.text = element_text(size = 20),
-        legend.title = element_text(size = 20)) +
+        legend.text = element_text(size = 30),
+        legend.title = element_text(size = 40)) +
   xlab("Tree species group\n") + 
   ylab("") +
   scale_x_discrete(labels = c("Pine", "Other deciduous \ntrees", "Rowan, aspen, \nwillow")) +
@@ -449,14 +451,14 @@ pd_treart <- ggplot() +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
                      values = c("total" = "#009292", "direct" = "#004949"))
 
+
 ph_treart <- ggplot(data = bp_treart,aes(var, point)) +
-  geom_pointrange(aes(ymin = CI025, ymax = CI975), colour = "#E69F00", size = 1.5) +
+  geom_pointrange(aes(ymin = CI025, ymax = CI975), colour = "#0072B2", size = 1.5) +
   theme_light() +
-  theme(axis.text = element_text(size = 20),
-        axis.title = element_text(family = "sans", size = 20),
-        legend.position = c(0.7, 0.9),
-        legend.text = element_text(size = 20),
-        legend.title = element_text(size = 20)) +
+  theme(axis.text.x = element_text(size = 50, angle = 45, vjust = 1, hjust = 1),
+        axis.text.y = element_text(size = 50),
+        axis.title = element_text(family = "sans", size = 50),
+        legend.position = c(0.7, 0.9)) +
   xlab("Tree species groups\n") + 
   ylab("Browsing pressure (%)\n") +
   scale_x_discrete(labels = c("Pine", "Other deciduous \ntrees", "Rowan, aspen, \nwillow")) 
@@ -466,16 +468,17 @@ pdt_kant <- ggplot() +
   geom_pointrange(data = total_kant, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "indirect (only\non probability)"), size = 1) +
   
   theme_light() +
-  theme(axis.text = element_text(size = 20), # face = "bold"
-        axis.title = element_text(family = "sans", size = 20),
+  theme(axis.text.x = element_text(size = 50, angle = 45, vjust = 1, hjust = 1), # face = "bold"
+        axis.text.y = element_text(size = 50),
+        axis.title = element_text(family = "sans", size = 50),
         legend.position = c(0.5, 0.9),
-        legend.text = element_text(size = 20),
-        legend.title = element_text(size = 20)) +
+        legend.text = element_text(size = 30),
+        legend.title = element_text(size = 40)) +
   xlab("Edge effect\n") +
   ylab("") +
   scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-20m", "Edge information\nmissing")) +
   scale_color_manual(name = "Effect on Recruits (%)", 
-                     values = "#E69F00")
+                     values = "#009E73")
 
 
 
@@ -503,15 +506,14 @@ pt_kant <- ggplot() +
                      values = c("indirect" = "#009292", "direct" = "#004949"))
 
 ph_kant <- ggplot(data = bp_kant, aes(var, point)) +
-  geom_pointrange(aes(ymin = CI025, ymax = CI975), colour = "#E69F00", size = 1.5) +
+  geom_pointrange(aes(ymin = CI025, ymax = CI975), colour = "#0072B2", size = 1.5) +
   theme_light() +
-  theme(axis.text = element_text(size = 20),
-        axis.title = element_text(family = "sans", size = 20),
-        legend.position = c(0.7, 0.9),
-        legend.text = element_text(size = 20),
-        legend.title = element_text(size = 20)) +
+  theme(axis.text.x = element_text(size = 50, angle = 45, vjust = 1, hjust = 1),
+        axis.text.y = element_text(size = 50),
+        axis.title = element_text(family = "sans", size = 50),
+        legend.position = c(0.7, 0.9)) +
   xlab("Edge effect\n") + 
-  ylab("") +
+  ylab("Browsing pressure (%)\n") +
   scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-20m", "Edge information\nmissing"))
 
 # hell ----
@@ -521,7 +523,7 @@ pdt_hell <- ggplot() +
   geom_line(data = recruit_hell, aes(var, point, color = "direct", linetype = "direct"), 
             size = 1.5, show.legend = T) +
   
-  geom_ribbon(data = total_hell, aes(x = var, ymin = CI025, ymax = CI975), fill = "#E69F00", linetype = 0, alpha = 0.2, show.legend = F) +
+  geom_ribbon(data = total_hell, aes(x = var, ymin = CI025, ymax = CI975), fill = "#009E73", linetype = 0, alpha = 0.2, show.legend = F) +
   geom_line(data = total_hell, aes(var, point, color = "total", linetype = "total"), 
             size = 1.5, show.legend = T) +
   
@@ -530,14 +532,14 @@ pdt_hell <- ggplot() +
   xlab("Slope (%)\n") +
   ylab("") +
   theme_light()+
-  theme(axis.text = element_text(size = 20), # face = "bold"
-        axis.title = element_text(family = "sans", size = 20),
+  theme(axis.text = element_text(size = 50), # face = "bold"
+        axis.title = element_text(family = "sans", size = 50),
         legend.position = c(0.5, 0.9),
-        legend.text = element_text(size = 20),
-        legend.title = element_text(size = 20)) +
+        legend.text = element_text(size = 30),
+        legend.title = element_text(size = 40)) +
   scale_color_manual(name = "Effect on Recruits (%)", 
                      values = cbPalette) +
-    scale_fill_manual(values = "#E69F00")
+    scale_fill_manual(values = "#009E73")
 
 
 pt_hell <- ggplot() + 
@@ -564,17 +566,15 @@ pd_hell <- ggplot() +
 
 ph_hell <- ggplot() +
   geom_ribbon(data = bp_hell, aes(x = var, ymin = CI025, ymax = CI975), show.legend = F, 
-              fill = "#E69F00", linetype = 0, alpha = 0.2) + 
-  geom_line(data = bp_hell, aes(var, point),colour = "#E69F00", linetype = 1, size = 1.5)+
+              fill = "#0072B2", linetype = 0, alpha = 0.2) + 
+  geom_line(data = bp_hell, aes(var, point),colour = "#0072B2", linetype = 1, size = 1.5)+
   theme_light() +
-  theme(axis.text = element_text(size = 20),
-        axis.title = element_text(family = "sans", size = 20),
-        legend.position = c(0.7, 0.9),
-        legend.text = element_text(size = 20),
-        legend.title = element_text(size = 20)) +
-  xlab("Slope (m)\n") + 
-  ylab("") +
-    scale_fill_manual(values = "#E69F00")
+  theme(axis.text = element_text(size = 50),
+        axis.title = element_text(family = "sans", size = 50),
+        legend.position = c(0.7, 0.9)) +
+  xlab("Slope (%)\n") + 
+  ylab("Browsing pressure (%)\n") +
+    scale_fill_manual(values = "#0072B2")
 
 
 # hoh ----
@@ -584,30 +584,30 @@ pdt_hoh <- ggplot() +
   geom_line(data = recruit_HOH, aes(var, point, color = "direct", linetype = "direct"), 
             size = 1.5, show.legend = T) +
   
-  geom_ribbon(data = total_HOH, aes(x = var, ymin = CI025, ymax = CI975), fill = "#E69F00", linetype = 0, alpha = 0.2, show.legend = F) +
+  geom_ribbon(data = total_HOH, aes(x = var, ymin = CI025, ymax = CI975), fill = "#009E73", linetype = 0, alpha = 0.2, show.legend = F) +
   geom_line(data = total_HOH, aes(var, point, color = "total", linetype = "total"), 
             size = 1.5, show.legend = T) +
   
   scale_linetype_manual("Effect on Recruits (%)",
                         values = c("direct" = 3,"total" = 1)) +
   
-  xlab("Altitude (%)\n") + 
+  xlab("Altitude (masl)\n") + 
   ylab("Recruits (%)\n") +
   theme_light()+
-  theme(axis.text = element_text(size = 20), # face = "bold"
-        axis.title = element_text(family = "sans", size = 20),
+  theme(axis.text = element_text(size = 50), # face = "bold"
+        axis.title = element_text(family = "sans", size = 50),
         legend.position = c(0.5, 0.9),
-        legend.text = element_text(size = 20),
-        legend.title = element_text(size = 20)) +
+        legend.text = element_text(size = 30),
+        legend.title = element_text(size = 40)) +
   scale_color_manual(name = "Effect on Recruits (%)", 
                      values = cbPalette) +
-    scale_fill_manual(values = "#E69F00")
+    scale_fill_manual(values = "#009E73")
 
 
 pt_hoh <- ggplot() + 
   geom_line(data = total_hoh, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = total_hoh, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
-  xlab("\nAltitude (%)") + 
+  xlab("\nAltitude (masl)") + 
   ylab("Recruits (%)\n") +
   theme_light()+
   theme(axis.text = element_text(size = 10),
@@ -618,7 +618,7 @@ pt_hoh <- ggplot() +
 pd_hoh <- ggplot() + 
   geom_line(data = recruit_hoh, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = recruit_hoh, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
-  xlab("\nAltitude (%)") + 
+  xlab("\nAltitude (masl)") + 
   ylab("Recruits (%)\n") +
   theme_light()+
   theme(axis.text = element_text(size = 10),
@@ -628,21 +628,19 @@ pd_hoh <- ggplot() +
 
 ph_hoh <- ggplot() +
   geom_ribbon(data = bp_hoh, aes(x = var, ymin = CI025, ymax = CI975), show.legend = F, 
-              fill = "#E69F00", linetype = 0, alpha = 0.2) + 
-  geom_line(data = bp_hoh, aes(var, point),colour = "#E69F00", linetype = 1, size = 1.5)+
+              fill = "#0072B2", linetype = 0, alpha = 0.2) + 
+  geom_line(data = bp_hoh, aes(var, point),colour = "#0072B2", linetype = 1, size = 1.5)+
   theme_light() +
-  theme(axis.text = element_text(size = 20),
-        axis.title = element_text(family = "sans", size = 20),
-        legend.position = c(0.7, 0.9),
-        legend.text = element_text(size = 20),
-        legend.title = element_text(size = 20)) +
-  xlab("Altitude (m)\n") + 
-  ylab("Browsing pressure (%)\n") +
-    scale_fill_manual(values = "#E69F00")
+  theme(axis.text = element_text(size = 50),
+        axis.title = element_text(family = "sans", size = 50),
+        legend.position = c(0.7, 0.9)) +
+  xlab("Altitude (masl)\n") + 
+  ylab("") +
+    scale_fill_manual(values = "#0072B2")
 
 # tretett ----
 pdt_tretett <- ggplot() + 
-  geom_ribbon(data = total_tretett, aes(x = var, ymin = CI025, ymax = CI975), fill = "#E69F00", linetype = 0, alpha = 0.2, show.legend = F) +
+  geom_ribbon(data = total_tretett, aes(x = var, ymin = CI025, ymax = CI975), fill = "#009E73", linetype = 0, alpha = 0.2, show.legend = F) +
   geom_line(data = total_tretett, aes(var, point, color = "indirect", linetype = "indirect"),
             size = 1.5, show.legend = T) +
   
@@ -651,14 +649,14 @@ pdt_tretett <- ggplot() +
   xlab("Tree density\n") + 
   ylab("Recruits (%)\n") +
   theme_light()+
-  theme(axis.text = element_text(size = 20), # face = "bold"
-        axis.title = element_text(family = "sans", size = 20),
-        legend.position = c(0.8, 0.9),
-        legend.text = element_text(size = 20),
-        legend.title = element_text(size = 20)) +
+  theme(axis.text = element_text(size = 50), # face = "bold"
+        axis.title = element_text(family = "sans", size = 50),
+        legend.position = c(0.7, 0.9),
+        legend.text = element_text(size = 30),
+        legend.title = element_text(size = 40)) +
   scale_color_manual(name = "Effect on Recruits (%)", 
-                     values = "#E69F00") +
-    scale_fill_manual(values = "#E69F00")
+                     values = "#009E73") +
+    scale_fill_manual(values = "#009E73")
 
 pt_tretett <- ggplot() + 
   geom_line(data = total_tretett, aes(var, point, color = "indirect"), linetype = 1, size = 1, show.legend = T) +
@@ -676,17 +674,16 @@ pt_tretett <- ggplot() +
 
 ph_tretett <- ggplot() +
   geom_ribbon(data = bp_tretett, aes(x = var, ymin = CI025, ymax = CI975), show.legend = F, 
-              fill = "#E69F00", linetype = 0, alpha = 0.2) + 
-  geom_line(data = bp_tretett, aes(var, point),colour = "#E69F00", linetype = 1, size = 1.5)+
+              fill = "#0072B2", linetype = 0, alpha = 0.2) + 
+  geom_line(data = bp_tretett, aes(var, point),colour = "#0072B2", linetype = 1, size = 1.5)+
   theme_light() +
-  theme(axis.text = element_text(size = 20),
-        axis.title = element_text(family = "sans", size = 20),
-        legend.position = c(0.7, 0.9),
-        legend.text = element_text(size = 20),
-        legend.title = element_text(size = 20)) +
-  xlab("Tree density (m)\n") + 
+  theme(axis.text.x = element_text(size = 50, angle = 10, vjust = 1, hjust = 1), 
+        axis.text.y = element_text(size = 50),
+        axis.title = element_text(family = "sans", size = 50),
+        legend.position = c(0.7, 0.9)) +
+  xlab("Tree density\n") + 
   ylab("") +
-    scale_fill_manual(values = "#E69F00")
+    scale_fill_manual(values = "#0072B2")
 
 # beite ----
 pdt_beite <- ggplot() + 
@@ -700,11 +697,11 @@ pdt_beite <- ggplot() +
   xlab("Browsing pressure (%)\n") + 
   ylab("Recruits (%)\n") +
   theme_light()+
-  theme(axis.text = element_text(size = 20), # face = "bold"
-        axis.title = element_text(family = "sans", size = 20),
-        legend.position = c(0.8, 0.9),
-        legend.text = element_text(size = 20),
-        legend.title = element_text(size = 20)) +
+  theme(axis.text = element_text(size = 50), # face = "bold"
+        axis.title = element_text(family = "sans", size = 50),
+        legend.position = c(0.7, 0.9),
+        legend.text = element_text(size = 30),
+        legend.title = element_text(size = 40)) +
   scale_color_manual(name = "Effect on Recruits (%)", 
                      values = cbPalette) +
     scale_fill_manual(values = cbPalette)
@@ -738,6 +735,7 @@ pd_beite <- ggplot() +
 ```{r}
 
 library(gridExtra)
+library(cowplot)
 
 ## browsing pressure #############
 # alle
@@ -748,7 +746,7 @@ grid.arrange(ph_disthus, ph_distvei,
           nrow = 1, ncol = 2)
 
 # rest
-grid.arrange(ph_treart, ph_hell, ph_hoh, ph_kant, ph_skogkat,  ph_tretett,
+grid.arrange(ph_treart, ph_skogkat, ph_kant, ph_tretett, ph_hell, ph_hoh, 
           nrow = 3, ncol = 2)
 
 # ## direct
@@ -764,8 +762,13 @@ grid.arrange(ph_treart, ph_hell, ph_hoh, ph_kant, ph_skogkat,  ph_tretett,
 grid.arrange(pdt_disthus, pdt_distvei, pdt_beite, pdt_treart, pdt_skogkat, pdt_hell, pdt_hoh, pdt_kant, pdt_tretett,
           nrow = 5, ncol = 2)
 # disthus and distvei
+# legend <- get_legend(pdt_disthus)
+# blankPlot <- ggplot()+geom_blank(aes(1,1)) + 
+#   cowplot::theme_nothing()
+
 grid.arrange(pdt_disthus, pdt_distvei,
           nrow = 1, ncol = 2)
+
 # rest
 grid.arrange(pdt_beite, pdt_treart, pdt_skogkat, pdt_hell, pdt_hoh, pdt_kant, pdt_tretett,
           nrow = 4, ncol = 2)
