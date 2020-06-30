@@ -364,3 +364,48 @@ length(levels(browse9.2_dist$FLATEID))
 
 ```
 
+
+
+
+## correlation plot explanatory variables
+```{r}
+library(ggplot2)
+library(GGally)
+
+## Browsing pressure
+# house
+ggcorr(browse9.4_house, nbreaks = 6, label = T, low = "red3", high = "green3",  
+       label_round = 2, name = "Correlation Scale", label_alpha = T, hjust = 0.75) +
+  ggtitle(label = "Correlation Plot") +
+  theme(plot.title = element_text(hjust = 0.6))
+
+# road
+ggcorr(browse9.4, nbreaks = 6, label = T, low = "red3", high = "green3",  
+       label_round = 2, name = "Correlation Scale", label_alpha = T, hjust = 0.75) +
+  ggtitle(label = "Correlation Plot") +
+  theme(plot.title = element_text(hjust = 0.6))
+
+# ----------------------- need to fix the variable names in english... ------------
+# palette = "PuOr" # colorblind and photocopy friendly
+
+
+
+## Recruits
+# house
+ggcorr(browse9.5msc, use = "pearson", nbreaks = 6, label = T, low = "red3", high = "green3",  
+       label_round = 2, name = "Correlation Scale", label_alpha = T, hjust = 0.75) +
+  ggtitle(label = "Correlation Plot") +
+  theme(plot.title = element_text(hjust = 0.6))
+
+# road
+ggcorr(browse9.6sc, use = "pearson", nbreaks = 6, label = T, low = "red3", high = "green3", label_round = 2, name = "Correlation Scale", label_alpha = T, hjust = 0.75) +
+  ggtitle(label = "Correlation Plot") +
+  theme(plot.title = element_text(hjust = 0.6))
+
+
+```
+
+
+
+
+
