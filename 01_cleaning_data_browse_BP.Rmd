@@ -319,7 +319,17 @@ save(browse9.2_distnew, file = "browse9.2_distnew.rda")
 
 ## New dataset with only variables we use in the models
 ```{r}
+browse9.4_house <- browse9.2[,c(8,10,12,17,19:21,23:25,35,49,92)]
+browse9.4_house[,"disthus"] <- NULL
+browse9.4_house[,"HOH"] <- NULL
+browse9.4_house[,"tretetthet9"] <- NULL
+browse9.4_house$tretetthet9_trunc <- browse9.2$tretetthet9_trunc
+browse9.4_house$KOMNR <- browse9.2$KOMNR
+browse9.4_house$treartgruppe9 <- factor(browse9.4_house$treartgruppe9, levels = c("LAUV", "FURU", "ROS"))
 
+
+
+save(browse9.4_house, file = "browse9.4_house.rda")
 browse9.4 <- browse9.2_dist[,c(3,10,12,17,19:23,25,35,36,49,69,92,97)]
 browse9.4 <- subset(browse9.4, select = -c(4:5,9,12))
 browse9.4$tretetthet9_trunc <- browse9.2_dist$tretetthet9_trunc
@@ -332,15 +342,7 @@ browse9.4$treartgruppe9 <- factor(browse9.4$treartgruppe9, levels = c("LAUV", "F
 save(browse9.4, file = "browse9.4.rda")
 
 
-browse9.4_house <- browse9.2[,c(8,10,12,17,19:21,23:25,35,49,92)]
-browse9.4_house[,"disthus"] <- NULL
-browse9.4_house[,"HOH"] <- NULL
-browse9.4_house[,"tretetthet9"] <- NULL
-browse9.4_house$tretetthet9_trunc <- browse9.2$tretetthet9_trunc
-browse9.4_house$KOMNR <- browse9.2$KOMNR
-browse9.4_house$treartgruppe9 <- factor(browse9.4_house$treartgruppe9, levels = c("LAUV", "FURU", "ROS"))
 
-save(browse9.4_house, file = "browse9.4_house.rda")
 
 ```
 
