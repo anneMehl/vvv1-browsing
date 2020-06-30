@@ -668,7 +668,13 @@ tab_model(m3betaroad, transform = NULL,
 
 ## figures
 ```{r}
-p1hus <- plot_model(mhusabin, type = c("eff"), terms = c("disthus_400"))
+library(sjPlot)
+library(ggplot2)
+
+load("processdata/browse9.6scpos.rda")
+
+
+p1hus <- plot_model(model, type = c("eff"), terms = c("disthus_400"))
 p1hus <- p1hus + theme_light() +
   theme(plot.title = element_blank(),
     axis.text = element_text(family = "sans", size = 20, color = "grey30"),
@@ -676,7 +682,7 @@ p1hus <- p1hus + theme_light() +
   xlab("Distance to house\n") +
   ylab("% Recruits\n")
 
-p1 <- plot_model(m3betaroad, type = c("eff"), terms = c("distvei2 [0:500]"))
+p1 <- plot_model(model, type = c("eff"), terms = c("distvei2 [0:500]"))
 p1 <- p1 + theme_light() +
   theme(plot.title = element_blank(),
     axis.text = element_text(family = "sans", size = 20, color = "grey30"),
@@ -690,7 +696,8 @@ p2 <- p2 + theme_light() +
     axis.text = element_text(family = "sans", size = 20, color = "grey30"),
         axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
   xlab("Forest category\n") +
-  ylab("% Recruits\n")
+  ylab("% Recruits\n") +
+  label_angle(angle.x = 45, base.theme = theme_sjplot())
 
 p3 <- plot_model(m3betaroad, type = c("eff"), transform = NULL, terms = c("treartgruppe9"))
 p3 <- p3 + theme_light() +
@@ -730,7 +737,7 @@ p7 <- p7 + theme_light() +
 library(gridExtra)
 grid.arrange(p6, p2, p3, p5, p7,
           nrow = 3, ncol = 2)
-
+# bin: p1hus, p1, p6, p2, p3, p5, p7
 ```
 
 
