@@ -21,8 +21,8 @@ library(glmmTMB)
 
 
 ## Load data and model
-** To load the data/ models to make the HOUSE plots, load chunks: Browsing pressure - Houses and Recruits - Houses **
-** To load the data/ models to make the ROAD plots, load chunks: Browsing pressure - Roads and Recruits - Roads **
+** To load the data/ models to make the HOUSE plots, load chunks: Browsing pressure - Houses AND Recruits - Houses **
+** To load the data/ models to make the ROAD plots, load chunks: Browsing pressure - Roads AND Recruits - Roads **
 
 ## Browsing pressure
 #### Houses
