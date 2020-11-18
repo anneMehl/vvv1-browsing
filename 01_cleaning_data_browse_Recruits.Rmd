@@ -454,10 +454,14 @@ summary(rr_beta) # moose density not sign.
 
 
 
+
+
+
 ## Look at changes in proportion of trees from 9th to 10th takst (plant performance)
 
 ```{r}
 load("rawdata/browse0.1.rda")
+
 # names(browse0.1)
 
 ```
@@ -473,7 +477,7 @@ recruits_test <- recruits_test[, -c(7:12,16:18,22:24)]
 recruits_test$FLATEID <- as.factor(recruits_test$FLATEID)
 str(levels(recruits_test$FLATEID))
 unique(recruits_test$FLATEID)
-  
+
 ```
 
 ```{r}
@@ -512,6 +516,11 @@ sum(recruits10m$proplt1, na.rm = T)
 mean(recruits10m$proplt1, na.rm = T)
 
 
+recruits_test$FLATEID <- as.factor(recruits_test$FLATEID)
+str(levels(recruits_test$FLATEID))
+unique(recruits_test$FLATEID)
+
+
 ```
 
 
@@ -533,7 +542,10 @@ sum((recruits10$Lauv_25_49_PRHA + recruits10$Lauv_25_49_PRHA),na.rm=TRUE)/sum(re
 # = 0.05117802
 
 
+
+
 ```
+
 
 
 
