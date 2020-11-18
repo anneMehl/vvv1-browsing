@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## For browse9.5 (tree height classes, not tree density)
 
 ```{r}
-load("browse9.5.rda")
+load("processdata/browse9.5.rda")
 load("rawdata/browse0.1.rda")
 ```
 
@@ -129,7 +129,7 @@ save(browse9.6, file = "browse9.6.rda")
 ##### Subsets and new variable(s)
 ```{r}
 
-# Creating new variable proportion large trees "proplt" 
+## Creating new variable proportion large trees "proplt" and on the way also "browsed merged"
 load("processdata/browse9.5.rda")
 browse9.5 <- as.data.frame(browse9.5)
 
@@ -283,3 +283,260 @@ browse9.5m$disthus_160 <- ifelse(browse9.5m$disthus >= 160, 160, browse9.5m$dist
 # browse9.2$disthus_trunc_cut100 <- ifelse(browse9.2$disthus_trunc >= 100, 100, browse9.2$disthus_trunc)
 
 save(browse9.5m, file = "browse9.5m.rda")
+```
+
+
+
+
+
+## Add moose density (mean over 5 year period to datasets and models)
+```{r}
+library(readr)
+moose_mean_density <- read_csv("processdata_copy/five_y_mean_density.csv", na = "NA")
+str(moose_mean_density)
+library(tidyverse)
+moose_mean_density <- moose_mean_density %>%
+  rename(KOMNR = knr2017) %>%
+  rename(moose_density = five_y_mean_density)
+str(moose_mean_density)
+
+```
+
+#### Recruits house
+```{r}
+## HOUSE
+load("processdata_copy/browse9.5msc.rda")
+browse9.5msc_test <- left_join(browse9.5msc, moose_mean_density, by = "KOMNR")
+str(browse9.5msc_test$moose_density)
+sum(is.na(browse9.5msc_test$moose_density))
+which(is.na(browse9.5msc_test$moose_density))
+browse9.5msc_test[2254, ]
+browse9.5msc_test[2257, ]
+browse9.5msc_test$moose_density <- ifelse(is.na(browse9.5msc_test$moose_density), 0, browse9.5msc_test$moose_density)
+sum(is.na(browse9.5msc_test$moose_density))
+
+# browse9.5msc_test_pos <- browse9.5msc_test[browse9.5msc_test$bt100 > 0, ]
+# sum(is.na(browse9.5msc_test_pos))
+
+load("processdata_copy/browse9.5mpossc.rda")
+browse9.5msc_test_pos <- left_join(browse9.5mpossc, moose_mean_density, by = "KOMNR")
+str(browse9.5msc_test_pos$moose_density)
+sum(is.na(browse9.5msc_test_pos$moose_density))
+browse9.5msc_test_pos$moose_density <- ifelse(is.na(browse9.5msc_test_pos$moose_density), 0, browse9.5msc_test_pos$moose_density)
+sum(is.na(browse9.5msc_test_pos$moose_density))
+
+
+library(lme4)
+library(glmmTMB)
+
+
+## BIN
+load("output_copy/mhusabin.rda")
+rh_bin <- glmer(factor(proplt > 0) ~ disthus_400 + log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + moose_density + (1|KOMNR),
+family = binomial(),
+data = browse9.5msc_test)
+
+rh_bin_int <- glmer(factor(proplt > 0) ~ disthus_400 + log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + moose_density + moose_density*log(distvei2+1) + (1|KOMNR),
+family = binomial(),
+data = browse9.5msc_test)
+
+
+library(AICcmodavg)
+candmods_BP_hbin <- list(rh_bin, mhusabin, rh_bin_int)
+aictab(candmods_BP_hbin, modnames = NULL,
+                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+#       K     AICc Delta_AICc AICcWt Cum.Wt       LL
+# Mod1 18 14206.75       0.00   0.70   0.70 -7085.35
+# Mod3 19 14208.68       1.92   0.27   0.97 -7085.30
+# Mod2 17 14213.08       6.33   0.03   1.00 -7089.51
+
+summary(rh_bin) # moose density negative **
+
+
+# library(sjPlot)
+# library(ggplot2)
+# p1 <- plot_model(bh_bin, type = c("eff"), transform = NULL, terms = c("moose_density"),
+#            grid = TRUE)
+# p1 <- p1 + theme_light() +
+#   theme(plot.title = element_blank(),
+#     axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+#         axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+#   xlab("5 year mean moose density\n") +
+#   ylab("Browsing pressure (%)\n")
+
+
+## BETA
+load("output_copy/m16abeta_house.rda")
+rh_beta <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + HOH + I(HOH^2) + browspres_merged + moose_density + (1|KOMNR),
+            data = browse9.5msc_test_pos,
+            family = beta_family())
+
+rh_beta_int <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + HOH + I(HOH^2) + browspres_merged + moose_density + moose_density*log(distvei2+1) + (1|KOMNR),
+            data = browse9.5msc_test_pos,
+            family = beta_family())
+
+
+library(bbmle)
+AIC(rh_beta, m16abeta_house, rh_beta_int)
+ICtab(rh_beta, m16abeta_house, rh_beta_int, type = "AIC", weights = TRUE, delta = TRUE)
+
+summary(rh_beta) # moose density not sign.
+
+```
+
+
+#### Recruits roads
+```{r}
+## ROADS
+load("processdata_copy/browse9.6sc.rda")
+browse9.6sc_test <- left_join(browse9.6sc, moose_mean_density, by = "KOMNR")
+str(browse9.6sc_test$moose_density)
+sum(is.na(browse9.6sc_test$moose_density))
+which(is.na(browse9.6sc_test$moose_density))
+browse9.6sc_test[1497, ]
+browse9.6sc_test[5522, ]
+browse9.6sc_test$moose_density <- ifelse(is.na(browse9.6sc_test$moose_density), 0, browse9.6sc_test$moose_density)
+sum(is.na(browse9.6sc_test$moose_density))
+
+load("processdata_copy/browse9.6scpos.rda")
+browse9.6sc_test_pos <- left_join(browse9.6scpos, moose_mean_density, by = "KOMNR")
+str(browse9.6sc_test_pos$moose_density)
+sum(is.na(browse9.6sc_test_pos$moose_density))
+browse9.6sc_test_pos$moose_density <- ifelse(is.na(browse9.6sc_test_pos$moose_density), 0, browse9.6sc_test_pos$moose_density)
+
+
+library(lme4)
+library(glmmTMB)
+
+
+## BIN
+load("output_copy/m2bin_roads.rda")
+rr_bin <- glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + helling + HOH + I(HOH^2) +  ac + moose_density + (1|KOMNR),
+family = binomial(),
+data = browse9.6sc_test)
+
+rr_bin_int <- glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + helling + HOH + I(HOH^2) +  ac + moose_density + moose_density*log(distvei2+1) + (1|KOMNR),
+family = binomial(),
+data = browse9.6sc_test)
+
+
+library(AICcmodavg)
+candmods_BP_hbeta <- list(rr_bin, m2bin_roads, rr_bin_int)
+aictab(candmods_BP_hbeta, modnames = NULL,
+                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+#       K     AICc Delta_AICc AICcWt Cum.Wt       LL
+# Mod1 14 10898.69       0.00   0.62   0.62 -5435.32
+# Mod3 15 10900.05       1.36   0.31   0.93 -5435.00
+# Mod2 13 10902.98       4.29   0.07   1.00 -5438.47
+
+summary(rr_bin) # moose density negativ *
+
+
+## BETA
+load("output_copy/m3betaroad.rda")
+rr_beta <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + ac + helling + HOH + I(HOH^2) + browspres_merged + moose_density + (1|KOMNR),
+            data = browse9.6sc_test_pos,
+            family = beta_family())
+
+rr_beta_int <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + ac + helling + HOH + I(HOH^2) + browspres_merged + moose_density + moose_density*log(distvei2+1) + (1|KOMNR),
+            data = browse9.6sc_test_pos,
+            family = beta_family())
+
+
+library(bbmle)
+AIC(rr_beta, m3betaroad, rr_beta_int)
+ICtab(rr_beta, m3betaroad, rr_beta_int, type = "AIC", weights = TRUE, delta = TRUE)
+
+summary(rr_beta) # moose density not sign.
+
+
+```
+
+
+
+## Look at changes in proportion of trees from 9th to 10th takst (plant performance)
+
+```{r}
+load("rawdata/browse0.1.rda")
+# names(browse0.1)
+
+```
+
+
+```{r}
+recruits_test <- browse0.1[, c(1,3,5,7:9,27:29,31:45,74,76:83,88,90,103,105,112:117)]
+str(recruits_test)
+names(recruits_test)
+
+recruits_test <- recruits_test[, -c(7:12,16:18,22:24)]
+
+recruits_test$FLATEID <- as.factor(recruits_test$FLATEID)
+str(levels(recruits_test$FLATEID))
+unique(recruits_test$FLATEID)
+  
+```
+
+```{r}
+recruits_test_910 <- split(recruits_test, recruits_test$takst)
+
+recruits9 <- recruits_test_910[['9']]
+summary(recruits9)
+
+recruits10 <- recruits_test_910[['10']]
+summary(recruits10)
+str(recruits10$treartgruppe10)
+
+
+# recruits9$FLATEID <- as.factor(recruits9$FLATEID)
+# str(levels(recruits9$FLATEID))
+# unique(recruits9$FLATEID)
+# 
+# recruits10$FLATEID <- as.factor(recruits10$FLATEID)
+# str(levels(recruits10$FLATEID))
+# unique(recruits10$FLATEID)
+
+
+## 9th cycle
+recruits9m$proplt1 <- ifelse(recruits9m$treartgruppe9 == "FURU", (recruits9m$Furu_0_25_PRHA + recruits9m$Furu_25_49_PRHA)/(recruits9m$Furu_0_PRHA + recruits9m$Furu_0_25_PRHA + recruits9m$Furu_25_49_PRHA), (recruits9m$Lauv_0_25_PRHA + recruits9m$Lauv_25_49_PRHA)/ (recruits9m$Lauv_0_PRHA + recruits9m$Lauv_0_25_PRHA + recruits9m$Lauv_25_49_PRHA))
+
+str(recruits9m$proplt1)
+sum(recruits9m$proplt1, na.rm = T)
+mean(recruits9m$proplt1, na.rm = T)
+
+
+## 10th cycle
+recruits10m$proplt1 <- ifelse(recruits10m$treartgruppe10 == "FURU", (recruits10m$Furu_0_25_PRHA + recruits10m$Furu_25_49_PRHA)/(recruits10m$Furu_0_PRHA + recruits10m$Furu_0_25_PRHA + recruits10m$Furu_25_49_PRHA), (recruits10m$Lauv_0_25_PRHA + recruits10m$Lauv_25_49_PRHA)/ (recruits10m$Lauv_0_PRHA + recruits10m$Lauv_0_25_PRHA + recruits10m$Lauv_25_49_PRHA))
+
+str(recruits10m$proplt1)
+sum(recruits10m$proplt1, na.rm = T)
+mean(recruits10m$proplt1, na.rm = T)
+
+
+```
+
+
+#### With trees below 5 cm DBH (same as in paper)
+```{r}
+### Number of trees 2(10)/ number of trees 1(9)
+sum(recruits10$Furu_0_25_PRHA,na.rm=TRUE)/sum(recruits9$Furu_0_PRHA,na.rm=TRUE)
+# = 0.2254849
+recruits_test$proplt2 <- ifelse(recruits10m$treartgruppe10 == "FURU", (recruits10m$Furu_0_25_PRHA + recruits10m$Furu_25_49_PRHA)/(recruits10m$Furu_0_PRHA + recruits10m$Furu_0_25_PRHA + recruits10m$Furu_25_49_PRHA), (recruits10m$Lauv_0_25_PRHA + recruits10m$Lauv_25_49_PRHA)/ (recruits10m$Lauv_0_PRHA + recruits10m$Lauv_0_25_PRHA + recruits10m$Lauv_25_49_PRHA))
+
+sum((recruits10$Lauv_0_25_PRHA + recruits10$Bjork_0_25_PRHA),na.rm=TRUE)/sum(recruits9$Lauv_0_PRHA,na.rm=TRUE) # pool lauv and bjork for 10th takst, because they are pooled in 9th takst?
+# = 0.427326
+
+
+### Number of trees 3(10)/ number of trees 1(9)
+sum(recruits10$Furu_25_49_PRHA,na.rm=TRUE)/sum(recruits9$Furu_0_PRHA,na.rm=TRUE)
+# = 0.1192973
+sum((recruits10$Lauv_25_49_PRHA + recruits10$Lauv_25_49_PRHA),na.rm=TRUE)/sum(recruits9$Lauv_0_PRHA,na.rm=TRUE) # pool lauv and bjork for 10th takst, because they are pooled in 9th takst?
+# = 0.05117802
+
+
+```
+
+
+
+
+
+
