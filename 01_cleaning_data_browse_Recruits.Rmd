@@ -171,7 +171,9 @@ browse9.5m <- as.data.frame(browse9.5m)
 browse9.5m <- browse9.5m[,c(1:24,29)]
 
 
-browse9.5m$proplt <- ifelse(browse9.5m$treartgruppe9 == "FURU", (browse9.5m$Furu_0_25_PRHA + browse9.5m$Furu_25_49_PRHA)/(browse9.5m$Furu_0_PRHA + browse9.5m$Furu_0_25_PRHA + browse9.5m$Furu_25_49_PRHA), (browse9.5m$Lauv_0_25_PRHA + browse9.5m$Lauv_25_49_PRHA)/ (browse9.5m$Lauv_0_PRHA + browse9.5m$Lauv_0_25_PRHA + browse9.5m$Lauv_25_49_PRHA))
+browse9.5m$proplt <- ifelse(browse9.5m$treartgruppe9 == "FURU", 
+                            (browse9.5m$Furu_0_25_PRHA + browse9.5m$Furu_25_49_PRHA)/(browse9.5m$Furu_0_PRHA + browse9.5m$Furu_0_25_PRHA + browse9.5m$Furu_25_49_PRHA), 
+                            (browse9.5m$Lauv_0_25_PRHA + browse9.5m$Lauv_25_49_PRHA)/ (browse9.5m$Lauv_0_PRHA + browse9.5m$Lauv_0_25_PRHA + browse9.5m$Lauv_25_49_PRHA))
 
 
 nrow(browse9.5m)
@@ -469,105 +471,110 @@ names(browse0.1)
 
 
 ```{r}
-recruits <- browse0.1[, c(1,3,5,7:9,27:29,31:45,74,76:83,88,90,103,105,112:117)]
-str(recruits)
-names(recruits)
+recruits_full <- browse0.1[, c(1,3,5,7:9,27:29,31:45,62:64,74,76:83,88,90,103,105,112:117)]
+str(recruits_full)
+names(recruits_full)
 
-recruits <- recruits[, -c(7:9,22:24, 26:33)]
-str(recruits)
-names(recruits)
+# recruits <- recruits_full[, -c(7:9,22:24, 26:33)]
+# str(recruits)
+# names(recruits)
 
-recruits_test$FLATEID <- as.factor(recruits_test$FLATEID)
-str(levels(recruits_test$FLATEID))
-unique(recruits_test$FLATEID)
-
-```
-
-```{r}
-recruits_test_910 <- split(recruits_test, recruits_test$takst)
-
-recruits9 <- recruits_test_910[['9']]
-summary(recruits9)
-
-recruits10 <- recruits_test_910[['10']]
-summary(recruits10)
-str(recruits10$treartgruppe10)
-
-recruits9$FLATEID <- as.factor(recruits9$FLATEID)
-str(levels(recruits9$FLATEID))
-# unique(recruits9$FLATEID)
-# 
-recruits10$FLATEID <- as.factor(recruits10$FLATEID)
-str(levels(recruits10$FLATEID))
-# unique(recruits10$FLATEID)
-
-recruits9_test <- recruits9 %>% distinct(FLATEID, .keep_all= TRUE)
-recruits10_test <- recruits10 %>% distinct(FLATEID, .keep_all= TRUE)
-
-recruits_distinct <- full_join(recruits10_test, recruits9_test, by = "FLATEID")
-str(levels(recruits$FLATEID))
-
-
-
-## 9th cycle
-# recruits9m$proplt1 <- ifelse(recruits9m$treartgruppe9 == "FURU", (recruits9m$Furu_0_25_PRHA + recruits9m$Furu_25_49_PRHA)/(recruits9m$Furu_0_PRHA + recruits9m$Furu_0_25_PRHA + recruits9m$Furu_25_49_PRHA), (recruits9m$Lauv_0_25_PRHA + recruits9m$Lauv_25_49_PRHA)/ (recruits9m$Lauv_0_PRHA + recruits9m$Lauv_0_25_PRHA + recruits9m$Lauv_25_49_PRHA))
-# 
-# str(recruits9m$proplt1)
-# sum(recruits9m$proplt1, na.rm = T)
-# mean(recruits9m$proplt1, na.rm = T)
-
-
-## 10th cycle
-# recruits10m$proplt1 <- ifelse(recruits10m$treartgruppe10 == "FURU", (recruits10m$Furu_0_25_PRHA + recruits10m$Furu_25_49_PRHA)/(recruits10m$Furu_0_PRHA + recruits10m$Furu_0_25_PRHA + recruits10m$Furu_25_49_PRHA), (recruits10m$Lauv_0_25_PRHA + recruits10m$Lauv_25_49_PRHA)/ (recruits10m$Lauv_0_PRHA + recruits10m$Lauv_0_25_PRHA + recruits10m$Lauv_25_49_PRHA))
-# 
-# str(recruits10m$proplt1)
-# sum(recruits10m$proplt1, na.rm = T)
-# mean(recruits10m$proplt1, na.rm = T)
-# 
-# 
 # recruits_test$FLATEID <- as.factor(recruits_test$FLATEID)
 # str(levels(recruits_test$FLATEID))
 # unique(recruits_test$FLATEID)
 
+#### TRY THIS BEFORE SPLITTING
+recruits_full$Lauv1 <- ifelse(recruits_full$takst == 10, recruits_full$Lauv_0_PRHA + recruits_full$Bjork_0_PRHA + recruits_full$ROS_0_PRHA, NA)
+recruits_full$Lauv2 <- ifelse(recruits_full$takst == 10, recruits_full$Lauv_0_25_PRHA + recruits_full$Bjork_0_25_PRHA + recruits_full$ROS_0_25_PRHA, NA)
+recruits_full$Lauv3 <- ifelse(recruits_full$takst == 10, recruits_full$Lauv_25_49_PRHA + recruits_full$Bjork_25_49_PRHA + recruits_full$ROS_25_49_PRHA, NA)
+
+recruits <- subset(recruits_full, treartgruppe10!="BJORK")
+
+
+
+recruits_910 <- split(recruits, recruits$takst)
+
+recruits_9 <- recruits_910[['9']]
+summary(recruits9)
+
+recruits_10 <- recruits_910[['10']]
+summary(recruits10)
+
+## The join/ merge does not work with the data where I have duplicated rows
+recruits_join <- inner_join(recruits_10, recruits_9, by = "FLATEID")
+recruits_join2 <- merge(recruits_10, recruits_9, by = "FLATEID")
+
+
+
+## inner_join works, when I do not have the dublicated rows
+recruits9 <- distinct(recruits_9, FLATEID, .keep_all = TRUE)
+recruits10 <- distinct(recruits_10, FLATEID, .keep_all = TRUE)
+recruits_test <- inner_join(recruits9, recruits10, by = "FLATEID")
 
 ```
+
 
 
 #### With trees below 5 cm DBH (same as in paper)
 ```{r}
 ### Number of trees 2(10)/ number of trees 1(9)
-# sum(recruits10$Furu_0_25_PRHA,na.rm=TRUE)/sum(recruits9$Furu_0_PRHA,na.rm=TRUE)
-# = 0.2254849
-# sum((recruits10$Lauv_0_25_PRHA + recruits10$Bjork_0_25_PRHA),na.rm=TRUE)/sum(recruits9$Lauv_0_PRHA,na.rm=TRUE) # pool lauv and bjork for 10th takst, because they are pooled in 9th takst?
-# = 0.427326
 
-# recruits$proplt2 <- ifelse(recruits$treartgruppe10.x == "FURU" | recruits$treartgruppe9.y == "FURU", 
-#                                 recruits$Furu_0_25_PRHA.x/recruits$Furu_0_PRHA.y, 
-#                                 recruits$Lauv_0_25_PRHA.x/recruits$Lauv_0_PRHA.y)
-# str(recruits$proplt2)
+
+
+# sum(recruits10$Furu_0_25_PRHA,na.rm=TRUE)/sum(recruits9$Furu_0_PRHA,na.rm=TRUE)
+# # = 0.2254849
+# sum(recruits9$Furu_0_25_PRHA,na.rm=TRUE)/sum(recruits9$Furu_0_PRHA,na.rm=TRUE)
+# # = 0.1496975
+# sum((recruits10$Lauv_0_25_PRHA + recruits10$Bjork_0_25_PRHA),na.rm=TRUE)/sum(recruits9$Lauv_0_PRHA,na.rm=TRUE) # pool lauv and bjork for 10th takst, because they are pooled in 9th takst?
+# # = 0.427326
+# sum((recruits9$Lauv_0_25_PRHA),na.rm=TRUE)/sum(recruits9$Lauv_0_PRHA,na.rm=TRUE) # pool lauv and bjork for 10th takst, because they are pooled in 9th takst?
+# # = 0.3694553
+
 
 recruits$proplt2 <- ifelse(recruits$treartgruppe10 == "FURU" | recruits$treartgruppe9 == "FURU", 
                                 recruits$Furu_0_25_PRHA/recruits$Furu_0_PRHA, 
-                                (recruits$Lauv_0_25_PRHA + recruits$Bjork_0_25_PRHA)/recruits$Lauv_0_PRHA)
+                                recruits$Lauv_0_25_PRHA/recruits$Lauv_0_PRHA)
 str(recruits$proplt2)
 
-### Number of trees 3(10)/ number of trees 1(9)
-# sum(recruits10$Furu_25_49_PRHA,na.rm=TRUE)/sum(recruits9$Furu_0_PRHA,na.rm=TRUE)
-# = 0.1192973
-# sum((recruits10$Lauv_25_49_PRHA + recruits10$Lauv_25_49_PRHA),na.rm=TRUE)/sum(recruits9$Lauv_0_PRHA,na.rm=TRUE) # pool lauv and bjork for 10th takst, because they are pooled in 9th takst?
-# = 0.05117802
 
-# recruits$proplt3 <- ifelse(recruits$treartgruppe10.x == "FURU" | recruits$treartgruppe9.y == "FURU", 
-#                                 recruits$Furu_25_49_PRHA.x/recruits$Furu_0_PRHA.y, 
-#                                 recruits$Lauv_25_49_PRHA.x/recruits$Lauv_0_PRHA.y)
-# str(recruits$proplt3)
+
+
+# 9th and 10th
+recruits_test$proplt2 <- (recruits_test$Furu_0_25_PRHA.y + recruits_test$Lauv_0_25_PRHA.y)/(recruits_test$Furu_0_PRHA.x + recruits_test$Lauv_0_PRHA.x)
+str(recruits_test$proplt2)
+
+# 9th
+recruits_test$proplt <- (recruits_test$Furu_0_25_PRHA.x + recruits_test$Lauv_0_25_PRHA.x)/(recruits_test$Furu_0_PRHA.x + recruits_test$Lauv_0_PRHA.x)
+str(recruits_test$proplt)
+
+
+recruits_cor <- recruits_test[, c(98:99)]
+str(recruits_cor)
+nrow(recruits_cor)
+nrow(na.omit(recruits_cor))
+recruits_cor <- na.omit(recruits_cor)
+
+cor(recruits_cor)
+cor.test(recruits_cor$proplt2, recruits_cor$proplt)
+
+
+### Number of trees 3(10)/ number of trees 1(9)
+
+sum(recruits10$Furu_25_49_PRHA,na.rm=TRUE)/sum(recruits9$Furu_0_PRHA,na.rm=TRUE)
+# = 0.1192973
+sum(recruits9$Furu_25_49_PRHA,na.rm=TRUE)/sum(recruits9$Furu_0_PRHA,na.rm=TRUE)
+# = 0.09093612
+sum((recruits10$Lauv_25_49_PRHA + recruits10$Lauv_25_49_PRHA),na.rm=TRUE)/sum(recruits9$Lauv_0_PRHA,na.rm=TRUE) # pool lauv and bjork for 10th takst, because they are pooled in 9th takst?
+# = 0.05117802
+sum((recruits$Lauv_25_49_PRHA),na.rm=TRUE)/sum(recruits9$Lauv_0_PRHA,na.rm=TRUE) # pool lauv and bjork for 10th takst, because they are pooled in 9th takst?
+# = 0.1373873
+
 
 recruits$proplt3 <- ifelse(recruits$treartgruppe10 == "FURU" | recruits$treartgruppe9 == "FURU", 
                                 recruits$Furu_25_49_PRHA/recruits$Furu_0_PRHA, 
-                                (recruits$Lauv_25_49_PRHA + recruits$Bjork_0_25_PRHA)/recruits$Lauv_0_PRHA)
-
+                                recruits$Lauv_25_49_PRHA/recruits$Lauv_0_PRHA)
+str(recruits$proplt3)
 ```
-
 
 
 
