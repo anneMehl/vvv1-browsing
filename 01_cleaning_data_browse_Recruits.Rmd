@@ -531,23 +531,24 @@ recruits_test <- inner_join(recruits9, recruits10, by = "FLATEID")
 # # = 0.3694553
 
 
-recruits$proplt2 <- ifelse(recruits$treartgruppe10 == "FURU" | recruits$treartgruppe9 == "FURU", 
-                                recruits$Furu_0_25_PRHA/recruits$Furu_0_PRHA, 
-                                recruits$Lauv_0_25_PRHA/recruits$Lauv_0_PRHA)
-str(recruits$proplt2)
+# recruits$proplt2 <- ifelse(recruits$treartgruppe10 == "FURU" | recruits$treartgruppe9 == "FURU", 
+#                                 recruits$Furu_0_25_PRHA/recruits$Furu_0_PRHA, 
+#                                 recruits$Lauv_0_25_PRHA/recruits$Lauv_0_PRHA)
+# str(recruits$proplt2)
 
 
 
 
 # 9th and 10th
-recruits_test$proplt2 <- (recruits_test$Furu_0_25_PRHA.y + recruits_test$Lauv2.y)/(recruits_test$Furu_0_PRHA.x + recruits_test$Lauv_0_PRHA.x)
+recruits_test$proplt3 <- (recruits_test$Furu_0_25_PRHA.y + recruits_test$Lauv2.y)/(recruits_test$Furu_0_PRHA.x + recruits_test$Lauv_0_PRHA.x)
 str(recruits_test$proplt2)
 
 # 9th
-recruits_test$proplt <- (recruits_test$Furu_0_25_PRHA.x + recruits_test$Lauv_0_25_PRHA.x)/(recruits_test$Furu_0_PRHA.x + recruits_test$Lauv_0_PRHA.x)
-str(recruits_test$proplt)
+recruits_test$proplt1 <- (recruits_test$Furu_0_25_PRHA.x + recruits_test$Lauv_0_25_PRHA.x)/(recruits_test$Furu_0_PRHA.x + recruits_test$Lauv_0_PRHA.x)
+str(recruits_test$proplt1)
 
-
+recruits_test$proplt2 <- (recruits_test$Furu_25_49_PRHA.x + recruits_test$Lauv_25_49_PRHA.x)/(recruits_test$Furu_0_25_PRHA.x + recruits_test$Lauv_0_25_PRHA.x)
+str(recruits_test$proplt2)
 
 
 
@@ -563,24 +564,25 @@ sum((recruits$Lauv_25_49_PRHA),na.rm=TRUE)/sum(recruits9$Lauv_0_PRHA,na.rm=TRUE)
 # = 0.1373873
 
 
-recruits$proplt3 <- ifelse(recruits$treartgruppe10 == "FURU" | recruits$treartgruppe9 == "FURU", 
-                                recruits$Furu_25_49_PRHA/recruits$Furu_0_PRHA, 
-                                recruits$Lauv_25_49_PRHA/recruits$Lauv_0_PRHA)
-str(recruits$proplt3)
+# recruits$proplt3 <- ifelse(recruits$treartgruppe10 == "FURU" | recruits$treartgruppe9 == "FURU", 
+#                                 recruits$Furu_25_49_PRHA/recruits$Furu_0_PRHA, 
+#                                 recruits$Lauv_25_49_PRHA/recruits$Lauv_0_PRHA)
+# str(recruits$proplt3)
 
 
 
 
 # 9th and 10th
-recruits_test$proplt3 <- (recruits_test$Furu_25_49_PRHA.y + recruits_test$Lauv3.y)/(recruits_test$Furu_0_PRHA.x + recruits_test$Lauv_0_PRHA.x)
+recruits_test$proplt4 <- (recruits_test$Furu_25_49_PRHA.y + recruits_test$Lauv3.y)/(recruits_test$Furu_0_PRHA.x + recruits_test$Lauv_0_25_PRHA.x)
 str(recruits_test$proplt3)
 
-
-recruits_cor <- recruits_test[, c(98:100)]
+names(recruits_test)
+recruits_cor <- recruits_test[, c(98,100)]
+recruits_cor1 <- recruits_test[, c(99,101)]
 
 
 recruits_cor <- recruits_cor[Reduce(`&`, lapply(recruits_cor, is.finite)),]
-
+recruits_cor1 <- recruits_cor1[Reduce(`&`, lapply(recruits_cor1, is.finite)),]
 
 
 cor(recruits_cor)
@@ -589,6 +591,7 @@ cor(recruits_cor)
 # proplt  0.5951219 1.0000000 0.5284639
 # proplt3 0.3916736 0.5284639 1.0000000
 
+cor(recruits_cor1)
 
 
 
