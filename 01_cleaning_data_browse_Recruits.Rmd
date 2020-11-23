@@ -540,7 +540,7 @@ str(recruits$proplt2)
 
 
 # 9th and 10th
-recruits_test$proplt2 <- (recruits_test$Furu_0_25_PRHA.y + recruits_test$Lauv_0_25_PRHA.y)/(recruits_test$Furu_0_PRHA.x + recruits_test$Lauv_0_PRHA.x)
+recruits_test$proplt2 <- (recruits_test$Furu_0_25_PRHA.y + recruits_test$Lauv2.y)/(recruits_test$Furu_0_PRHA.x + recruits_test$Lauv_0_PRHA.x)
 str(recruits_test$proplt2)
 
 # 9th
@@ -548,14 +548,7 @@ recruits_test$proplt <- (recruits_test$Furu_0_25_PRHA.x + recruits_test$Lauv_0_2
 str(recruits_test$proplt)
 
 
-recruits_cor <- recruits_test[, c(98:99)]
-str(recruits_cor)
-nrow(recruits_cor)
-nrow(na.omit(recruits_cor))
-recruits_cor <- na.omit(recruits_cor)
 
-cor(recruits_cor)
-cor.test(recruits_cor$proplt2, recruits_cor$proplt)
 
 
 ### Number of trees 3(10)/ number of trees 1(9)
@@ -574,6 +567,31 @@ recruits$proplt3 <- ifelse(recruits$treartgruppe10 == "FURU" | recruits$treartgr
                                 recruits$Furu_25_49_PRHA/recruits$Furu_0_PRHA, 
                                 recruits$Lauv_25_49_PRHA/recruits$Lauv_0_PRHA)
 str(recruits$proplt3)
+
+
+
+
+# 9th and 10th
+recruits_test$proplt3 <- (recruits_test$Furu_25_49_PRHA.y + recruits_test$Lauv3.y)/(recruits_test$Furu_0_PRHA.x + recruits_test$Lauv_0_PRHA.x)
+str(recruits_test$proplt3)
+
+
+recruits_cor <- recruits_test[, c(98:100)]
+
+
+recruits_cor <- recruits_cor[Reduce(`&`, lapply(recruits_cor, is.finite)),]
+
+
+
+cor(recruits_cor)
+#           proplt2    proplt   proplt3
+# proplt2 1.0000000 0.5951219 0.3916736
+# proplt  0.5951219 1.0000000 0.5284639
+# proplt3 0.3916736 0.5284639 1.0000000
+
+
+
+
 ```
 
 
