@@ -203,7 +203,7 @@ save(browse9.5m, file = "browse9.5m.rda")
 
 ```
 
-## TEST for difference between regions
+## Test for difference between regions
 ```{r}
 ##### House
 load("processdata/browse9.5msc.rda")
@@ -327,63 +327,6 @@ sum(is.na(browse9.5msc_test_pos$moose_density))
 browse9.5msc_test_pos$moose_density <- ifelse(is.na(browse9.5msc_test_pos$moose_density), 0, browse9.5msc_test_pos$moose_density)
 sum(is.na(browse9.5msc_test_pos$moose_density))
 
-
-library(lme4)
-library(glmmTMB)
-
-
-## BIN
-load("output_copy/mhusabin.rda")
-rh_bin <- glmer(factor(proplt > 0) ~ disthus_400 + log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + moose_density + (1|KOMNR),
-family = binomial(),
-data = browse9.5msc_test)
-
-rh_bin_int <- glmer(factor(proplt > 0) ~ disthus_400 + log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + moose_density + moose_density*log(distvei2+1) + (1|KOMNR),
-family = binomial(),
-data = browse9.5msc_test)
-
-
-library(AICcmodavg)
-candmods_BP_hbin <- list(rh_bin, mhusabin, rh_bin_int)
-aictab(candmods_BP_hbin, modnames = NULL,
-                       second.ord = TRUE, nobs = NULL, sort = TRUE)
-#       K     AICc Delta_AICc AICcWt Cum.Wt       LL
-# Mod1 18 14206.75       0.00   0.70   0.70 -7085.35
-# Mod3 19 14208.68       1.92   0.27   0.97 -7085.30
-# Mod2 17 14213.08       6.33   0.03   1.00 -7089.51
-
-summary(rh_bin) # moose density negative **
-
-
-# library(sjPlot)
-# library(ggplot2)
-# p1 <- plot_model(bh_bin, type = c("eff"), transform = NULL, terms = c("moose_density"),
-#            grid = TRUE)
-# p1 <- p1 + theme_light() +
-#   theme(plot.title = element_blank(),
-#     axis.text = element_text(family = "sans", size = 20, color = "grey30"),
-#         axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
-#   xlab("5 year mean moose density\n") +
-#   ylab("Browsing pressure (%)\n")
-
-
-## BETA
-load("output_copy/m16abeta_house.rda")
-rh_beta <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + HOH + I(HOH^2) + browspres_merged + moose_density + (1|KOMNR),
-            data = browse9.5msc_test_pos,
-            family = beta_family())
-
-rh_beta_int <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + HOH + I(HOH^2) + browspres_merged + moose_density + moose_density*log(distvei2+1) + (1|KOMNR),
-            data = browse9.5msc_test_pos,
-            family = beta_family())
-
-
-library(bbmle)
-AIC(rh_beta, m16abeta_house, rh_beta_int)
-ICtab(rh_beta, m16abeta_house, rh_beta_int, type = "AIC", weights = TRUE, delta = TRUE)
-
-summary(rh_beta) # moose density not sign.
-
 ```
 
 
@@ -406,50 +349,6 @@ str(browse9.6sc_test_pos$moose_density)
 sum(is.na(browse9.6sc_test_pos$moose_density))
 browse9.6sc_test_pos$moose_density <- ifelse(is.na(browse9.6sc_test_pos$moose_density), 0, browse9.6sc_test_pos$moose_density)
 
-
-library(lme4)
-library(glmmTMB)
-
-
-## BIN
-load("output_copy/m2bin_roads.rda")
-rr_bin <- glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + helling + HOH + I(HOH^2) +  ac + moose_density + (1|KOMNR),
-family = binomial(),
-data = browse9.6sc_test)
-
-rr_bin_int <- glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + helling + HOH + I(HOH^2) +  ac + moose_density + moose_density*log(distvei2+1) + (1|KOMNR),
-family = binomial(),
-data = browse9.6sc_test)
-
-
-library(AICcmodavg)
-candmods_BP_hbeta <- list(rr_bin, m2bin_roads, rr_bin_int)
-aictab(candmods_BP_hbeta, modnames = NULL,
-                       second.ord = TRUE, nobs = NULL, sort = TRUE)
-#       K     AICc Delta_AICc AICcWt Cum.Wt       LL
-# Mod1 14 10898.69       0.00   0.62   0.62 -5435.32
-# Mod3 15 10900.05       1.36   0.31   0.93 -5435.00
-# Mod2 13 10902.98       4.29   0.07   1.00 -5438.47
-
-summary(rr_bin) # moose density negativ *
-
-
-## BETA
-load("output_copy/m3betaroad.rda")
-rr_beta <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + ac + helling + HOH + I(HOH^2) + browspres_merged + moose_density + (1|KOMNR),
-            data = browse9.6sc_test_pos,
-            family = beta_family())
-
-rr_beta_int <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + ac + helling + HOH + I(HOH^2) + browspres_merged + moose_density + moose_density*log(distvei2+1) + (1|KOMNR),
-            data = browse9.6sc_test_pos,
-            family = beta_family())
-
-
-library(bbmle)
-AIC(rr_beta, m3betaroad, rr_beta_int)
-ICtab(rr_beta, m3betaroad, rr_beta_int, type = "AIC", weights = TRUE, delta = TRUE)
-
-summary(rr_beta) # moose density not sign.
 
 
 ```
@@ -520,11 +419,11 @@ names(recruits_10)
 ## inner_join works, when I do not have the dublicated rows
 recruits9 <- distinct(recruits_9, FLATEID, .keep_all = TRUE)
 recruits10 <- distinct(recruits_10, FLATEID, .keep_all = TRUE)
-recruits_test <- inner_join(recruits9, recruits10, by = "FLATEID", suffix =
+recruits <- inner_join(recruits9, recruits10, by = "FLATEID", suffix =
 c("_9", "_10"))
 
 
-names(recruits_test)
+names(recruits)
 
 
 ```
@@ -583,30 +482,30 @@ cor(recruits_cor1)
 
 #### Duplicate rows and make column treartgruppe9
 ```{r}
-# recruits_test is made i: #### Prepare data set for plant performance test
+# recruits_test is made in: #### Prepare data set for plant performance test
 
-str(recruits_test)
-table(as.factor(recruits_test$treartgruppe9))
+str(recruits)
+table(as.factor(recruits$treartgruppe9))
 
-recruits_test_rep <- recruits_test %>% slice(rep(1:n(), each = 3))
-head(recruits_test_rep)
+recruits <- recruits %>% slice(rep(1:n(), each = 3))
+head(recruits)
 
 x <- factor(c("ROS","FURU","LAUV"))
-recruits_test_rep$treartgruppe9 <- rep(x, 14479)
-head(recruits_test_rep$treartgruppe9)
-head(recruits_test_rep)
+recruits$treartgruppe9 <- rep(x, 14479)
+head(recruits$treartgruppe9)
+head(recruits)
 
 ```
 
 
 #### Make column tretetthet9
 ```{r}
-recruits_test_rep$tretetthet9 <- ifelse(recruits_test_rep$treartgruppe9 == "ROS", recruits_test_rep$elgROSha9, NA)
-recruits_test_rep$tretetthet9 <- ifelse(recruits_test_rep$treartgruppe9 == "FURU", recruits_test_rep$elgFURUha9, recruits_test_rep$tretetthet9)
-recruits_test_rep$tretetthet9 <- ifelse(recruits_test_rep$treartgruppe9 == "LAUV", recruits_test_rep$elgLAUVha9, recruits_test_rep$tretetthet9)
+recruits$tretetthet9 <- ifelse(recruits$treartgruppe9 == "ROS", recruits$elgROSha9, NA)
+recruits$tretetthet9 <- ifelse(recruits$treartgruppe9 == "FURU", recruits$elgFURUha9, recruits$tretetthet9)
+recruits$tretetthet9 <- ifelse(recruits$treartgruppe9 == "LAUV", recruits$elgLAUVha9, recruits$tretetthet9)
 
-head(recruits_test_rep$tretetthet9, n = 12)
-sum(is.na(recruits_test_rep$tretetthet9)) #44, meaning that there were no trees to count? But then it should have been 0, no?
+head(recruits$tretetthet9, n = 12)
+sum(is.na(recruits$tretetthet9)) #44, meaning that there were no trees to count? But then it should have been 0, no?
 
 
 ```
@@ -614,17 +513,17 @@ sum(is.na(recruits_test_rep$tretetthet9)) #44, meaning that there were no trees 
 
 #### Make column beitetrykk9
 ```{r}
-recruits_test_rep$beitetrykk9 <- ifelse(recruits_test_rep$treartgruppe9 == "ROS", recruits_test_rep$elgbROSprs9, NA)
-recruits_test_rep$beitetrykk9 <- ifelse(recruits_test_rep$treartgruppe9 == "FURU", recruits_test_rep$elgbFURUprs9, recruits_test_rep$beitetrykk9)
-recruits_test_rep$beitetrykk9 <- ifelse(recruits_test_rep$treartgruppe9 == "LAUV", recruits_test_rep$elgbLAUVprs9, recruits_test_rep$beitetrykk9)
+recruits$beitetrykk9 <- ifelse(recruits$treartgruppe9 == "ROS", recruits$elgbROSprs9, NA)
+recruits$beitetrykk9 <- ifelse(recruits$treartgruppe9 == "FURU", recruits$elgbFURUprs9, recruits$beitetrykk9)
+recruits$beitetrykk9 <- ifelse(recruits$treartgruppe9 == "LAUV", recruits$elgbLAUVprs9, recruits$beitetrykk9)
 
-head(recruits_test_rep$beitetrykk9, n = 12)
-sum(is.na(recruits_test_rep$beitetrykk9)) #21073, meaning that there could not have been browsing pressure, because there were no trees to browse on 
+head(recruits$beitetrykk9, n = 12)
+sum(is.na(recruits$beitetrykk9)) #21073, meaning that there could not have been browsing pressure, because there were no trees to browse on 
 
 
 ## NA the ones where tretetthet is 0, but we have beitetrykk values
-recruits_test_rep$beitetrykk9 <- ifelse(recruits_test_rep$tretetthet9 != 0, recruits_test_rep$beitetrykk9, NA)
-sum(is.na(recruits_test_rep$beitetrykk9)) #21182, meaning that there could not have been browsing pressure, because there were no trees to browse on  
+recruits$beitetrykk9 <- ifelse(recruits$tretetthet9 != 0, recruits$beitetrykk9, NA)
+sum(is.na(recruits$beitetrykk9)) #21182, meaning that there could not have been browsing pressure, because there were no trees to browse on  
 
 
 ```
@@ -632,16 +531,83 @@ sum(is.na(recruits_test_rep$beitetrykk9)) #21182, meaning that there could not h
 
 #### Make column proplt (which will be height class 3 from the 10th cycle) 
 ```{r}
-recruits_test_rep$proplt <- ifelse(recruits_test_rep$treartgruppe9 == "ROS", recruits_test_rep$ROS_25_49_PRHA, NA)
-recruits_test_rep$proplt <- ifelse(recruits_test_rep$treartgruppe9 == "FURU", recruits_test_rep$Furu_25_49_PRHA_10, recruits_test_rep$proplt)
-recruits_test_rep$proplt <- ifelse(recruits_test_rep$treartgruppe9 == "LAUV", recruits_test_rep$Lauv3, recruits_test_rep$proplt)
+recruits$recruitment <- ifelse(recruits$treartgruppe9 == "ROS", recruits$ROS_25_49_PRHA, NA)
+recruits$recruitment <- ifelse(recruits$treartgruppe9 == "FURU", recruits$Furu_25_49_PRHA_10, recruits$recruitment)
+recruits$recruitment <- ifelse(recruits$treartgruppe9 == "LAUV", recruits$Lauv3, recruits$recruitment)
 
-head(recruits_test_rep$proplt)
-sum(is.na(recruits_test_rep$proplt)) #921, because there were no trees to count in that height class? Or where there no trees of the species? If there were trees of the species but not in height class, should in not be 0?
+head(recruits$recruitment)
+sum(is.na(recruits$recruitment)) #921, because there were no trees to count in that height class? Or where there no trees of the species? If there were trees of the species but not in height class, should in not be 0?
 
 ```
 
 
+#### Make variable browse_merged
+```{r}
+tmp1 <- recruits[recruits$treartgruppe9 == "FURU", ]
+tmp2 <- recruits[recruits$treartgruppe9 == "LAUV", ]
+tmp3 <- recruits[recruits$treartgruppe9 == "ROS", ]
+recruits_tmp <-  recruits[recruits$treartgruppe9 != "FURU", ]
+recruits_tmp <-  recruits_tmp[!duplicated(recruits_tmp$FLATEID), ]
+recruits_tmp$treartgruppe9 <-  "LAUV"
+recruits_tmp <- rbind(recruits_tmp, tmp1)
+recruits_tmp$rosTD <- tmp3$tretetthet9[match(recruits_tmp$FLATEID, tmp3$FLATEID)]
+recruits_tmp$rosBP <- tmp3$beitetrykk9 [match(recruits_tmp$FLATEID, tmp3$FLATEID)]
+recruits_tmp$lauvTD <- tmp2$tretetthet9[match(recruits_tmp$FLATEID, tmp2$FLATEID)]
+recruits_tmp$lauvBP <- tmp2$beitetrykk9 [match(recruits_tmp$FLATEID, tmp2$FLATEID)]
+
+recruits_tmp$rosTD <- ifelse(is.na(recruits_tmp$rosTD), 0, recruits_tmp$rosTD)
+recruits_tmp$rosBP <- ifelse(is.na(recruits_tmp$rosBP), 0, recruits_tmp$rosBP)
+recruits_tmp$lauvTD <- ifelse(is.na(recruits_tmp$lauvTD), 0, recruits_tmp$lauvTD)
+recruits_tmp$lauvBP <- ifelse(is.na(recruits_tmp$lauvBP), 0, recruits_tmp$lauvBP)
+  
+recruits_tmp$browspres_merged <- recruits_tmp$beitetrykk9
+## !! change this so we have FURU, LAUV and ROS !! ##
+recruits_tmp$browspres_merged[recruits_tmp$treartgruppe9 == "LAUV"] <- (recruits_tmp$lauvTD[recruits_tmp$treartgruppe9 == "LAUV"] * recruits_tmp$lauvBP[recruits_tmp$treartgruppe9 == "LAUV"] + recruits_tmp$rosTD[recruits_tmp$treartgruppe9 == "LAUV"] * recruits_tmp$rosBP[recruits_tmp$treartgruppe9 == "LAUV"])/ (recruits_tmp$lauvTD[recruits_tmp$treartgruppe9 == "LAUV"] + recruits_tmp$rosTD[recruits_tmp$treartgruppe9 == "LAUV"])
+```
+
+
+
+#### Stuff like... NAs, level orders, etc.
+```{r}
+
+nrow(recruits_test_rep_merge)
+nrow(na.omit(recruits_test_rep_merge))
+
+sum(is.na(recruits_test_rep_merge$distvei2))
+sum(is.na(recruits_test_rep_merge$disthus))
+# ... maybe look at others
+
+recruits_test_rep$distvei2[is.na(recruits_test_rep$distvei2)] <- 2218 # max distance to roads
+recruits_test_rep$disthus[is.na(recruits_test_rep$disthus)] <- 3000# max distance to house
+
+
+recruits_test_rep$skogkategori <- factor(recruits_test_rep$skogkategori, levels = c("Lavproduktiv_eldreskog", "Høyproduktiv_eldreskog", "Høyproduktiv_ungskog",  "Lavproduktiv_ungskog", "Uproduktiv_skog"))
+recruits_test_rep$kant <- factor(recruits_test_rep$kant, levels = c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant")) 
+recruits_test_rep$treartgruppe9 <- factor(recruits_test_rep$treartgruppe9, levels = c("LAUV", "FURU"))
+
+# recruits_test_rep$region <- factor(recruits_test_rep$region, levels = c("Hedmark", "Agder", "Buskerud", "Hordaland",  "More og Romsdal", "Nord-Trondelag", "Nordland", "Oppland", "Ostfold-Akershus", "Rogaland", "Sogn og Fjordane", "Sor-Trondelag", "Troms", "Vestfold-Telemark"))
+
+
+nrow(recruits_test_rep_merge)
+nrow(na.omit(recruits_test_rep_merge))
+
+
+
+# Subset for roads data set
+recruits_roads <- recruits_test_rep_merge[ which(recruits_test_rep_merge$disthus > 400), ]
+
+```
+
+
+
+
+
+#### Save data set
+```{r}
+save(recruits_test_rep, file = "recruits_test_rep.rda")
+load("processdata/recruits_test_rep.rda")
+
+```
 
 
 
