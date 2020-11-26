@@ -129,7 +129,7 @@ save(browse9.6, file = "browse9.6.rda")
 ##### Subsets and new variable(s)
 ```{r}
 
-## Creating new variable proportion large trees "proplt" and on the way also "browsed merged"
+## Creating new variable "browsed merged"
 load("processdata/browse9.5.rda")
 browse9.5 <- as.data.frame(browse9.5)
 
@@ -170,7 +170,7 @@ browse9.5m <- as.data.frame(browse9.5m)
 
 browse9.5m <- browse9.5m[,c(1:24,29)]
 
-
+## Creating new variable proportion large trees "proplt"
 browse9.5m$proplt <- ifelse(browse9.5m$treartgruppe9 == "FURU", 
                             (browse9.5m$Furu_0_25_PRHA + browse9.5m$Furu_25_49_PRHA)/(browse9.5m$Furu_0_PRHA + browse9.5m$Furu_0_25_PRHA + browse9.5m$Furu_25_49_PRHA), 
                             (browse9.5m$Lauv_0_25_PRHA + browse9.5m$Lauv_25_49_PRHA)/ (browse9.5m$Lauv_0_PRHA + browse9.5m$Lauv_0_25_PRHA + browse9.5m$Lauv_25_49_PRHA))
@@ -469,7 +469,7 @@ names(browse0.1)
 
 ```
 
-
+#### Prepare data set for plant performance test
 ```{r}
 recruits_full <- browse0.1[, c(1,3,5,7:9,27:29,31:45,62:67,74,76:83,88,90,103,105,112:117)]
 str(recruits_full)
@@ -494,23 +494,20 @@ recruits <- subset(recruits_full, treartgruppe10!="BJORK")
 recruits_910 <- split(recruits, recruits$takst)
 
 recruits_9 <- recruits_910[['9']]
-summary(recruits_9)
+# summary(recruits_9)
 names(recruits_9)
 
-recruits_9 <- recruits_9[ ,-c(7:9,16:18,22:24,32:39,48:52)]
+recruits_9 <- recruits_9[ ,-c(7:12,16:18,22:24,32:39,48:52)]
 names(recruits_9)
 
 
 
 recruits_10 <- recruits_910[['10']]
-summary(recruits_10)
+# summary(recruits_10)
 names(recruits_10)
 
-recruits_10 <- recruits_10[ ,-c(2,4:12,16:44,46)]
+recruits_10 <- recruits_10[ ,-c(2,4:11, 13:14,16:51)]
 names(recruits_10)
-
-
-
 
 
 
@@ -527,10 +524,50 @@ recruits_test <- inner_join(recruits9, recruits10, by = "FLATEID", suffix =
 c("_9", "_10"))
 
 
+names(recruits_test)
+
+
+```
+
+####Look at changes in proportion of trees from 9th to 10th takst --> With trees below 5 cm DBH (same as in paper)
+```{r}
+### Number of trees 2(10)/ number of trees 1(9)
+
+# 9th and 10th
+recruits_test$proplt3 <- (recruits_test$Furu_0_25_PRHA.y + recruits_test$Lauv2.y)/(recruits_test$Furu_0_PRHA.x + recruits_test$Lauv_0_PRHA.x)
+str(recruits_test$proplt2)
+
+# 9th
+recruits_test$proplt1 <- (recruits_test$Furu_0_25_PRHA.x + recruits_test$Lauv_0_25_PRHA.x)/(recruits_test$Furu_0_PRHA.x + recruits_test$Lauv_0_PRHA.x)
+str(recruits_test$proplt1)
+
+recruits_test$proplt2 <- (recruits_test$Furu_25_49_PRHA.x + recruits_test$Lauv_25_49_PRHA.x)/(recruits_test$Furu_0_25_PRHA.x + recruits_test$Lauv_0_25_PRHA.x)
+str(recruits_test$proplt2)
+
+
+
+### Number of trees 3(10)/ number of trees 1(9)
+
+# 9th and 10th
+recruits_test$proplt4 <- (recruits_test$Furu_25_49_PRHA.y + recruits_test$Lauv3.y)/(recruits_test$Furu_0_PRHA.x + recruits_test$Lauv_0_25_PRHA.x)
+str(recruits_test$proplt3)
 
 names(recruits_test)
-sum(recruits_test$treartgruppe9 != recruits_test$treartgruppe10) #17
+recruits_cor <- recruits_test[, c(98,100)]
+recruits_cor1 <- recruits_test[, c(99,101)]
 
+
+recruits_cor <- recruits_cor[Reduce(`&`, lapply(recruits_cor, is.finite)),]
+recruits_cor1 <- recruits_cor1[Reduce(`&`, lapply(recruits_cor1, is.finite)),]
+
+
+cor(recruits_cor)
+#           proplt2    proplt   proplt3
+# proplt2 1.0000000 0.5951219 0.3916736
+# proplt  0.5951219 1.0000000 0.5284639
+# proplt3 0.3916736 0.5284639 1.0000000
+
+cor(recruits_cor1)
 
 
 
@@ -538,59 +575,74 @@ sum(recruits_test$treartgruppe9 != recruits_test$treartgruppe10) #17
 
 
 
+
+
+
+
+## Make a new recruits dataset
+
+#### Duplicate rows and make column treartgruppe9
 ```{r}
+# recruits_test is made i: #### Prepare data set for plant performance test
 
+str(recruits_test)
+table(as.factor(recruits_test$treartgruppe9))
+
+recruits_test_rep <- recruits_test %>% slice(rep(1:n(), each = 3))
+head(recruits_test_rep)
+
+x <- factor(c("ROS","FURU","LAUV"))
+recruits_test_rep$treartgruppe9 <- rep(x, 14479)
+head(recruits_test_rep$treartgruppe9)
+head(recruits_test_rep)
+
+```
+
+
+#### Make column tretetthet9
+```{r}
+recruits_test_rep$tretetthet9 <- ifelse(recruits_test_rep$treartgruppe9 == "ROS", recruits_test_rep$elgROSha9, NA)
+recruits_test_rep$tretetthet9 <- ifelse(recruits_test_rep$treartgruppe9 == "FURU", recruits_test_rep$elgFURUha9, recruits_test_rep$tretetthet9)
+recruits_test_rep$tretetthet9 <- ifelse(recruits_test_rep$treartgruppe9 == "LAUV", recruits_test_rep$elgLAUVha9, recruits_test_rep$tretetthet9)
+
+head(recruits_test_rep$tretetthet9, n = 12)
+sum(is.na(recruits_test_rep$tretetthet9)) #44, meaning that there were no trees to count? But then it should have been 0, no?
 
 
 ```
 
 
+#### Make column beitetrykk9
+```{r}
+recruits_test_rep$beitetrykk9 <- ifelse(recruits_test_rep$treartgruppe9 == "ROS", recruits_test_rep$elgbROSprs9, NA)
+recruits_test_rep$beitetrykk9 <- ifelse(recruits_test_rep$treartgruppe9 == "FURU", recruits_test_rep$elgbFURUprs9, recruits_test_rep$beitetrykk9)
+recruits_test_rep$beitetrykk9 <- ifelse(recruits_test_rep$treartgruppe9 == "LAUV", recruits_test_rep$elgbLAUVprs9, recruits_test_rep$beitetrykk9)
+
+head(recruits_test_rep$beitetrykk9, n = 12)
+sum(is.na(recruits_test_rep$beitetrykk9)) #21073, meaning that there could not have been browsing pressure, because there were no trees to browse on 
+
+
+## NA the ones where tretetthet is 0, but we have beitetrykk values
+recruits_test_rep$beitetrykk9 <- ifelse(recruits_test_rep$tretetthet9 != 0, recruits_test_rep$beitetrykk9, NA)
+sum(is.na(recruits_test_rep$beitetrykk9)) #21182, meaning that there could not have been browsing pressure, because there were no trees to browse on  
+
+
+```
+
+
+#### Make column proplt (which will be height class 3 from the 10th cycle) 
+```{r}
+recruits_test_rep$proplt <- ifelse(recruits_test_rep$treartgruppe9 == "ROS", recruits_test_rep$ROS_25_49_PRHA, NA)
+recruits_test_rep$proplt <- ifelse(recruits_test_rep$treartgruppe9 == "FURU", recruits_test_rep$Furu_25_49_PRHA_10, recruits_test_rep$proplt)
+recruits_test_rep$proplt <- ifelse(recruits_test_rep$treartgruppe9 == "LAUV", recruits_test_rep$Lauv3, recruits_test_rep$proplt)
+
+head(recruits_test_rep$proplt)
+sum(is.na(recruits_test_rep$proplt)) #921, because there were no trees to count in that height class? Or where there no trees of the species? If there were trees of the species but not in height class, should in not be 0?
+
+```
 
 
 
-<!-- #### With trees below 5 cm DBH (same as in paper) -->
-<!-- ```{r} -->
-<!-- ### Number of trees 2(10)/ number of trees 1(9) -->
-
-<!-- # 9th and 10th -->
-<!-- recruits_test$proplt3 <- (recruits_test$Furu_0_25_PRHA.y + recruits_test$Lauv2.y)/(recruits_test$Furu_0_PRHA.x + recruits_test$Lauv_0_PRHA.x) -->
-<!-- str(recruits_test$proplt2) -->
-
-<!-- # 9th -->
-<!-- recruits_test$proplt1 <- (recruits_test$Furu_0_25_PRHA.x + recruits_test$Lauv_0_25_PRHA.x)/(recruits_test$Furu_0_PRHA.x + recruits_test$Lauv_0_PRHA.x) -->
-<!-- str(recruits_test$proplt1) -->
-
-<!-- recruits_test$proplt2 <- (recruits_test$Furu_25_49_PRHA.x + recruits_test$Lauv_25_49_PRHA.x)/(recruits_test$Furu_0_25_PRHA.x + recruits_test$Lauv_0_25_PRHA.x) -->
-<!-- str(recruits_test$proplt2) -->
-
-
-
-<!-- ### Number of trees 3(10)/ number of trees 1(9) -->
-
-<!-- # 9th and 10th -->
-<!-- recruits_test$proplt4 <- (recruits_test$Furu_25_49_PRHA.y + recruits_test$Lauv3.y)/(recruits_test$Furu_0_PRHA.x + recruits_test$Lauv_0_25_PRHA.x) -->
-<!-- str(recruits_test$proplt3) -->
-
-<!-- names(recruits_test) -->
-<!-- recruits_cor <- recruits_test[, c(98,100)] -->
-<!-- recruits_cor1 <- recruits_test[, c(99,101)] -->
-
-
-<!-- recruits_cor <- recruits_cor[Reduce(`&`, lapply(recruits_cor, is.finite)),] -->
-<!-- recruits_cor1 <- recruits_cor1[Reduce(`&`, lapply(recruits_cor1, is.finite)),] -->
-
-
-<!-- cor(recruits_cor) -->
-<!-- #           proplt2    proplt   proplt3 -->
-<!-- # proplt2 1.0000000 0.5951219 0.3916736 -->
-<!-- # proplt  0.5951219 1.0000000 0.5284639 -->
-<!-- # proplt3 0.3916736 0.5284639 1.0000000 -->
-
-<!-- cor(recruits_cor1) -->
-
-
-
-<!-- ``` -->
 
 
 
