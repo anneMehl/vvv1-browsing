@@ -943,3 +943,158 @@ tab_model(m3betaroad_reg)
 plot_model(m3betaroad_reg, type = c("eff"), transform = NULL, terms = c("region"))
 
 ```
+
+
+
+#### Adding moose_density to the model
+```{r}
+library(lme4)
+library(glmmTMB)
+
+##### Houses
+## BIN
+load("output_copy/mhusabin.rda")
+rh_bin <- glmer(factor(proplt > 0) ~ disthus_400 + log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + moose_density + (1|KOMNR),
+family = binomial(),
+data = browse9.5msc_test)
+
+rh_bin_int <- glmer(factor(proplt > 0) ~ disthus_400 + log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + moose_density + moose_density*log(distvei2+1) + (1|KOMNR),
+family = binomial(),
+data = browse9.5msc_test)
+
+
+library(AICcmodavg)
+candmods_BP_hbin <- list(rh_bin, mhusabin, rh_bin_int)
+aictab(candmods_BP_hbin, modnames = NULL,
+                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+#       K     AICc Delta_AICc AICcWt Cum.Wt       LL
+# Mod1 18 14206.75       0.00   0.70   0.70 -7085.35
+# Mod3 19 14208.68       1.92   0.27   0.97 -7085.30
+# Mod2 17 14213.08       6.33   0.03   1.00 -7089.51
+
+summary(rh_bin) # moose density negative **
+
+
+# library(sjPlot)
+# library(ggplot2)
+# p1 <- plot_model(bh_bin, type = c("eff"), transform = NULL, terms = c("moose_density"),
+#            grid = TRUE)
+# p1 <- p1 + theme_light() +
+#   theme(plot.title = element_blank(),
+#     axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+#         axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+#   xlab("5 year mean moose density\n") +
+#   ylab("Browsing pressure (%)\n")
+
+
+## BETA
+load("output_copy/m16abeta_house.rda")
+rh_beta <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + HOH + I(HOH^2) + browspres_merged + moose_density + (1|KOMNR),
+            data = browse9.5msc_test_pos,
+            family = beta_family())
+
+rh_beta_int <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + HOH + I(HOH^2) + browspres_merged + moose_density + moose_density*log(distvei2+1) + (1|KOMNR),
+            data = browse9.5msc_test_pos,
+            family = beta_family())
+
+
+library(bbmle)
+AIC(rh_beta, m16abeta_house, rh_beta_int)
+ICtab(rh_beta, m16abeta_house, rh_beta_int, type = "AIC", weights = TRUE, delta = TRUE)
+
+summary(rh_beta) # moose density not sign.
+
+
+
+
+##### Roads
+library(lme4)
+library(glmmTMB)
+
+
+## BIN
+load("output_copy/m2bin_roads.rda")
+rr_bin <- glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + helling + HOH + I(HOH^2) +  ac + moose_density + (1|KOMNR),
+family = binomial(),
+data = browse9.6sc_test)
+
+rr_bin_int <- glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + helling + HOH + I(HOH^2) +  ac + moose_density + moose_density*log(distvei2+1) + (1|KOMNR),
+family = binomial(),
+data = browse9.6sc_test)
+
+
+library(AICcmodavg)
+candmods_BP_hbeta <- list(rr_bin, m2bin_roads, rr_bin_int)
+aictab(candmods_BP_hbeta, modnames = NULL,
+                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+#       K     AICc Delta_AICc AICcWt Cum.Wt       LL
+# Mod1 14 10898.69       0.00   0.62   0.62 -5435.32
+# Mod3 15 10900.05       1.36   0.31   0.93 -5435.00
+# Mod2 13 10902.98       4.29   0.07   1.00 -5438.47
+
+summary(rr_bin) # moose density negativ *
+
+
+## BETA
+load("output_copy/m3betaroad.rda")
+rr_beta <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + ac + helling + HOH + I(HOH^2) + browspres_merged + moose_density + (1|KOMNR),
+            data = browse9.6sc_test_pos,
+            family = beta_family())
+
+rr_beta_int <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + ac + helling + HOH + I(HOH^2) + browspres_merged + moose_density + moose_density*log(distvei2+1) + (1|KOMNR),
+            data = browse9.6sc_test_pos,
+            family = beta_family())
+
+
+library(bbmle)
+AIC(rr_beta, m3betaroad, rr_beta_int)
+ICtab(rr_beta, m3betaroad, rr_beta_int, type = "AIC", weights = TRUE, delta = TRUE)
+
+summary(rr_beta) # moose density not sign.
+```
+
+
+
+
+
+## Test of model
+```{r}
+library(ggplot2)
+library(ggpubr)
+ggplot(recruits_test_rep, aes(proplt)) +
+  geom_histogram(fill = "#0073C2FF") +
+  theme_pubclean()
+
+str(recruits_test_rep$proplt)
+summary(recruits_test_rep$proplt)
+
+library(glmmTMB)
+
+
+
+#### Test for zero-inflation
+
+# Use glmmTMB package to run glm
+library("glmmTMB")
+m_test_zi <- glm(proplt ~ , family = poisson, data = recruits_test_rep)
+
+library("performance")
+check_zeroinflation(m_test_zi)
+
+
+
+
+## Poisson
+full_zipo <- glmmTMB(tree_layer_c ~ method + years_since + (1|site_id_new.x), data = plots_full_richness, ziformula = ~1, family = poisson)
+
+## Negative binomial "NB2" (variance = µ(1 + µ/k))
+full_zibinom <- update(full_zipo,family = nbinom2)
+## Negative binomial "NB1" (variance = φµ)
+full_zibinom1 <- update(full_zipo,family = nbinom1)
+
+## Fit updated to hurdle model
+full_hnzibinom1 <- update(full_zibinom1, ziformula=~., data=plots_full_richness, family=list(family="truncated_nbinom1", link="log"))
+
+full_hnzibinom <- update(full_zibinom, ziformula=~., data=plots_full_richness, family=list(family="truncated_nbinom2", link="log"))
+
+```
