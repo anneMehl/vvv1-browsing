@@ -1,0 +1,26 @@
+---
+title: "recruitment"
+author: "Anne"
+date: "27/11/2020"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Load data
+```{r}
+load("processdata/recruits_roads.rda")
+load("processdata/recruits_house.rda")
+
+names(recruits_roads)
+names(recruits_house)
+```
+
+
+
+
