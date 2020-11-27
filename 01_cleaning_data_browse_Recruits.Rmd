@@ -362,65 +362,72 @@ browse9.6sc_test_pos$moose_density <- ifelse(is.na(browse9.6sc_test_pos$moose_de
 
 ```{r}
 load("rawdata/browse0.1.rda")
+names(browse0.1)
+
+library(readr)
+new_trees <- read_csv("rawdata/new_trees.csv", na = "NA")
+str(new_trees)
+
+nrow(new_trees)
+nrow(na.omit(new_trees)) #2 difference
+new_trees <- na.omit(new_trees)
+
+head(new_trees)
+
+# library(tidyverse)
+# moose_mean_density <- moose_mean_density %>%
+#   rename(KOMNR = knr2017) %>%
+#   rename(moose_density = five_y_mean_density)
+# str(moose_mean_density)
+
 
 library(dplyr)
-names(browse0.1)
+
 
 ```
 
 #### Prepare data set for plant performance test
 ```{r}
-recruits_full <- browse0.1[, c(1,3,5,7:9,27:29,31:45,62:67,74,76:83,88,90,103,105,112:117)]
+recruits_full <- browse0.1[, c(1,3,5,7:9,62:67,74,88,90,103,105,112:115)]
 str(recruits_full)
 names(recruits_full)
 
-# recruits <- recruits_full[, -c(7:9,22:24, 26:33)]
-# str(recruits)
-# names(recruits)
 
-# recruits_test$FLATEID <- as.factor(recruits_test$FLATEID)
-# str(levels(recruits_test$FLATEID))
-# unique(recruits_test$FLATEID)
-
-#### TRY THIS BEFORE SPLITTING
-recruits_full$Lauv1 <- ifelse(recruits_full$takst == 10, recruits_full$Lauv_0_PRHA + recruits_full$Bjork_0_PRHA, NA)
-recruits_full$Lauv2 <- ifelse(recruits_full$takst == 10, recruits_full$Lauv_0_25_PRHA + recruits_full$Bjork_0_25_PRHA, NA)
-recruits_full$Lauv3 <- ifelse(recruits_full$takst == 10, recruits_full$Lauv_25_49_PRHA + recruits_full$Bjork_25_49_PRHA, NA)
-
-recruits <- subset(recruits_full, treartgruppe10!="BJORK")
+# #### TRY THIS BEFORE SPLITTING
+# recruits_full$Lauv1 <- ifelse(recruits_full$takst == 10, recruits_full$Lauv_0_PRHA + recruits_full$Bjork_0_PRHA, NA)
+# recruits_full$Lauv2 <- ifelse(recruits_full$takst == 10, recruits_full$Lauv_0_25_PRHA + recruits_full$Bjork_0_25_PRHA, NA)
+# recruits_full$Lauv3 <- ifelse(recruits_full$takst == 10, recruits_full$Lauv_25_49_PRHA + recruits_full$Bjork_25_49_PRHA, NA)
+# 
+# recruits <- subset(recruits_full, treartgruppe10!="BJORK")
 
 
-recruits_910 <- split(recruits, recruits$takst)
+recruits_910 <- split(recruits_full, recruits_full$takst)
 
 recruits_9 <- recruits_910[['9']]
 # summary(recruits_9)
 names(recruits_9)
 
-recruits_9 <- recruits_9[ ,-c(7:12,16:18,22:24,32:39,48:52)]
-names(recruits_9)
+# recruits_9 <- recruits_9[ ,-c(7:12,16:18,22:24,32:39,48:52)]
+# names(recruits_9)
 
 
 
-recruits_10 <- recruits_910[['10']]
-# summary(recruits_10)
-names(recruits_10)
+# recruits_10 <- recruits_910[['10']]
+# # summary(recruits_10)
+# names(recruits_10)
+# 
+# recruits_10 <- recruits_10[ ,-c(2,4:11, 13:14,16:51)]
+# names(recruits_10)
 
-recruits_10 <- recruits_10[ ,-c(2,4:11, 13:14,16:51)]
-names(recruits_10)
 
-
-
-# ## The join/ merge does not work with the data where I have duplicated rows
-# recruits_join <- inner_join(recruits_9, recruits_10, by = c("FLATEID","treartgruppe9")) # add treartgruppe as well to join by
-# recruits_join2 <- merge(recruits_10, recruits_9, by = c("FLATEID"))
 
 
 
 ## inner_join works, when I do not have the dublicated rows
 recruits9 <- distinct(recruits_9, FLATEID, .keep_all = TRUE)
-recruits10 <- distinct(recruits_10, FLATEID, .keep_all = TRUE)
-recruits <- inner_join(recruits9, recruits10, by = "FLATEID", suffix =
-c("_9", "_10"))
+# recruits10 <- distinct(recruits_10, FLATEID, .keep_all = TRUE)
+recruits <- inner_join(recruits9, new_trees, by = "FLATEID", suffix =
+c("_9", "_new"))
 
 
 names(recruits)
@@ -428,7 +435,7 @@ names(recruits)
 
 ```
 
-####Look at changes in proportion of trees from 9th to 10th takst --> With trees below 5 cm DBH (same as in paper)
+#### --> With trees below 5 cm DBH (same as in paper)
 ```{r}
 ### Number of trees 2(10)/ number of trees 1(9)
 
@@ -491,7 +498,7 @@ recruits <- recruits %>% slice(rep(1:n(), each = 3))
 head(recruits)
 
 x <- factor(c("ROS","FURU","LAUV"))
-recruits$treartgruppe9 <- rep(x, 14479)
+recruits$treartgruppe9 <- rep(x, 11603) #nrows recruits/3 = 11603, also just nrows recruits before replication
 head(recruits$treartgruppe9)
 head(recruits)
 
@@ -505,7 +512,7 @@ recruits$tretetthet9 <- ifelse(recruits$treartgruppe9 == "FURU", recruits$elgFUR
 recruits$tretetthet9 <- ifelse(recruits$treartgruppe9 == "LAUV", recruits$elgLAUVha9, recruits$tretetthet9)
 
 head(recruits$tretetthet9, n = 12)
-sum(is.na(recruits$tretetthet9)) #44, meaning that there were no trees to count? But then it should have been 0, no?
+sum(is.na(recruits$tretetthet9)) #5, meaning that there were no trees to count? But then it should have been 0, no?
 
 
 ```
@@ -518,94 +525,174 @@ recruits$beitetrykk9 <- ifelse(recruits$treartgruppe9 == "FURU", recruits$elgbFU
 recruits$beitetrykk9 <- ifelse(recruits$treartgruppe9 == "LAUV", recruits$elgbLAUVprs9, recruits$beitetrykk9)
 
 head(recruits$beitetrykk9, n = 12)
-sum(is.na(recruits$beitetrykk9)) #21073, meaning that there could not have been browsing pressure, because there were no trees to browse on 
+sum(is.na(recruits$beitetrykk9)) #13728, meaning that there could not have been browsing pressure, because there were no trees to browse on 
 
 
 ## NA the ones where tretetthet is 0, but we have beitetrykk values
 recruits$beitetrykk9 <- ifelse(recruits$tretetthet9 != 0, recruits$beitetrykk9, NA)
-sum(is.na(recruits$beitetrykk9)) #21182, meaning that there could not have been browsing pressure, because there were no trees to browse on  
+sum(is.na(recruits$beitetrykk9)) #13831, meaning that there could not have been browsing pressure, because there were no trees to browse on  
 
 
 ```
 
 
-#### Make column proplt (which will be height class 3 from the 10th cycle) 
+#### Make column proplt (which will be height class 4 (>5cm BHD) from the 10th and 11th cycle) 
 ```{r}
-recruits$recruitment <- ifelse(recruits$treartgruppe9 == "ROS", recruits$ROS_25_49_PRHA, NA)
-recruits$recruitment <- ifelse(recruits$treartgruppe9 == "FURU", recruits$Furu_25_49_PRHA_10, recruits$recruitment)
-recruits$recruitment <- ifelse(recruits$treartgruppe9 == "LAUV", recruits$Lauv3, recruits$recruitment)
+recruits$recruitment <- ifelse(recruits$treartgruppe9 == "ROS", recruits$nyrosprha1011, NA)
+recruits$recruitment <- ifelse(recruits$treartgruppe9 == "FURU", recruits$nyfuruprha1011, recruits$recruitment)
+recruits$recruitment <- ifelse(recruits$treartgruppe9 == "LAUV", recruits$nylauvprha1011, recruits$recruitment)
 
 head(recruits$recruitment)
-sum(is.na(recruits$recruitment)) #921, because there were no trees to count in that height class? Or where there no trees of the species? If there were trees of the species but not in height class, should in not be 0?
+sum(is.na(recruits$recruitment)) #0, because there were no trees to count in that height class? Or where there no trees of the species? If there were trees of the species but not in height class, should in not be 0?
+
+
+recruits$recruitment_ratio <- ifelse(recruits$treartgruppe9 == "ROS", recruits$recros1011, NA)
+recruits$recruitment_ratio <- ifelse(recruits$treartgruppe9 == "FURU", recruits$recfuru1011, recruits$recruitment_ratio)
+recruits$recruitment_ratio <- ifelse(recruits$treartgruppe9 == "LAUV", recruits$reclauv1011, recruits$recruitment_ratio)
+
+head(recruits$recruitment_ratio)
+sum(is.na(recruits$recruitment_ratio)) #0
+
+
+
+sum(recruits$hogd10 == 1)+sum(recruits$hogd11 == 1) #1209
 
 ```
 
 
-#### Make variable browse_merged
+#### Reduce data set to variables we are going to use further
 ```{r}
-tmp1 <- recruits[recruits$treartgruppe9 == "FURU", ]
-tmp2 <- recruits[recruits$treartgruppe9 == "LAUV", ]
-tmp3 <- recruits[recruits$treartgruppe9 == "ROS", ]
-recruits_tmp <-  recruits[recruits$treartgruppe9 != "FURU", ]
-recruits_tmp <-  recruits_tmp[!duplicated(recruits_tmp$FLATEID), ]
-recruits_tmp$treartgruppe9 <-  "LAUV"
-recruits_tmp <- rbind(recruits_tmp, tmp1)
-recruits_tmp$rosTD <- tmp3$tretetthet9[match(recruits_tmp$FLATEID, tmp3$FLATEID)]
-recruits_tmp$rosBP <- tmp3$beitetrykk9 [match(recruits_tmp$FLATEID, tmp3$FLATEID)]
-recruits_tmp$lauvTD <- tmp2$tretetthet9[match(recruits_tmp$FLATEID, tmp2$FLATEID)]
-recruits_tmp$lauvBP <- tmp2$beitetrykk9 [match(recruits_tmp$FLATEID, tmp2$FLATEID)]
-
-recruits_tmp$rosTD <- ifelse(is.na(recruits_tmp$rosTD), 0, recruits_tmp$rosTD)
-recruits_tmp$rosBP <- ifelse(is.na(recruits_tmp$rosBP), 0, recruits_tmp$rosBP)
-recruits_tmp$lauvTD <- ifelse(is.na(recruits_tmp$lauvTD), 0, recruits_tmp$lauvTD)
-recruits_tmp$lauvBP <- ifelse(is.na(recruits_tmp$lauvBP), 0, recruits_tmp$lauvBP)
-  
-recruits_tmp$browspres_merged <- recruits_tmp$beitetrykk9
-## !! change this so we have FURU, LAUV and ROS !! ##
-recruits_tmp$browspres_merged[recruits_tmp$treartgruppe9 == "LAUV"] <- (recruits_tmp$lauvTD[recruits_tmp$treartgruppe9 == "LAUV"] * recruits_tmp$lauvBP[recruits_tmp$treartgruppe9 == "LAUV"] + recruits_tmp$rosTD[recruits_tmp$treartgruppe9 == "LAUV"] * recruits_tmp$rosBP[recruits_tmp$treartgruppe9 == "LAUV"])/ (recruits_tmp$lauvTD[recruits_tmp$treartgruppe9 == "LAUV"] + recruits_tmp$rosTD[recruits_tmp$treartgruppe9 == "LAUV"])
+names(recruits)
+recruits <- recruits[,-c(7:12,22:37)]
+names(recruits)
 ```
 
 
 
-#### Stuff like... NAs, level orders, etc.
+#### Stuff like... NAs, level order, etc.
 ```{r}
 
-nrow(recruits_test_rep_merge)
-nrow(na.omit(recruits_test_rep_merge))
+nrow(recruits)
+nrow(na.omit(recruits))
 
-sum(is.na(recruits_test_rep_merge$distvei2))
-sum(is.na(recruits_test_rep_merge$disthus))
-# ... maybe look at others
+sum(is.na(recruits$distvei2))
+sum(is.na(recruits$disthus))
+sum(is.na(recruits$HOH))
+sum(is.na(recruits$region))
+sum(is.na(recruits$skogkategori))
+sum(is.na(recruits$kant))
+sum(is.na(recruits$helling)) #417, what does it mean when there is NA in helling? helling from 1-100, so I guess NA is when there is no helling, so 0?
+sum(is.na(recruits$treartgruppe9))
+sum(is.na(recruits$beitetrykk9)) # 13831, because there are 0 trees (in the 9th cycle), hence no BP --> still, there are recruits in the 10th/11th... 
+sum(is.na(recruits$tretetthet9)) #5, meaning no trees to count? Should these not just be 0 then? Or delete?
+sum(is.na(recruits$recruitment))
+sum(is.na(recruits$recruitment_ratio))
 
-recruits_test_rep$distvei2[is.na(recruits_test_rep$distvei2)] <- 2218 # max distance to roads
-recruits_test_rep$disthus[is.na(recruits_test_rep$disthus)] <- 3000# max distance to house
+
+recruits$distvei2[is.na(recruits$distvei2)] <- 2218 # max distance to roads
+recruits$disthus[is.na(recruits$disthus)] <- 3000# max distance to house
+recruits$helling[is.na(recruits$helling)] <- 0 # no helling
+
+nrow(recruits) 
+nrow(na.omit(recruits)) # only NAs left are the ones in beitetrykk
+recruits <- na.omit(recruits)
 
 
-recruits_test_rep$skogkategori <- factor(recruits_test_rep$skogkategori, levels = c("Lavproduktiv_eldreskog", "Høyproduktiv_eldreskog", "Høyproduktiv_ungskog",  "Lavproduktiv_ungskog", "Uproduktiv_skog"))
-recruits_test_rep$kant <- factor(recruits_test_rep$kant, levels = c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant")) 
-recruits_test_rep$treartgruppe9 <- factor(recruits_test_rep$treartgruppe9, levels = c("LAUV", "FURU"))
+library(ggplot2)
+ggplot(data = recruits, aes(skogkategori)) +
+  geom_bar()+
+  theme_classic()
 
-# recruits_test_rep$region <- factor(recruits_test_rep$region, levels = c("Hedmark", "Agder", "Buskerud", "Hordaland",  "More og Romsdal", "Nord-Trondelag", "Nordland", "Oppland", "Ostfold-Akershus", "Rogaland", "Sogn og Fjordane", "Sor-Trondelag", "Troms", "Vestfold-Telemark"))
+ggplot(data = recruits, aes(kant)) +
+  geom_bar()+
+  theme_classic()
+
+recruits$skogkategori <- factor(recruits$skogkategori, levels = c("Lavproduktiv_eldreskog", "Høyproduktiv_eldreskog", "Høyproduktiv_ungskog",  "Lavproduktiv_ungskog", "Uproduktiv_skog"))
+recruits$kant <- factor(recruits$kant, levels = c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant")) 
 
 
-nrow(recruits_test_rep_merge)
-nrow(na.omit(recruits_test_rep_merge))
 
+```
+
+
+## Modelling spatial autocorrelation (https://onlinelibrary.wiley.com/doi/full/10.1111/j.2007.0906-7590.05171.x)
+Change the projection and make coordinates and a spatial point data frame to make a shapefile
+
+```{r}
+library(tidyr)
+recruits$UTMmerge <- paste(recruits$UTM_OV_33, recruits$UTM_SN_33, sep="_")
+sum(duplicated(recruits$UTMmerge))
+
+
+```
+
+
+```{r}
+
+library(sp)
+library(rgdal)
+
+crs <- CRS("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")
+coords <- cbind(recruits$UTM_OV_33, recruits$UTM_SN_33)
+data_spdf <- SpatialPointsDataFrame(coords, recruits, proj4string = crs)
+# plot(data_spdf)
+writeOGR(data_spdf, dsn = "output", layer = "spac", driver = "ESRI Shapefile")
+
+```
+
+
+```{r}
+
+library(spdep)
+library(ape)
+
+
+# spdep package:
+
+# prepare neighbour lists for spatial autocorrelation analysis
+nb.list <- dnearneigh(as.matrix(recruits[recruits$beitetrykk9, c("UTM_OV_33", "UTM_SN_33")]), 0, 5000)
+nb.weights <- nb2listw(nb.list, zero.policy = TRUE)
+# moran.test(recruits$beitetrykk9, nb.weights, zero.policy = TRUE, randomisation=TRUE,
+#  alternative="greater", rank = FALSE, na.action=na.fail, spChk=NULL,
+#  adjust.n=TRUE, drop.EI2=FALSE)
+
+
+# Make a matrix of coordinates - use when chunk above was not run
+coords <- as.matrix(cbind(recruits$UTM_OV_33, recruits$UTM_SN_33))
+
+# compute the autocovariate based on the above distance and weight
+ac <- autocov_dist(recruits$beitetrykk9, coords, nbs = 5000, type="inverse", zero.policy = TRUE)
+recruits$ac <- ac
+
+
+
+```
+
+
+#### Reduce data set to variables used further
+```{r}
+names(recruits)
+recruits <- recruits[,-c(3:5,15,18)]
+names(recruits)
 
 
 # Subset for roads data set
-recruits_roads <- recruits_test_rep_merge[ which(recruits_test_rep_merge$disthus > 400), ]
+recruits_roads <- recruits[ which(recruits$disthus > 400), ]
+
+
+# House data set
+recruits_house <- recruits
+recruits_house$disthus_400 <- ifelse(recruits_house$disthus >= 400, 400, recruits_house$disthus)
+
+
 
 ```
 
-
-
-
-
 #### Save data set
 ```{r}
-save(recruits_test_rep, file = "recruits_test_rep.rda")
-load("processdata/recruits_test_rep.rda")
+save(recruits_roads, file = "recruits_roads.rda")
+save(recruits_house, file = "recruits_house.rda")
+# load("processdata/recruits.rda")
 
 ```
 
