@@ -4,7 +4,7 @@ author: "Anne"
 date: "27/11/2020"
 output: word_document
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -12,15 +12,189 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-## Load data
-```{r}
-load("processdata/recruits_roads.rda")
-load("processdata/recruits_house.rda")
 
-names(recruits_roads)
-names(recruits_house)
+
+
+## Generell test for zero inflation for recruitment response variable
+```{r}
+load("processdata/recruits.rda")
+
+library(ggplot2)
+library(ggpubr)
+
+ggplot(recruits, aes(recruitment)) +
+  geom_histogram(fill = "#0073C2FF") +
+  theme_pubclean()
+
+str(recruits$recruitment)
+summary(recruits$recruitment)
+
+
+recruits_house$recruitment <- as.integer(recruits_house$recruitment)
+str(recruits_house$recruitment)
+
+#### Test for zero-inflation
+
+# Use glmmTMB package to run glm
+library("glmmTMB")
+m_test_zi <- glm(recruitment ~ disthus + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac, family = poisson, data = recruits_house)
+
+library("performance")
+check_zeroinflation(m_test_zi)
+
+# Check for zero-inflation
+
+#    Observed zeros: 13384
+#   Predicted zeros: 4
+#             Ratio: 0.00
+# 
+# Model is underfitting zeros (probable zero-inflation).
+
+# full_zipo <- glmmTMB(recruitment ~ scale(disthus) + scale(distvei2) + skogkategori + treartgruppe9 + scale(beitetrykk9) + kant + scale(helling) + scale(HOH) + I(HOH^2) + scale(moose_density) + ac + (1|KOMNR), data = recruits_house, ziformula = ~1, family = poisson)
+# 
+# ## Negative binomial "NB2" (variance = µ(1 + µ/k))
+# full_zibinom <- update(full_zipo,family = nbinom2)
+# ## Negative binomial "NB1" (variance = φµ)
+# full_zibinom1 <- update(full_zipo,family = nbinom1)
+
+hurdel_NB1 <- glmmTMB(recruitment ~ scale(disthus) + scale(distvei2) + skogkategori + treartgruppe9 + scale(beitetrykk9) + kant + scale(helling) + scale(HOH) + I(HOH^2) + scale(moose_density) + ac + (1|KOMNR), data = recruits_house, ziformula = ~1, family = list(family="truncated_nbinom1", link="log"))
+
+hurdel_poi <- glmmTMB(recruitment ~ scale(disthus) + scale(distvei2) + skogkategori + treartgruppe9 + scale(beitetrykk9) + kant + scale(helling) + scale(HOH) + I(HOH^2) + scale(moose_density) + ac + (1|KOMNR), zi = ~ scale(disthus) + scale(distvei2) + skogkategori + treartgruppe9 + scale(beitetrykk9) + kant + scale(helling) + scale(HOH) + I(HOH^2), recruits_house,
+family = truncated_poisson)
+
+
 ```
 
 
 
+
+###################################################################################
+##     HOUSE                HOUSE                 HOUSE                       #####
+###################################################################################
+
+##       House binary - First part of hurdle model to account for zero inflation  ##
+
+
+## Load data house models
+```{r}
+load("processdata/recruits_house.rda")
+
+names(recruits_house)
+```
+
+#### Checking for the cut for disthus
+```{r}
+library(lme4)
+
+# fitting glmm with glmmTMB
+# glmmTMB(count~spp + (1|site), Salamanders, family=poisson)
+
+recruits_house$recr_bin <- ifelse(recruits_house$recruitment == 0, 0, 1)
+
+recruits_house$disthus <- scale(recruits_house$disthus)
+recruits_house$distvei2 <- scale(recruits_house$distvei2)
+recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
+recruits_house$helling <- scale(recruits_house$helling)
+recruits_house$HOH <- scale(recruits_house$HOH)
+recruits_house$moose_density <- scale(recruits_house$moose_density)
+recruits_house$disthus_600 <- scale(recruits_house$disthus_600)
+recruits_house$disthus_500 <- scale(recruits_house$disthus_500)
+recruits_house$disthus_400 <- scale(recruits_house$disthus_400)
+recruits_house$disthus_350 <- scale(recruits_house$disthus_350)
+recruits_house$disthus_300 <- scale(recruits_house$disthus_300)
+recruits_house$disthus_200 <- scale(recruits_house$disthus_200)
+recruits_house$disthus_150 <- scale(recruits_house$disthus_150)
+
+summary(recruits_house$disthus)
+
+
+bin_cuthouse1 <- glmer(recr_bin ~ disthus + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house)
+
+bin_cuthouse2 <- glmer(recr_bin ~ disthus_600 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house)
+
+bin_cuthouse3 <- glmer(recr_bin ~ disthus_500 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house)
+
+bin_cuthouse4 <- glmer(recr_bin ~ disthus_400 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house)
+
+bin_cuthouse5 <- glmer(recr_bin ~ disthus_350 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house)
+
+bin_cuthouse6 <- glmer(recr_bin ~ disthus_300 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house)
+
+bin_cuthouse7 <- glmer(recr_bin ~ disthus_200 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house)
+
+bin_cuthouse8 <- glmer(recr_bin ~ disthus_150 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house)
+
+```
+
+#### AIC selection threshold house
+```{r}
+library(AICcmodavg)
+
+candmods_bin_cuthouse <- list(bin_cuthouse1, bin_cuthouse2, bin_cuthouse3, bin_cuthouse4, bin_cuthouse5, bin_cuthouse6, bin_cuthouse7, bin_cuthouse8)
+aictab(candmods_bin_cuthouse, modnames = NULL,
+                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+
+
+```
+
+#### Save recruits_house dataset
+```{r}
+names(recruits_house)
+recruits_house <- recruits_house[, -c(13,16,18:22)]
+save(recruits_house, file = "recruits_house.rda")
+
+```
+
+
+
+
+#### Bin - model selection
+```{r}
+
+```
+
+#### AIC selection bin models
+```{r}
+library(AICcmodavg)
+
+candmods_BP_hbin <- list(bin_cuthouse1, bin_cuthouse2, bin_cuthouse3, bin_cuthouse4, bin_cuthouse5, bin_cuthouse6, bin_cuthouse7, bin_cuthouse8)
+aictab(candmods_BP_hbin, modnames = NULL,
+                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+```
+
+
+
+
+
+
+##       House beta - Second part of the hurdle, beta regression  ##
+
+
+## Load data house models
+```{r}
+load("processdata/recruits_house.rda")
+
+names(recruits_house)
+```
+
+#### Checking for the cut for disthus
+```{r}
+
+```
 
