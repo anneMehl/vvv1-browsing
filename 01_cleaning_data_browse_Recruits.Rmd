@@ -560,6 +560,25 @@ sum(recruits$hogd10 == 1)+sum(recruits$hogd11 == 1) #1209
 ```
 
 
+#### Make new variable moose density (mean over 5 year period to datasets and models)
+```{r}
+library(readr)
+moose_mean_density <- read_csv("processdata/five_y_mean_density.csv", na = "NA")
+str(moose_mean_density)
+library(tidyverse)
+moose_mean_density <- moose_mean_density %>%
+  rename(KOMNR = knr2017) %>%
+  rename(moose_density = five_y_mean_density)
+str(moose_mean_density)
+
+recruits <- left_join(recruits, moose_mean_density, by = "KOMNR")
+str(recruits$moose_density)
+sum(is.na(recruits$moose_density))
+which(is.na(recruits$moose_density))
+recruits$moose_density <- ifelse(is.na(recruits$moose_density), 0, recruits$moose_density)
+
+```
+
 #### Reduce data set to variables we are going to use further
 ```{r}
 names(recruits)
@@ -675,23 +694,40 @@ names(recruits)
 recruits <- recruits[,-c(3:5,15,18)]
 names(recruits)
 
+save(recruits, file = "recruits.rda")
 
 # Subset for roads data set
-recruits_roads <- recruits[ which(recruits$disthus > 400), ]
-
-
-# House data set
-recruits_house <- recruits
-recruits_house$disthus_400 <- ifelse(recruits_house$disthus >= 400, 400, recruits_house$disthus)
-
+recruits_roads <- recruits[ which(recruits$disthus > 500), ] ## !!!!!!!!! ADJUST
 
 
 ```
 
+#### Threshold for distance house, where houses do not have an influence anymore
+```{r}
+# House data set
+load("processdata/recruits.rda")
+recruits_house <- recruits
+
+recruits_house$disthus_600 <- ifelse(recruits_house$disthus >= 600, 600, recruits_house$disthus)
+recruits_house$disthus_500 <- ifelse(recruits_house$disthus >= 500, 500, recruits_house$disthus)
+recruits_house$disthus_400 <- ifelse(recruits_house$disthus >= 400, 400, recruits_house$disthus)
+recruits_house$disthus_350 <- ifelse(recruits_house$disthus >= 350, 350, recruits_house$disthus)
+recruits_house$disthus_300 <- ifelse(recruits_house$disthus >= 300, 300, recruits_house$disthus)
+recruits_house$disthus_200 <- ifelse(recruits_house$disthus >= 200, 200, recruits_house$disthus)
+recruits_house$disthus_150 <- ifelse(recruits_house$disthus >= 150, 150, recruits_house$disthus)
+
+str(recruits_house)
+
+# recruits_house <- recruits_house[, -c(8)]
+```
+
+
+
+
 #### Save data set
 ```{r}
 save(recruits_roads, file = "recruits_roads.rda")
-save(recruits_house, file = "recruits_house.rda")
+# save(recruits_house, file = "recruits_house.rda")
 # load("processdata/recruits.rda")
 
 ```
