@@ -688,47 +688,44 @@ recruits$ac <- ac
 ```
 
 
+#### Threshold distance to house
+```{r}
+recruits$disthus_600 <- ifelse(recruits$disthus >= 600, 600, recruits$disthus)
+recruits$disthus_500 <- ifelse(recruits$disthus >= 500, 500, recruits$disthus)
+recruits$disthus_400 <- ifelse(recruits$disthus >= 400, 400, recruits$disthus)
+recruits$disthus_350 <- ifelse(recruits$disthus >= 350, 350, recruits$disthus)
+recruits$disthus_300 <- ifelse(recruits$disthus >= 300, 300, recruits$disthus)
+recruits$disthus_200 <- ifelse(recruits$disthus >= 200, 200, recruits$disthus)
+recruits$disthus_150 <- ifelse(recruits$disthus >= 150, 150, recruits$disthus)
+
+```
+
+
+
 #### Reduce data set to variables used further
 ```{r}
 names(recruits)
-recruits <- recruits[,-c(3:5,15,18)]
-names(recruits)
+# recruits <- recruits[,-c(3:5,15,18)]
+# names(recruits)
 
 save(recruits, file = "recruits.rda")
 
-# Subset for roads data set
-recruits_roads <- recruits[ which(recruits$disthus > 500), ] ## !!!!!!!!! ADJUST
-
 
 ```
 
-#### Threshold for distance house, where houses do not have an influence anymore
+
+#### Subset for roads data set
+
 ```{r}
-# House data set
-load("processdata/recruits.rda")
-recruits_house <- recruits
-
-recruits_house$disthus_600 <- ifelse(recruits_house$disthus >= 600, 600, recruits_house$disthus)
-recruits_house$disthus_500 <- ifelse(recruits_house$disthus >= 500, 500, recruits_house$disthus)
-recruits_house$disthus_400 <- ifelse(recruits_house$disthus >= 400, 400, recruits_house$disthus)
-recruits_house$disthus_350 <- ifelse(recruits_house$disthus >= 350, 350, recruits_house$disthus)
-recruits_house$disthus_300 <- ifelse(recruits_house$disthus >= 300, 300, recruits_house$disthus)
-recruits_house$disthus_200 <- ifelse(recruits_house$disthus >= 200, 200, recruits_house$disthus)
-recruits_house$disthus_150 <- ifelse(recruits_house$disthus >= 150, 150, recruits_house$disthus)
-
-str(recruits_house)
-
-# recruits_house <- recruits_house[, -c(8)]
+recruits_roads <- recruits[ which(recruits$disthus > 500), ]
 ```
-
-
 
 
 #### Save data set
 ```{r}
 save(recruits_roads, file = "recruits_roads.rda")
-# save(recruits_house, file = "recruits_house.rda")
-# load("processdata/recruits.rda")
+
+## recruits_house data set is finished with the distance house threshold in 09_recruitment_hurdle.Rmd
 
 ```
 
