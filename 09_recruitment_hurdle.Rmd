@@ -14,8 +14,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 
-
-## Generell test for zero inflation for recruitment response variable
+########################################################################
+## Generell test for zero inflation for recruitment response variable ##
+#######################################################################
 ```{r}
 load("processdata/recruits.rda")
 
@@ -73,7 +74,7 @@ names(recruits)
 
 recruits_house <- recruits
 
-load("processdata/recruits_house.rda")
+# load("processdata/recruits_house.rda")
 
 names(recruits_house)
 ```
@@ -83,12 +84,15 @@ recruits_house$recr_bin <- ifelse(recruits_house$recruitment == 0, 0, 1)
 
 recruits_house$disthus <- scale(recruits_house$disthus)
 recruits_house$distvei2 <- scale(recruits_house$distvei2)
+
 recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
 recruits_house$helling <- scale(recruits_house$helling)
 recruits_house$HOH <- scale(recruits_house$HOH)
 recruits_house$moose_density <- scale(recruits_house$moose_density)
 recruits_house$disthus_600 <- scale(recruits_house$disthus_600)
+
 recruits_house$disthus_500 <- scale(recruits_house$disthus_500)
+
 recruits_house$disthus_400 <- scale(recruits_house$disthus_400)
 recruits_house$disthus_350 <- scale(recruits_house$disthus_350)
 recruits_house$disthus_300 <- scale(recruits_house$disthus_300)
@@ -155,7 +159,8 @@ aictab(candmods_bin_cuthouse, modnames = NULL,
 #### Save recruits_house_bin dataset
 ```{r}
 names(recruits_house)
-recruits_house_bin <- recruits_house[, -c(13,16,18:22)]
+recruits_house_bin <- recruits_house[, -c(8,12:13,17:22)]
+names(recruits_house_bin)
 save(recruits_house_bin, file = "recruits_house_bin.rda")
 
 ```
@@ -185,15 +190,15 @@ data = recruits_house)
 
 rec_h_bin5 <- glmer(recr_bin ~ log(disthus_500+1) + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
 family = binomial(),
-data = recruits_house) # BEST
+data = recruits_house) 
 
 rec_h_bin6 <- glmer(recr_bin ~ log(disthus_500+1) + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
 family = binomial(),
-data = recruits_house) # NAs produced - but why?
+data = recruits_house) # Too high: Model failed to converge with max|grad| = 0.826257 (tol = 0.002, component 1)
 
 rec_h_bin7 <- glmer(recr_bin ~ disthus_500 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
 family = binomial(),
-data = recruits_house) # NaNs produced
+data = recruits_house) # BEST
 
 ```
 
@@ -202,12 +207,19 @@ data = recruits_house) # NaNs produced
 library(AICcmodavg)
 
 candmods_rec_house_bin <- list(rec_h_bin1, rec_h_bin2, rec_h_bin3, rec_h_bin4, rec_h_bin5, rec_h_bin7)
+candmods_rec_house_bin <- list(rec_h_bin5, rec_h_bin6, rec_h_bin7)
 aictab(candmods_rec_house_bin, modnames = NULL,
                        second.ord = TRUE, nobs = NULL, sort = TRUE)
+
+
+#       K     AICc Delta_AICc AICcWt Cum.Wt        LL
+# Mod3 19 23196.99       0.00   0.58   0.58 -11579.48
+# Mod1 19 23197.64       0.65   0.42   1.00 -11579.80
+# Mod2 19 23240.85      43.86   0.00   1.00 -11601.41
 ```
 #### Summary bin house
 ```{r}
-summary(rec_h_bin5)
+summary(rec_h_bin7)
 # vcov(rec_h_bin5)
 ```
 
@@ -219,14 +231,17 @@ summary(rec_h_bin5)
 # 
 # plot(allEffects(rec_h_bin)5)
 # plot(effect("skogkategori", rec_h_bin5))
-# 
-# library(sjPlot)
-# 
+
+library(sjPlot)
+plot_model(rec_h_bin7, type = "diag")
+plot_model(rec_h_bin7, type = "eff")
+plot_model(rec_h_bin7, type = "est")
+ 
 # tab_model(rec_h_bin5, transform = NULL, 
 #           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
 
 ggstatsplot::ggcoefstats(
-  x = rec_h_bin5,
+  x = rec_h_bin7,
   title = "generalized linear mixed-effects model"
 )
 
@@ -234,14 +249,14 @@ ggstatsplot::ggcoefstats(
 
 #### Save bin house
 ```{r}
-save(rec_h_bin5, file = "rec_h_bin5.rda")
+save(rec_h_bin7, file = "rec_h_bin7.rda")
 
 ```
 
 
 
 
-##       House beta - Second part of the hurdle, beta regression  ##
+##       House beta - Second part of the hurdle, Poisson  ##
 
 
 ## Load data house models
@@ -261,7 +276,7 @@ summary(recruits_house_beta$recruitment)
 
 is.integer(recruits_house_beta$recruitment)
 recruits_house_beta$recruitment <- as.integer(recruits_house_beta$recruitment)
-
+is.integer(recruits_house_beta$recruitment)
 ```
 
 
@@ -269,12 +284,15 @@ recruits_house_beta$recruitment <- as.integer(recruits_house_beta$recruitment)
 ```{r}
 recruits_house_beta$disthus <- scale(recruits_house_beta$disthus)
 recruits_house_beta$distvei2 <- scale(recruits_house_beta$distvei2)
+
 recruits_house_beta$beitetrykk9 <- scale(recruits_house_beta$beitetrykk9)
 recruits_house_beta$helling <- scale(recruits_house_beta$helling)
 recruits_house_beta$HOH <- scale(recruits_house_beta$HOH)
 recruits_house_beta$moose_density <- scale(recruits_house_beta$moose_density)
 recruits_house_beta$disthus_600 <- scale(recruits_house_beta$disthus_600)
+
 recruits_house_beta$disthus_500 <- scale(recruits_house_beta$disthus_500)
+
 recruits_house_beta$disthus_400 <- scale(recruits_house_beta$disthus_400)
 recruits_house_beta$disthus_350 <- scale(recruits_house_beta$disthus_350)
 recruits_house_beta$disthus_300 <- scale(recruits_house_beta$disthus_300)
@@ -357,7 +375,7 @@ save(recruits_house_beta, file = "recruits_house_beta.rda")
 ```
 
 
-## Bin house models
+## Beta house models
 ```{r}
 library(lme4)
 rec_h_beta1 <- glmer(recruitment ~ disthus_500 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
@@ -378,17 +396,18 @@ rec_h_beta4 <- glmer(recruitment ~ disthus_500 + distvei2 + skogkategori + trear
 family = poisson(),
 data = recruits_house_beta)
 
+## For this to run, do not scale disthus_500 and distvei2 (because of the log())
 rec_h_beta5 <- glmer(recruitment ~ log(disthus_500+1) + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = poisson(),
-data = recruits_house_beta) # NaNs produced
+data = recruits_house_beta) 
 
 rec_h_beta6 <- glmer(recruitment ~ log(disthus_500+1) + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = poisson(),
-data = recruits_house_beta) # NaNs produced
+data = recruits_house_beta) # way too large: Model failed to converge with max|grad| = 1.31087
 
 rec_h_beta7 <- glmer(recruitment ~ disthus_500 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = poisson(),
-data = recruits_house_beta) # NaNs produced
+data = recruits_house_beta) # BEST
 
 
 ```
@@ -399,6 +418,7 @@ data = recruits_house_beta) # NaNs produced
 library(AICcmodavg)
 
 candmods_rec_house_beta <- list(rec_h_beta1, rec_h_beta2, rec_h_beta3, rec_h_beta4)
+candmods_rec_house_beta <- list(rec_h_beta4, rec_h_beta5, rec_h_beta6, rec_h_beta7)
 aictab(candmods_rec_house_beta, modnames = NULL,
                        second.ord = TRUE, nobs = NULL, sort = TRUE)
 
@@ -409,12 +429,18 @@ aictab(candmods_rec_house_beta, modnames = NULL,
 # Mod1 19 1169628       1.31   0.34   1.00 -584795.1
 # Mod2 18 1171848    2220.86   0.00   1.00 -585905.9
 # Mod3 18 1178858    9231.21   0.00   1.00 -589411.1
+
+#       K    AICc Delta_AICc AICcWt Cum.Wt        LL
+# Mod4 18 1167508       0.00      1      1 -583736.1
+# Mod2 18 1168672    1163.47      0      1 -584317.8
+# Mod1 18 1169627    2118.74      0      1 -584795.4
+# Mod3 18 1170787    3278.26      0      1 -585375.2
 ```
 
 
 #### Summary beta house
 ```{r}
-summary(rec_h_beta4)
+summary(rec_h_beta7)
 # vcov(rec_h_bin5)
 ```
 
@@ -422,26 +448,288 @@ summary(rec_h_beta4)
 
 #### Plots beta house
 ```{r}
-library(effects)
+# library(effects)
+# plot(allEffects(rec_h_beta7))
+# plot(effect("skogkategori", rec_h_beta7))
 
-plot(allEffects(rec_h_beta4))
-plot(effect("skogkategori", rec_h_beta4))
+library(sjPlot)
+plot_model(rec_h_beta7, type = "diag")
+plot_model(rec_h_beta7, type = "eff")
+plot_model(rec_h_beta7, type = "est")
 
-# library(sjPlot)
-# 
-# tab_model(rec_h_beta4, transform = NULL,
-#           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
+# tab_model(rec_h_beta7, transform = NULL,
+#           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001)) 
+# Is it not working because of the scaled variables?
+
+
+
+
 
 ggstatsplot::ggcoefstats(
-  x = rec_h_beta4,
+  x = rec_h_beta7,
   title = "generalized linear mixed-effects model"
-)
+) # Not sure what exactly this shows.
 
 ```
 
 
 #### Save house beta model
 ```{r}
-save(rec_h_beta4, file = "rec_h_beta4.rda")
+save(rec_h_beta7, file = "rec_h_beta7.rda")
 ```
 
+
+
+
+
+
+
+
+###################################################################################
+##     ROADS                ROADS                 ROADS                       #####
+###################################################################################
+
+##       Roads Bin - First part of a hurdle model to account for zero inflation  ##
+
+
+## Bin house threshold distance to house
+
+#### Load data house models
+```{r}
+load("processdata/recruits_roads.rda")
+names(recruits_roads)
+
+```
+
+
+
+#### Scale variables if necessary
+```{r}
+recruits_roads$recr_bin <- ifelse(recruits_roads$recruitment == 0, 0, 1)
+
+recruits_roads$disthus <- scale(recruits_roads$disthus)
+# recruits_roads$distvei2 <- scale(recruits_roads$distvei2)
+recruits_roads$beitetrykk9 <- scale(recruits_roads$beitetrykk9)
+recruits_roads$helling <- scale(recruits_roads$helling)
+recruits_roads$HOH <- scale(recruits_roads$HOH)
+recruits_roads$moose_density <- scale(recruits_roads$moose_density)
+
+summary(recruits_roads$disthus)
+```
+
+
+
+## Bin roads models
+```{r}
+library(lme4)
+rec_r_bin1 <- glmer(recr_bin ~ disthus + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = recruits_roads)
+summary(rec_r_bin1) 
+
+rec_r_bin2 <- glmer(recr_bin ~ distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = recruits_roads) 
+
+rec_r_bin3 <- glmer(recr_bin ~ disthus + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = recruits_roads)
+
+rec_r_bin4 <- glmer(recr_bin ~ skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = recruits_roads)
+
+rec_r_bin5 <- glmer(recr_bin ~ skogkategori + treartgruppe9 + beitetrykk9 + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = recruits_roads)
+
+rec_r_bin6 <- glmer(recr_bin ~ disthus + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = recruits_roads)
+
+## For this to run, do not scale distvei2 (because of the log())
+rec_r_bin7 <- glmer(recr_bin ~ log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = recruits_roads) # BEST
+
+
+
+```
+
+#### AIC selection bin models
+```{r}
+library(AICcmodavg)
+
+candmods_rec_roads_bin <- list(rec_r_bin1, rec_r_bin2, rec_r_bin3, rec_r_bin4, rec_r_bin5, rec_r_bin6, rec_r_bin7)
+aictab(candmods_rec_roads_bin, modnames = NULL,
+                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+
+# Model selection based on AICc:
+# 
+#       K     AICc Delta_AICc AICcWt Cum.Wt       LL
+# Mod7 18 15513.65       0.00      1      1 -7738.80
+# Mod2 18 15527.88      14.23      0      1 -7745.91
+# Mod1 19 15529.88      16.23      0      1 -7745.91
+# Mod4 17 15530.49      16.85      0      1 -7748.23
+# Mod3 18 15531.36      17.71      0      1 -7747.65
+# Mod6 16 15541.40      27.76      0      1 -7754.68
+# Mod5 14 15542.60      28.96      0      1 -7757.29
+```
+
+#### Summary bin roads
+```{r}
+summary(rec_r_bin7)
+# vcov(rec_h_bin5)
+```
+
+
+
+#### Plots bin roads
+```{r}
+# library(effects)
+# 
+# plot(allEffects(rec_r_bin7))
+# plot(effect("skogkategori", rec_r_bin7))
+
+library(sjPlot)
+plot_model(rec_r_bin7, type = "diag")
+# plot_model(rec_r_bin7, type = "eff") # Doesn't work...
+plot_model(rec_r_bin7, type = "est")
+
+# tab_model(rec_r_bin7, transform = NULL,
+#           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
+
+ggstatsplot::ggcoefstats(
+  x = rec_r_bin7,
+  title = "generalized linear mixed-effects model"
+)
+
+```
+
+#### Save bin roads
+```{r}
+save(rec_r_bin7, file = "rec_r_bin7.rda")
+
+```
+
+
+
+
+##       Roads beta - Second part of the hurdle, Poisson  ##
+
+
+## Load data road models
+```{r}
+load("processdata/recruits_roads.rda")
+
+names(recruits_roads)
+```
+
+
+#### Prepare data set for second part of the hurdle
+```{r}
+recruits_roads_beta <- recruits_roads[recruits_roads$recruitment > 0, ]
+str(recruits_roads_beta)
+summary(recruits_roads_beta$recruitment)
+
+is.integer(recruits_roads_beta$recruitment)
+recruits_roads_beta$recruitment <- as.integer(recruits_roads_beta$recruitment)
+is.integer(recruits_roads_beta$recruitment)
+
+```
+
+
+#### Scale variables if necessary
+```{r}
+
+# recruits_roads_beta$distvei2 <- scale(recruits_roads_beta$distvei2)
+
+recruits_roads_beta$beitetrykk9 <- scale(recruits_roads_beta$beitetrykk9)
+recruits_roads_beta$helling <- scale(recruits_roads_beta$helling)
+recruits_roads_beta$HOH <- scale(recruits_roads_beta$HOH)
+recruits_roads_beta$moose_density <- scale(recruits_roads_beta$moose_density)
+
+
+```
+
+
+## Beta roads models
+```{r}
+library(lme4)
+rec_r_beta1 <- glmer(recruitment ~ distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = poisson(),
+data = recruits_roads_beta)
+summary(rec_r_beta1)
+
+rec_r_beta2 <- glmer(recruitment ~ distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+family = poisson(),
+data = recruits_roads_beta)
+
+rec_r_beta3 <- glmer(recruitment ~ skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+family = poisson(),
+data = recruits_roads_beta)
+
+## For these models to run, do not scale distvei2
+rec_r_beta4 <- glmer(recruitment ~ log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+family = poisson(),
+data = recruits_roads_beta)
+
+
+
+
+```
+
+
+#### AIC selection beta models
+```{r}
+library(AICcmodavg)
+
+candmods_rec_roads_beta <- list(rec_r_beta1, rec_r_beta2, rec_r_beta3, rec_r_beta4)
+aictab(candmods_rec_roads_beta, modnames = NULL,
+                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+
+# Model selection based on AICc:
+# 
+#       K     AICc Delta_AICc AICcWt Cum.Wt        LL
+# Mod4 17 570695.8       0.00      1      1 -285330.9
+# Mod1 18 571364.0     668.18      0      1 -285663.9
+# Mod2 17 571364.4     668.56      0      1 -285665.1
+# Mod3 16 571984.2    1288.38      0      1 -285976.1
+```
+
+
+#### Summary beta roads
+```{r}
+summary(rec_r_beta4)
+# vcov(rec_h_bin5)
+```
+
+
+
+#### Plots beta roads
+```{r}
+library(effects)
+
+plot(allEffects(rec_r_beta4))
+plot(effect("skogkategori", rec_r_beta4))
+
+library(sjPlot)
+plot_model(rec_r_beta4, type = "diag")
+plot_model(rec_r_beta4, type = "eff") 
+plot_model(rec_r_beta4, type = "est")
+
+# tab_model(rec_h_beta4, transform = NULL,
+#           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
+
+ggstatsplot::ggcoefstats(
+  x = rec_r_beta4,
+  title = "generalized linear mixed-effects model"
+)
+
+```
+
+
+#### Save roads beta model
+```{r}
+save(rec_r_beta4, file = "rec_r_beta4.rda")
+```
