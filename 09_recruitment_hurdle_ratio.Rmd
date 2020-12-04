@@ -72,7 +72,7 @@ data=Owls,
 ziformula=~1,
 family=poisson)
 
-#### lme4 probably: offset(log(predictor))
+#### lme4 probably: offset(log(predictor_variable))
 
 
 
@@ -92,13 +92,13 @@ names(recruits)
 
 recruits_house <- recruits
 
-# load("processdata/recruits_house.rda")
 
 names(recruits_house)
 ```
+
 #### Scale variables if necessary
 ```{r}
-recruits_house$recr_bin <- ifelse(recruits_house$recruitment == 0, 0, 1)
+# recruits_house$recr_bin <- ifelse(recruits_house$recruitment == 0, 0, 1)
 
 recruits_house$disthus <- scale(recruits_house$disthus)
 recruits_house$distvei2 <- scale(recruits_house$distvei2)
@@ -107,6 +107,7 @@ recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
 recruits_house$helling <- scale(recruits_house$helling)
 recruits_house$HOH <- scale(recruits_house$HOH)
 recruits_house$moose_density <- scale(recruits_house$moose_density)
+
 recruits_house$disthus_600 <- scale(recruits_house$disthus_600)
 
 recruits_house$disthus_500 <- scale(recruits_house$disthus_500)
@@ -125,8 +126,12 @@ summary(recruits_house$disthus)
 ```{r}
 library(lme4)
 
-# fitting glmm with glmmTMB
-# glmmTMB(count~spp + (1|site), Salamanders, family=poisson)
+
+mod_offset_test <- glmer(recruitment_ratio ~ disthus + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + offset(log(tretetthet9)) + (1|KOMNR),
+family = poisson(),
+data = recruits_house)
+summary(mod_offset_test)
+
 
 
 bin_cuthouse1 <- glmer(recr_bin ~ disthus + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
