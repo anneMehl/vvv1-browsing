@@ -57,45 +57,64 @@ dat1 <- browse9.4
 ## Recruits
 #### Houses
 ```{r}
-load("output/mhusabin.rda")
-zeromod2 <- mhusabin
+# load("output/mhusabin.rda")
+# zeromod2 <- mhusabin
+# 
+# # mhusabin <- glmer(factor(proplt > 0) ~ disthus_400 + log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+# # family = binomial(),
+# # data = browse9.5msc)
+# 
+# load("output/m16abeta_house.rda")
+# percmod2 <- m16abeta_house
+# 
+# # m16beta_house <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+# #             data = browse9.5mpossc,
+# #             family = beta_family())
+# 
+# load("processdata/browse9.5msc.rda")
+# dat2 <- browse9.5msc
 
-# mhusabin <- glmer(factor(proplt > 0) ~ disthus_400 + log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
-# family = binomial(),
-# data = browse9.5msc)
+load("output/recruitment_01_12_2020/rec_h_bin7.rda")
+zeromod2 <- rec_h_bin7
 
-load("output/m16abeta_house.rda")
-percmod2 <- m16abeta_house
+load("output/recruitment_01_12_2020/rec_h_beta7.rda")
+percmod2 <- rec_h_beta7
 
-# m16beta_house <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
-#             data = browse9.5mpossc,
-#             family = beta_family())
-
-load("processdata/browse9.5msc.rda")
-dat2 <- browse9.5msc
+dat2 <- recruits_house
 
 ```
 
 #### Roads
 ```{r}
-load("output/m2bin_roads.rda")
+# load("output/m2bin_roads.rda")
+# zeromod2 <- m2bin_roads
+# # summary(m2bin_roads)
+# 
+# # m2bin_roads <- glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+# # family = binomial(),
+# # data = browse9.6sc)
+# 
+# load("output/m3betaroad.rda")
+# percmod2 <- m3betaroad
+# 
+# # m3betaroad <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + ac + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
+# #             data = browse9.6scpos,
+# #             family = beta_family())
+# 
+# load("processdata/browse9.6sc.rda")
+# # head(browse9.6sc)
+# dat2 <- browse9.6sc
+
+
+load("output/recruitment_01_12_2020/rec_r_bin4.rda")
 zeromod2 <- m2bin_roads
-# summary(m2bin_roads)
 
-# m2bin_roads <- glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
-# family = binomial(),
-# data = browse9.6sc)
-
-load("output/m3betaroad.rda")
+load("output/recruitment_01_12_2020/rec_r_beta4.rda")
 percmod2 <- m3betaroad
 
-# m3betaroad <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + ac + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
-#             data = browse9.6scpos,
-#             family = beta_family())
+load("processdata/recruits_roads.rda")
+dat2 <- recruits_roads
 
-load("processdata/browse9.6sc.rda")
-# head(browse9.6sc)
-dat2 <- browse9.6sc
 ```
 
 
