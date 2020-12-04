@@ -1,0 +1,506 @@
+---
+title: "05_browsing_pressure_new"
+author: "anne"
+date: "1 februar 2019"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+########################################################################
+## Generell test for zero inflation for browsing response variable ##
+#######################################################################
+```{r}
+load("processdata/browse.rda")
+
+library(ggplot2)
+library(ggpubr)
+
+ggplot(browse, aes(beitetrykk9)) +
+  geom_histogram(fill = "#0073C2FF") +
+  theme_pubclean()
+
+ggplot(browse, aes(bt100)) +
+  geom_histogram(fill = "#0073C2FF") +
+  theme_pubclean()
+
+str(browse$beitetrykk9)
+summary(browse$beitetrykk9)
+
+
+
+#### Test for zero-inflation
+
+# Use glmmTMB package to run glm
+library("glmmTMB")
+m_test_zi <- glm(beitetrykk9 ~ disthus + distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac, family = poisson, data = browse)
+
+library("performance")
+check_zeroinflation(m_test_zi)
+
+# # Check for zero-inflation
+# 
+#    Observed zeros: 5681
+#   Predicted zeros: 1
+#             Ratio: 0.00
+# 
+# Model is underfitting zeros (probable zero-inflation).
+
+
+
+```
+
+
+
+
+
+###################################################################################
+##     HOUSE                HOUSE                 HOUSE                       #####
+###################################################################################
+
+##       House binary - First part of hurdle model to account for zero inflation  ##
+
+
+## Bin house threshold distance to house
+
+#### Load data house models
+```{r}
+load("processdata/browse.rda")
+names(browse)
+
+browse_house <- browse
+
+names(browse_house)
+
+```
+
+
+#### Scale variables if necessary
+```{r}
+
+browse_house$disthus <- scale(browse_house$disthus)
+browse_house$distvei2 <- scale(browse_house$distvei2)
+
+browse_house$tretetthet9 <- scale(browse_house$tretetthet9)
+browse_house$helling <- scale(browse_house$helling)
+browse_house$HOH <- scale(browse_house$HOH)
+browse_house$moose_density <- scale(browse_house$moose_density)
+
+browse_house$disthus_600 <- scale(browse_house$disthus_600)
+browse_house$disthus_500 <- scale(browse_house$disthus_500)
+browse_house$disthus_400 <- scale(browse_house$disthus_400)
+browse_house$disthus_350 <- scale(browse_house$disthus_350)
+browse_house$disthus_300 <- scale(browse_house$disthus_300)
+
+browse_house$disthus_200 <- scale(browse_house$disthus_200)
+
+browse_house$disthus_150 <- scale(browse_house$disthus_150)
+
+summary(browse_house$disthus_200)
+```
+
+
+#### Checking for the cut for disthus
+```{r}
+library(lme4)
+
+
+bin_cuthouse1 <- glmer(factor(beitetrykk9 > 0) ~ disthus + distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = browse_house)
+
+bin_cuthouse2 <- glmer(factor(beitetrykk9 > 0) ~ disthus_600 + distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = browse_house)
+
+bin_cuthouse3 <- glmer(factor(beitetrykk9 > 0) ~ disthus_500 + distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = browse_house) # BEST
+
+bin_cuthouse4 <- glmer(factor(beitetrykk9 > 0) ~ disthus_400 + distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = browse_house)
+
+bin_cuthouse5 <- glmer(factor(beitetrykk9 > 0) ~ disthus_350 + distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = browse_house)
+
+bin_cuthouse6 <- glmer(factor(beitetrykk9 > 0) ~ disthus_300 + distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = browse_house)
+
+bin_cuthouse7 <- glmer(factor(beitetrykk9 > 0) ~ disthus_200 + distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = browse_house) # BEST
+
+bin_cuthouse8 <- glmer(factor(beitetrykk9 > 0) ~ disthus_150 + distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = browse_house)
+
+```
+
+#### AIC selection threshold house
+```{r}
+library(AICcmodavg)
+
+candmods_bin_cuthouse <- list(bin_cuthouse1, bin_cuthouse2, bin_cuthouse3, bin_cuthouse4, bin_cuthouse5, bin_cuthouse6, bin_cuthouse7, bin_cuthouse8)
+aictab(candmods_bin_cuthouse, modnames = NULL,
+                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+
+# Model selection based on AICc:
+# 
+#       K     AICc Delta_AICc AICcWt Cum.Wt        LL
+# Mod7 19 21514.35       0.00   0.69   0.69 -10738.16
+# Mod8 19 21516.61       2.26   0.22   0.91 -10739.29
+# Mod6 19 21518.53       4.17   0.09   1.00 -10740.25
+# Mod5 19 21526.92      12.57   0.00   1.00 -10744.44
+# Mod4 19 21533.96      19.60   0.00   1.00 -10747.96
+# Mod3 19 21545.22      30.87   0.00   1.00 -10753.59
+# Mod2 19 21556.32      41.97   0.00   1.00 -10759.14
+# Mod1 19 21589.06      74.70   0.00   1.00 -10775.51
+
+```
+
+#### Save browse_house dataset
+```{r}
+names(browse_house)
+# browse_house <- browse_house[, -c(19:23)]
+names(browse_house)
+save(browse_house, file = "browse_house.rda")
+
+browse_house$beite_bin <- ifelse(browse_house$beitetrykk9 == 0, 0, 1)
+
+```
+
+
+## Bin house models
+```{r}
+library(lme4)
+browse_h_bin1 <- glmer(beite_bin ~ disthus_200 + distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = browse_house)
+summary(browse_h_bin1)
+
+browse_h_bin2 <- glmer(beite_bin ~ disthus_200 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = browse_house) # BEST
+
+browse_h_bin3 <- glmer(beite_bin ~ disthus_200 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = browse_house)
+
+browse_h_bin4 <- glmer(beite_bin ~ disthus_200 + distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = browse_house)
+
+browse_h_bin6 <- glmer(beite_bin ~ disthus_200 + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = browse_house)
+
+## For these models to run, do not scale disthus
+browse_h_bin5 <- glmer(beite_bin ~ log(disthus_200+1) + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = browse_house) 
+
+
+
+
+
+```
+
+#### AIC selection bin models
+```{r}
+library(AICcmodavg)
+
+candmods_browse_house_bin <- list(browse_h_bin1, browse_h_bin2, browse_h_bin3, browse_h_bin4, browse_h_bin5, browse_h_bin6)
+candmods_browse_house_bin <- list(browse_h_bin2, browse_h_bin5)
+candmods_browse_house_bin <- list(browse_h_bin2, browse_h_bin6)
+aictab(candmods_browse_house_bin, modnames = NULL,
+                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+
+# Model selection based on AICc:
+# 
+#       K     AICc Delta_AICc AICcWt Cum.Wt        LL
+# Mod2 18 21512.64       0.00   0.58   0.58 -10738.31
+# Mod1 19 21514.35       1.71   0.25   0.83 -10738.16
+# Mod5 18 21515.14       2.50   0.17   1.00 -10739.56
+# Mod6 14 21522.73      10.09   0.00   1.00 -10747.36
+# Mod3 16 21549.96      37.32   0.00   1.00 -10758.97
+# Mod4 17 21550.08      37.44   0.00   1.00 -10758.03
+
+#       K     AICc Delta_AICc AICcWt Cum.Wt        LL
+# Mod1 18 21512.64        0.0   0.78   0.78 -10738.31
+# Mod2 18 21515.14        2.5   0.22   1.00 -10739.56
+
+#       K     AICc Delta_AICc AICcWt Cum.Wt        LL
+# Mod1 18 21512.64       0.00   0.99   0.99 -10738.31
+# Mod2 14 21522.73      10.09   0.01   1.00 -10747.36
+
+```
+
+#### Summary bin house
+```{r}
+summary(browse_h_bin2)
+# vcov(browse_h_bin5)
+```
+
+
+
+#### Plots bin house
+```{r}
+# library(effects)
+# 
+# plot(allEffects(rbrowse_h_bin)5)
+# plot(effect("skogkategori", browse_h_bin5))
+
+
+library(sjPlot)
+plot_model(browse_h_bin2, type = "diag")
+plot_model(browse_h_bin2, type = "eff")
+plot_model(browse_h_bin2, type = "est")
+
+library(performance)
+# check_model(browse_h_bin2)
+model_performance(browse_h_bin2)
+
+ 
+# tab_model(rec_h_bin5, transform = NULL, 
+#           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
+
+ggstatsplot::ggcoefstats(
+  x = browse_h_bin2,
+  title = "generalized linear mixed-effects model"
+)
+
+```
+
+#### Save bin house
+```{r}
+save(browse_h_bin2, file = "browse_h_bin2.rda")
+
+```
+
+
+
+
+
+
+##       House beta - Second part of the hurdle, Beta  ##
+
+
+## Load data house models
+```{r}
+
+## !! Use browse_house - all variables needed are in there !! ##
+load("processdata/browse_house.rda")
+
+# load("processdata/recruits.rda")
+# recruits_house <- recruits
+
+names(browse_house)
+```
+
+
+#### Prepare data set for second part of the hurdle
+```{r}
+browse_house <- browse_house[browse_house$bt100 > 0, ]
+str(browse_house)
+summary(browse_house$bt100)
+
+```
+
+
+#### Scale variables if necessary
+```{r}
+browse_house$disthus <- scale(browse_house$disthus)
+browse_house$distvei2 <- scale(browse_house$distvei2)
+
+browse_house$tretetthet9 <- scale(browse_house$tretetthet9)
+browse_house$helling <- scale(browse_house$helling)
+browse_house$HOH <- scale(browse_house$HOH)
+browse_house$moose_density <- scale(browse_house$moose_density)
+
+browse_house$disthus_600 <- scale(browse_house$disthus_600)
+browse_house$disthus_500 <- scale(browse_house$disthus_500)
+browse_house$disthus_400 <- scale(browse_house$disthus_400)
+browse_house$disthus_350 <- scale(browse_house$disthus_350)
+browse_house$disthus_300 <- scale(browse_house$disthus_300)
+browse_house$disthus_200 <- scale(browse_house$disthus_200)
+browse_house$disthus_150 <- scale(browse_house$disthus_150)
+
+summary(browse_house$disthus_600)
+```
+
+#### Checking for the cut for disthus
+```{r}
+library(glmmTMB)
+
+beta_cuthouse1 <- glmmTMB(bt100 ~ disthus + distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+            data = browse_house,
+            family = beta_family())
+
+beta_cuthouse2 <- glmmTMB(bt100 ~ disthus_600 + distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+            data = browse_house,
+            family = beta_family())
+
+beta_cuthouse3 <- glmmTMB(bt100 ~ disthus_500 + distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+            data = browse_house,
+            family = beta_family())
+
+beta_cuthouse4 <- glmmTMB(bt100 ~ disthus_400 + distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+            data = browse_house,
+            family = beta_family())
+
+beta_cuthouse5 <- glmmTMB(bt100 ~ disthus_300 + distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+            data = browse_house,
+            family = beta_family())
+
+beta_cuthouse6 <- glmmTMB(bt100 ~ disthus_350 + distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+            data = browse_house,
+            family = beta_family())
+
+beta_cuthouse7 <- glmmTMB(bt100 ~ disthus_200 + distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+            data = browse_house,
+            family = beta_family()) # BEST
+
+beta_cuthouse8 <- glmmTMB(bt100 ~ disthus_150 + distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+            data = browse_house,
+            family = beta_family())
+
+```
+
+#### AIC selection threshold house
+```{r}
+library(AICcmodavg)
+
+candmods_beta_cuthouse <- list(beta_cuthouse1, beta_cuthouse2, beta_cuthouse3, beta_cuthouse4, beta_cuthouse5, beta_cuthouse6, beta_cuthouse7, beta_cuthouse8)
+candmods_beta_cuthouse <- list(beta_cuthouse1, beta_cuthouse2, beta_cuthouse3)
+aictab(candmods_beta_cuthouse, modnames = NULL,
+                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+
+# Model selection based on AICc:
+# 
+#       K     AICc Delta_AICc AICcWt Cum.Wt      LL
+# Mod7 20 -9735.44       0.00   0.92   0.92 4887.75
+# Mod8 20 -9729.12       6.32   0.04   0.95 4884.59
+# Mod5 20 -9729.12       6.33   0.04   0.99 4884.58
+# Mod6 20 -9724.88      10.57   0.00   1.00 4882.46
+# Mod4 20 -9722.41      13.03   0.00   1.00 4881.23
+# Mod3 20 -9719.25      16.19   0.00   1.00 4879.65
+# Mod2 20 -9714.73      20.72   0.00   1.00 4877.39
+# Mod1 20 -9702.34      33.10   0.00   1.00 4871.20
+
+```
+
+
+#### Save browse_house dataset
+```{r}
+## !! Use browse_house - all variables needed are in there !! ##
+
+
+# names(browse_house)
+# browse_house <- browse_house[, -c(4,18:23)]
+# str(browse_house)
+# save(browse_house, file = "browse_house.rda")
+
+```
+
+
+
+
+
+
+
+## Beta house models
+
+Prepare data set for second part of the hurdle
+```{r}
+browse_house <- browse_house[browse_house$bt100 > 0, ]
+str(browse_house)
+summary(browse_house$bt100)
+
+```
+
+```{r}
+library(glmmTMB)
+
+browse_h_beta1 <- glmmTMB(bt100 ~ disthus_200 + distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+            data = browse_house,
+            family = beta_family())
+summary(browse_h_beta1)
+
+browse_h_beta2 <- glmmTMB(bt100 ~ disthus_200 + distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+            data = browse_house,
+            family = beta_family())
+
+
+
+```
+
+
+#### AIC selection beta models
+```{r}
+library(AICcmodavg)
+
+candmods_browse_house_beta <- list(browse_h_beta1,browse_h_beta2)
+aictab(candmods_browse_house_beta, modnames = NULL,
+                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+
+# Model selection based on AICc:
+# 
+#       K     AICc Delta_AICc AICcWt Cum.Wt      LL
+# Mod2 19 -9736.17       0.00   0.59   0.59 4887.11
+# Mod1 20 -9735.44       0.72   0.41   1.00 4887.75
+
+```
+
+
+#### Summary beta house
+```{r}
+summary(browse_h_beta2)
+# vcov(rec_h_bin5)
+```
+
+
+
+#### Plots beta house
+```{r}
+# library(effects)
+# plot(allEffects(rec_h_beta7))
+# plot(effect("skogkategori", rec_h_beta7))
+
+library(sjPlot)
+plot_model(browse_h_beta2, type = "diag")
+plot_model(browse_h_beta2, type = "eff")
+plot_model(browse_h_beta2, type = "est")
+
+library(performance)
+# check_model(browse_h_beta2)
+model_performance(browse_h_beta2)
+
+# tab_model(rec_h_beta7, transform = NULL,
+#           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001)) 
+# Is it not working because of the scaled variables?
+
+
+
+
+
+ggstatsplot::ggcoefstats(
+  x = browse_h_beta2,
+  title = "generalized linear mixed-effects model"
+) # Not sure what exactly this shows.
+
+```
+
+
+#### Save house beta model
+```{r}
+save(browse_h_beta2, file = "browse_h_beta2.rda")
+```
