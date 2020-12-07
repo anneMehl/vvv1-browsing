@@ -781,3 +781,21 @@ save(browse, file = "browse.rda")
 
 
 ```
+
+
+
+## Roads data set
+```{r}
+load("processdata/browse.rda")
+names(browse)
+browse_roads <- browse[,-c(4,16:20,22)]
+names(browse_roads)
+browse_roads <- browse_roads[ which(browse_roads$disthus > 200), ]
+summary(browse_roads$disthus)
+
+str(browse_roads)
+
+
+save(browse_roads, file = "browse_roads.rda")
+
+```
