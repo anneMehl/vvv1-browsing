@@ -170,8 +170,9 @@ aictab(candmods_bin_cuthouse, modnames = NULL,
 
 #### Save recruits_house dataset
 ```{r}
-names(recruits_house)
-recruits_house <- recruits_house[, -c(19:23)]
+str(recruits)
+names(recruits)
+recruits_house <- recruits[, -c(4,19:23)]
 names(recruits_house)
 save(recruits_house, file = "recruits_house.rda")
 
@@ -181,37 +182,66 @@ save(recruits_house, file = "recruits_house.rda")
 
 
 ## Bin house models
+
+#### Load data
+```{r}
+load("processdata/recruits_house.rda")
+str(recruits_house)
+recruits_house$recruitment_bin <- ifelse(recruits_house$recruitment == 0, 0, 1)
+
+```
+
+#### Scale variables if necessary
+```{r}
+
+# recruits_house$disthus <- scale(recruits_house$disthus)
+
+# recruits_house$distvei2 <- scale(recruits_house$distvei2)
+
+recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
+recruits_house$helling <- scale(recruits_house$helling)
+recruits_house$HOH <- scale(recruits_house$HOH)
+recruits_house$moose_density <- scale(recruits_house$moose_density)
+
+# recruits_house$disthus_600 <- scale(recruits_house$disthus_600)
+
+recruits_house$disthus_500 <- scale(recruits_house$disthus_500)
+
+summary(recruits_house$beitetrykk9)
+```
+
+
+
 ```{r}
 library(lme4)
-rec_h_bin1 <- glmer(factor(recruitment > 0) ~ disthus_500 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+rec_h_bin1 <- glmer(recruitment_bin ~ disthus_500 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
 family = binomial(),
 data = recruits_house)
 summary(rec_h_bin1)
 
-rec_h_bin2 <- glmer(factor(recruitment > 0) ~ disthus_500 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+rec_h_bin2 <- glmer(recruitment_bin ~ disthus_500 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
 family = binomial(),
 data = recruits_house)
 
-rec_h_bin3 <- glmer(factor(recruitment > 0) ~ skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+rec_h_bin3 <- glmer(recruitment_bin ~ skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
 family = binomial(),
 data = recruits_house)
 
-rec_h_bin4 <- glmer(factor(recruitment > 0) ~ disthus_500 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+rec_h_bin4 <- glmer(recruitment_bin ~ log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
 family = binomial(),
 data = recruits_house)
 
-## For these models to run, do not scale disthus/distvei
-rec_h_bin5 <- glmer(factor(recruitment > 0) ~ log(disthus_500+1) + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+rec_h_bin5 <- glmer(recruitment_bin ~ log(disthus_500+1) + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
 family = binomial(),
 data = recruits_house) 
 
-rec_h_bin6 <- glmer(factor(recruitment > 0) ~ log(disthus_500+1) + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+rec_h_bin6 <- glmer(recruitment_bin ~ log(disthus_500+1) + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
 family = binomial(),
-data = recruits_house) # Too high: Model failed to converge with max|grad| = 5.06844 (tol = 0.002, component 1)
+data = recruits_house)
 
-rec_h_bin7 <- glmer(factor(recruitment > 0) ~ disthus_500 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+rec_h_bin7 <- glmer(recruitment_bin ~ disthus_500 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
 family = binomial(),
-data = recruits_house) # BEST
+data = recruits_house)
 
 ```
 
@@ -219,23 +249,18 @@ data = recruits_house) # BEST
 ```{r}
 library(AICcmodavg)
 
-candmods_rec_house_bin <- list(rec_h_bin1, rec_h_bin2, rec_h_bin3, rec_h_bin4)
-candmods_rec_house_bin <- list(rec_h_bin5, rec_h_bin6, rec_h_bin7)
+candmods_rec_house_bin <- list(rec_h_bin1, rec_h_bin2, rec_h_bin3, rec_h_bin4, rec_h_bin7)
 aictab(candmods_rec_house_bin, modnames = NULL,
                        second.ord = TRUE, nobs = NULL, sort = TRUE)
 
 # Model selection based on AICc:
 # 
 #       K     AICc Delta_AICc AICcWt Cum.Wt        LL
-# Mod1 19 22793.10       0.00   0.99   0.99 -11377.53
-# Mod2 18 22802.45       9.36   0.01   1.00 -11383.21
-# Mod4 16 22809.03      15.93   0.00   1.00 -11388.50
-# Mod3 17 22922.22     129.12   0.00   1.00 -11444.09
-
-#       K     AICc Delta_AICc AICcWt Cum.Wt        LL
-# Mod3 19 22754.24       0.00   0.59   0.59 -11358.10
-# Mod1 19 22754.97       0.73   0.41   1.00 -11358.47
-# Mod2 19 22794.65      40.40   0.00   1.00 -11378.30
+# Mod5 19 22754.24       0.00      1      1 -11358.10
+# Mod1 19 22793.10      38.86      0      1 -11377.53
+# Mod4 18 22796.88      42.64      0      1 -11380.42
+# Mod2 18 22802.45      48.21      0      1 -11383.21
+# Mod3 17 22922.22     167.98      0      1 -11444.09
 ```
 
 #### Summary bin house
@@ -260,7 +285,7 @@ plot_model(rec_h_bin7, type = "eff")
 plot_model(rec_h_bin7, type = "est")
 
 library(performance)
-check_model(rec_h_bin7)
+# check_model(rec_h_bin7)
 model_performance(rec_h_bin7)
 
  
@@ -292,11 +317,12 @@ save(rec_h_bin7, file = "rec_h_bin7.rda")
 ## !! Use recruits_house - all variables needed are in there !! ##
 
 
-# load("processdata/recruits.rda")
-# recruits_house <- recruits
-
+load("processdata/recruits_house.rda")
+str(recruits_house)
 names(recruits_house)
+
 ```
+
 
 
 #### Prepare data set for second part of the hurdle
@@ -402,17 +428,21 @@ aictab(candmods_beta_cuthouse, modnames = NULL,
 ## !! Use recruits_house - all variables needed are in there !! ##
 
 
-# names(recruits_house_beta)
-# recruits_house_beta <- recruits_house_beta[, -c(4,18:23)]
-# str(recruits_house_beta)
-# save(recruits_house_beta, file = "recruits_house_beta.rda")
 
 ```
 
 
 ## Beta house models
 
-Prepare data set for second part of the hurdle
+#### Load models
+```{r}
+load("processdata/recruits_house.rda")
+str(recruits_house)
+names(recruits_house)
+```
+
+
+#### Prepare data set for second part of the hurdle
 ```{r}
 recruits_house <- recruits_house[recruits_house$recruitment > 0, ]
 str(recruits_house)
@@ -423,12 +453,32 @@ recruits_house$recruitment <- as.integer(recruits_house$recruitment)
 is.integer(recruits_house$recruitment)
 ```
 
+
+#### Scale variables if necessary
+```{r}
+# recruits_house$disthus <- scale(recruits_house$disthus)
+
+# recruits_house$distvei2 <- scale(recruits_house$distvei2)
+
+recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
+recruits_house$helling <- scale(recruits_house$helling)
+recruits_house$HOH <- scale(recruits_house$HOH)
+recruits_house$moose_density <- scale(recruits_house$moose_density)
+
+recruits_house$disthus_600 <- scale(recruits_house$disthus_600)
+
+# recruits_house$disthus_500 <- scale(recruits_house$disthus_500)
+
+summary(recruits_house$disthus_600)
+```
+
+
+#### Beta house models
 ```{r}
 library(lme4)
 rec_h_beta1 <- glmer(recruitment ~ disthus_600 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
 family = poisson(),
 data = recruits_house)
-
 summary(rec_h_beta1)
 
 rec_h_beta2 <- glmer(recruitment ~ disthus_600 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
@@ -443,14 +493,13 @@ rec_h_beta4 <- glmer(recruitment ~ disthus_600 + distvei2 + skogkategori + trear
 family = poisson(),
 data = recruits_house)
 
-## For this to run, do not scale disthus_500 and distvei2 (because of the log())
 rec_h_beta5 <- glmer(recruitment ~ log(disthus_600+1) + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = poisson(),
 data = recruits_house) 
 
 rec_h_beta6 <- glmer(recruitment ~ log(disthus_600+1) + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = poisson(),
-data = recruits_house) # way too large: Model failed to converge with max|grad| = 1.31087
+data = recruits_house)
 
 rec_h_beta7 <- glmer(recruitment ~ disthus_600 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = poisson(),
@@ -464,22 +513,19 @@ data = recruits_house) # BEST
 ```{r}
 library(AICcmodavg)
 
-candmods_rec_house_beta <- list(rec_h_beta1, rec_h_beta2, rec_h_beta3, rec_h_beta4)
-candmods_rec_house_beta <- list(rec_h_beta4, rec_h_beta7)
+candmods_rec_house_beta <- list(rec_h_beta1, rec_h_beta2, rec_h_beta3, rec_h_beta4, rec_h_beta7)
+# candmods_rec_house_beta <- list(rec_h_beta4, rec_h_beta7)
 aictab(candmods_rec_house_beta, modnames = NULL,
                        second.ord = TRUE, nobs = NULL, sort = TRUE)
 
 # Model selection based on AICc:
 # 
 #       K    AICc Delta_AICc AICcWt Cum.Wt        LL
-# Mod4 18 1145904       0.00   0.69   0.69 -572933.9
-# Mod1 19 1145905       1.58   0.31   1.00 -572933.7
-# Mod2 18 1147541    1636.84   0.00   1.00 -573752.3
-# Mod3 18 1154173    8268.77   0.00   1.00 -577068.3
-
-#       K    AICc Delta_AICc AICcWt Cum.Wt        LL
-# Mod2 18 1143746       0.00      1      1 -571855.0
-# Mod1 18 1145904    2157.79      0      1 -572933.9
+# Mod5 18 1143746       0.00      1      1 -571855.0
+# Mod4 18 1145904    2157.79      0      1 -572933.9
+# Mod1 19 1145905    2159.37      0      1 -572933.7
+# Mod2 18 1147541    3794.63      0      1 -573752.3
+# Mod3 18 1154173   10426.57      0      1 -577068.3
 
 ```
 
@@ -542,11 +588,14 @@ save(rec_h_beta7, file = "rec_h_beta7.rda")
 ##       Roads Bin - First part of a hurdle model to account for zero inflation  ##
 
 
-## Bin house threshold distance to house
+## Bin roads
 
-#### Load data house models
+#### Load data roads models
 ```{r}
 load("processdata/recruits_roads.rda")
+
+recruits_roads$recruitment_bin <- ifelse(recruits_roads$recruitment == 0, 0, 1)
+str(recruits_roads)
 names(recruits_roads)
 
 ```
@@ -570,23 +619,17 @@ summary(recruits_roads$beitetrykk9)
 ## Bin roads models
 ```{r}
 library(lme4)
-rec_r_bin1 <- glmer(factor(recruitment > 0) ~ distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+rec_r_bin1 <- glmer(recruitment_bin ~ distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
 family = binomial(),
 data = recruits_roads)
 summary(rec_r_bin1) 
 
-rec_r_bin2 <- glmer(factor(recruitment > 0) ~ skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+rec_r_bin2 <- glmer(recruitment_bin ~ skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
 family = binomial(),
 data = recruits_roads) 
 
-rec_r_bin3 <- glmer(factor(recruitment > 0) ~ distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
-family = binomial(),
-data = recruits_roads)
 
-
-
-## For this to run, do not scale distvei2 (because of the log())
-rec_r_bin4  <- glmer(factor(recruitment > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+rec_r_bin3  <- glmer(recruitment_bin ~ log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
 family = binomial(),
 data = recruits_roads) # BEST
 
@@ -598,23 +641,22 @@ data = recruits_roads) # BEST
 ```{r}
 library(AICcmodavg)
 
-candmods_rec_roads_bin <- list(rec_r_bin1, rec_r_bin2, rec_r_bin3, rec_r_bin4)
+candmods_rec_roads_bin <- list(rec_r_bin1, rec_r_bin2, rec_r_bin3)
 aictab(candmods_rec_roads_bin, modnames = NULL,
                        second.ord = TRUE, nobs = NULL, sort = TRUE)
 
 # Model selection based on AICc:
 # 
 #       K     AICc Delta_AICc AICcWt Cum.Wt       LL
-# Mod4 18 13840.01       0.00      1      1 -6901.98
+# Mod3 18 13840.01       0.00      1      1 -6901.98
 # Mod1 18 13854.89      14.88      0      1 -6909.42
 # Mod2 17 13856.76      16.75      0      1 -6911.36
-# Mod3 15 13865.49      25.48      0      1 -6917.73
 
 ```
 
 #### Summary bin roads
 ```{r}
-summary(rec_r_bin4)
+summary(rec_r_bin3)
 # vcov(rec_h_bin5)
 ```
 
@@ -628,19 +670,19 @@ summary(rec_r_bin4)
 # plot(effect("skogkategori", rec_r_bin7))
 
 library(performance)
-check_model(rec_r_bin4)
-model_performance(rec_r_bin4)
+# check_model(rec_r_bin3)
+model_performance(rec_r_bin3)
 
 library(sjPlot)
-plot_model(rec_r_bin4, type = "diag")
-plot_model(rec_r_bin4, type = "eff")
-plot_model(rec_r_bin4, type = "est")
+plot_model(rec_r_bin3, type = "diag")
+plot_model(rec_r_bin3, type = "eff")
+plot_model(rec_r_bin3, type = "est")
 
 # tab_model(rec_r_bin7, transform = NULL,
 #           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
 
 ggstatsplot::ggcoefstats(
-  x = rec_r_bin4,
+  x = rec_r_bin3,
   title = "generalized linear mixed-effects model"
 )
 
@@ -648,7 +690,7 @@ ggstatsplot::ggcoefstats(
 
 #### Save bin roads
 ```{r}
-save(rec_r_bin4, file = "rec_r_bin4.rda")
+save(rec_r_bin3, file = "rec_r_bin3.rda")
 
 ```
 
@@ -709,7 +751,6 @@ rec_r_beta3 <- glmer(recruitment ~ skogkategori + treartgruppe9 + beitetrykk9 + 
 family = poisson(),
 data = recruits_roads)
 
-## For these models to run, do not scale distvei2
 rec_r_beta4 <- glmer(recruitment ~ log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = poisson(),
 data = recruits_roads)
@@ -776,4 +817,236 @@ ggstatsplot::ggcoefstats(
 #### Save roads beta model
 ```{r}
 save(rec_r_beta4, file = "rec_r_beta4.rda")
+```
+
+
+
+
+## Figures bin
+```{r}
+library(sjPlot)
+library(ggplot2)
+
+## House
+load("processdata/recruits_house.rda")
+str(recruits_house)
+load("output/recruitment_07_12_2020/rec_h_bin7.rda")
+recruits_house$recruitment_bin <- ifelse(recruits_house$recruitment == 0, 0, 1)
+summary(rec_h_bin7)
+
+# scale
+recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
+recruits_house$helling <- scale(recruits_house$helling)
+recruits_house$HOH <- scale(recruits_house$HOH)
+recruits_house$moose_density <- scale(recruits_house$moose_density)
+
+
+p_rec_bin1_house <- plot_model(rec_h_bin7, type = c("eff"), transform = NULL, terms = c("disthus_500"))
+p_rec_bin1_house <- p_rec_bin1_house + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Distance to houses\n") +
+  ylab("Recruitment\n")
+
+
+
+## Roads
+load("processdata/recruits_roads.rda")
+str(recruits_roads)
+load("output/recruitment_07_12_2020/rec_r_bin3.rda")
+recruits_roads$recruitment_bin <- ifelse(recruits_roads$recruitment == 0, 0, 1)
+summary(rec_r_bin3)
+
+# scale
+recruits_roads$beitetrykk9 <- scale(recruits_roads$beitetrykk9)
+recruits_roads$helling <- scale(recruits_roads$helling)
+recruits_roads$HOH <- scale(recruits_roads$HOH)
+recruits_roads$moose_density <- scale(recruits_roads$moose_density)
+
+
+
+p_rec_bin1 <- plot_model(rec_r_bin3, type = c("eff"), transform = NULL, terms = c("distvei2  [0:500]"))
+p_rec_bin1 <- p_rec_bin1 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Distance to road\n") +
+  ylab("Recruitment\n")
+
+
+p_rec_bin2 <- plot_model(rec_r_bin3, type = c("eff"), transform = NULL, terms = c("skogkategori"))
+p_rec_bin2 <- p_rec_bin2 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 12, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30"),
+    axis.text.x = element_text(angle = 30)) +
+  xlab("Forest category\n") +
+  ylab("Recruitment\n") 
+
+
+p_rec_bin3 <- plot_model(rec_r_bin3, type = c("eff"), transform = NULL, terms = c("treartgruppe9"))
+p_rec_bin3 <- p_rec_bin3 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Tree species group\n") +
+  ylab("Recruitment\n") 
+
+
+p_rec_bin4 <- plot_model(rec_r_bin3, type = c("eff"), transform = NULL, terms = c("kant"))
+p_rec_bin4 <- p_rec_bin4 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 12, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30"),
+    axis.text.x = element_text(angle = 30)) +
+  xlab("Edge\n") +
+  ylab("Recruitment\n")
+
+
+p_rec_bin5 <- plot_model(rec_r_bin3, type = c("eff"), transform = NULL, terms = c("helling [all]"))
+p_rec_bin5 <- p_rec_bin5 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Slope\n") +
+  ylab("Recruitment\n")
+
+
+p_rec_bin6 <- plot_model(rec_r_bin3, type = c("eff"), transform = NULL, terms = c("HOH [all]"))
+p_rec_bin6 <- p_rec_bin6 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Altitude\n") +
+  ylab("Recruitment\n")
+
+
+p_rec_bin7 <- plot_model(rec_r_bin3, type = c("eff"), transform = NULL, terms = c("moose_density [all]"))
+p_rec_bin7 <- p_rec_bin7 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Moose density\n") +
+  ylab("Recruitment\n")
+
+
+
+
+library(gridExtra)
+grid.arrange(p_rec_bin1_house, p_rec_bin1, p_rec_bin2, p_rec_bin3, p_rec_bin4, p_rec_bin5, p_rec_bin6, p_rec_bin7,
+          nrow = 4, ncol = 2)
+
+# type = "pred" = Predicted values (marginal effects) for specific model terms. See ggpredict for details.
+# type = "eff" = Similar to type = "pred", however, discrete predictors are held constant at their proportions (not reference level). See ggeffect for details. ggeffect() computes marginal effects by internally calling Effect. Effect constructs an "eff" object for a term (usually a high-order term), absorbing the lower-order terms marginal to the term in question, and averaging over other terms in the model.
+
+```
+
+
+
+## Figures beta
+```{r}
+library(sjPlot)
+library(ggplot2)
+
+## House
+load("processdata/recruits_house.rda")
+str(recruits_house)
+load("output/recruitment_07_12_2020/rec_h_beta7.rda")
+recruits_house$recruitment_bin <- ifelse(recruits_house$recruitment == 0, 0, 1)
+summary(rec_h_beta7)
+
+# scale
+recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
+recruits_house$helling <- scale(recruits_house$helling)
+recruits_house$HOH <- scale(recruits_house$HOH)
+recruits_house$moose_density <- scale(recruits_house$moose_density)
+
+
+p_rec_beta1_house <- plot_model(rec_h_beta7, type = c("eff"), transform = NULL, terms = c("disthus_600"))
+p_rec_beta1_house <- p_rec_beta1_house + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Distance to houses\n") +
+  ylab("Recruitment\n")
+
+
+
+## Roads
+load("processdata/recruits_roads.rda")
+str(recruits_roads)
+load("output/recruitment_07_12_2020/rec_r_beta4.rda")
+summary(rec_r_beta4)
+
+# scale
+recruits_roads$beitetrykk9 <- scale(recruits_roads$beitetrykk9)
+recruits_roads$helling <- scale(recruits_roads$helling)
+recruits_roads$HOH <- scale(recruits_roads$HOH)
+recruits_roads$moose_density <- scale(recruits_roads$moose_density)
+
+
+
+p_rec_beta1 <- plot_model(rec_r_beta4, type = c("eff"), transform = NULL, terms = c("distvei2  [0:500]"))
+p_rec_beta1 <- p_rec_beta1 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Distance to road\n") +
+  ylab("Recruitment\n")
+
+
+p_rec_beta2 <- plot_model(rec_r_beta4, type = c("eff"), transform = NULL, terms = c("skogkategori"))
+p_rec_beta2 <- p_rec_beta2 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 12, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30"),
+    axis.text.x = element_text(angle = 30)) +
+  xlab("Forest category\n") +
+  ylab("Recruitment\n") 
+
+
+p_rec_beta3 <- plot_model(rec_r_beta4, type = c("eff"), transform = NULL, terms = c("treartgruppe9"))
+p_rec_beta3 <- p_rec_beta3 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Tree species group\n") +
+  ylab("Recruitment\n") 
+
+
+p_rec_beta4 <- plot_model(rec_r_beta4, type = c("eff"), transform = NULL, terms = c("kant"))
+p_rec_beta4 <- p_rec_beta4 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 12, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30"),
+    axis.text.x = element_text(angle = 30)) +
+  xlab("Edge\n") +
+  ylab("Recruitment\n")
+
+
+p_rec_beta5 <- plot_model(rec_r_beta4, type = c("eff"), transform = NULL, terms = c("helling [all]"))
+p_rec_beta5 <- p_rec_beta5 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Slope\n") +
+  ylab("Recruitment\n")
+
+
+p_rec_beta6 <- plot_model(rec_r_beta4, type = c("eff"), transform = NULL, terms = c("HOH [all]"))
+p_rec_beta6 <- p_rec_beta6 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Altitude\n") +
+  ylab("Recruitment\n")
+
+
+
+
+
+library(gridExtra)
+grid.arrange(p_rec_beta1_house, p_rec_beta1, p_rec_beta2, p_rec_beta3, p_rec_beta4, p_rec_beta5, p_rec_beta6,
+          nrow = 4, ncol = 2)
 ```
