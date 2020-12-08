@@ -4,7 +4,7 @@ make_modelmatrix <- function(mod, dat, focal, isfactor, nvals, whurdle=c("BP", "
   #set to mean value, or set factors to intercept
   colnms <- colnames(mm)
   
-  if(type=="perc"){
+  if(type=="perc"){  # --> add & type=="zero" ? Now I have one glmmTMB and lme4 model as perc model
     modframe <- mod$frame
     }else{modframe <- mod@frame}
 
@@ -57,7 +57,7 @@ bootstrap_focal <- function(mod, focal, isfactor, nb_btstrp, whurdle=c("BP", "tr
       sess <- ses[wvar]
       smpl <- c(0, rnorm(nb_btstrp, mean=0, sd=sess))
       mat[wvar,] <- mat[wvar,]+smpl
-      if (focal %in% c("HOH_scale", "HOH")){
+      if (focal %in% c("HOH", "HOH")){ # changed from: c("HOH_scale", "HOH")
         sess <- ses[wvar+1]
         smpl <- c(0, rnorm(nb_btstrp, mean=0, sd=sess))
         mat[(wvar+1),] <- mat[(wvar+1),]+smpl  
@@ -106,16 +106,16 @@ resp_curve <- function(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2
   require(boot)
   require(nlme)
   
-  focal1 <- c("distvei2_trunc",   "skogkategori", "treartgruppe", "kant", 
-              "helling", "HOH_scale", "tretetthet9_trunc", "disthus_trunc_cut200_scale") # changed variable names from: "distvei2_trunc",   "skogkategori", "treartgruppe", "kant", "helling", "HOH_scale", "tretetthet9_trunc", "disthus_trunc_cut200_scale"
+  focal1 <- c("distvei2",   "skogkategori", "treartgruppe9", "kant", 
+              "helling", "HOH", "tretetthet9", "disthus_200") # changed variable names from: "distvei2_trunc",   "skogkategori", "treartgruppe", "kant", "helling", "HOH_scale", "tretetthet9_trunc", "disthus_trunc_cut200_scale"
   focal1 <- focal1[grepl(focal, focal1)]
   focal1 <- ifelse(length(focal1)==0, NA, focal1)
-  focal2 <- c("distvei2",   "skogkategori", "treartgruppe", "helling", "HOH", 
-              "browspres_merged", "disthus_400")
+  focal2 <- c("distvei2",   "skogkategori", "treartgruppe9", "helling", "HOH", 
+              "beitetrykk9", "disthus_600") # changed variable names from: "distvei2",   "skogkategori", "treartgruppe", "helling", "HOH", "browspres_merged", "disthus_400"
   focal2 <- focal2[grepl(focal, focal2)]
   focal2 <- ifelse(length(focal2)==0, NA, focal2)
     
-  isfactor <- ifelse(is.na(focal1), focal2, focal1) %in% c("skogkategori", "treartgruppe", "kant")
+  isfactor <- ifelse(is.na(focal1), focal2, focal1) %in% c("skogkategori", "treartgruppe9", "kant")
 
   if ((!isfactor) | focal=="disthus") {
     if (!is.na(focal1)){
@@ -132,7 +132,7 @@ resp_curve <- function(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2
   }
 
   if (focal=="disthus") {
-    xvals1 <- seq(-6.714585, 11.10379, length.out=nvals)
+    xvals1 <- seq(-6.714585, 11.10379, length.out=nvals) 
     dat1[c(1:nvals),focal1] <- ifelse(xvals1>0.2791458, 0.2791458, xvals1)
     xvals2 <- seq(-3.980824, 1.59322, length.out=nvals)
     dat2[c(1:nvals),focal2] <- ifelse(xvals2>0.2791458, 0.2791458, xvals2)
@@ -144,7 +144,7 @@ resp_curve <- function(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2
     dat2[c(1:nvals),focal2] <- seq(rng2[1], rng2[2], length.out=nvals)
   }
   
-  if (focal=="browspres_merged"){ #we get this over with first...
+  if (focal=="beitetrykk9"){ #we get this over with first... --> changed from: "browpres_merged
     mm3 <- make_modelmatrix(mod=zeromod2, dat=dat2, focal=focal2, isfactor=isfactor, nvals=nvals, whurdle="trees", type="zero")
     mm4 <- make_modelmatrix(mod=percmod2, dat=dat2, focal=focal2, isfactor=isfactor, nvals=nvals, whurdle="trees", type="perc")
     
@@ -162,7 +162,7 @@ resp_curve <- function(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2
   } #done with hurlde2 only
   
   
-  if (focal!="browspres_merged"){
+  if (focal!="beitetrykk9"){ # changed from: "browpres_merged
     mm1 <- make_modelmatrix(mod=zeromod1, dat=dat1, focal=focal1, isfactor=isfactor, nvals=nvals, whurdle="BP", type="zero")
     mm2 <- make_modelmatrix(mod=percmod1, dat=dat1, focal=focal1, isfactor=isfactor, nvals=nvals, whurdle="BP", type="perc")
     
@@ -186,22 +186,22 @@ resp_curve <- function(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2
     }
     #end of the first hurdle
   
-    if (which_effect!="hurdle1_only"){
-      #merge ROS and LAUV
-      if (!is.na(focal2)) {
-        if (focal2=="treartgruppe") {
-        pred_smpl[1,] <- pred_smpl[1,] + pred_smpl[3,]
-        pred_smpl <- pred_smpl[c(1:2),]
-      }}
+    if (which_effect!="hurdle1_only"){ 
+      #merge ROS and LAUV --> # DO NOT need this anymore, since we have FURU, LAUV and ROS for all
+      # if (!is.na(focal2)) {
+      #   if (focal2=="treartgruppe") {
+      #   pred_smpl[1,] <- pred_smpl[1,] + pred_smpl[3,]
+      #   pred_smpl <- pred_smpl[c(1:2),]
+      # }}
 
       mm3 <- make_modelmatrix(mod=zeromod2, dat=dat2, focal=focal2, isfactor=isfactor, nvals=nvals, whurdle="trees", type="zero")
       mm4 <- make_modelmatrix(mod=percmod2, dat=dat2, focal=focal2, isfactor=isfactor, nvals=nvals, whurdle="trees", type="perc")
   
       #include first hurdle results...
       toto <- function(x, mm, pred_smpl){
-        mm[,which(colnames(mm)=="browspres_merged")] <- pred_smpl[,x]
+        mm[,which(colnames(mm)=="beitetrykk9")] <- pred_smpl[,x] # changed from: "browpres_merged"
         if (which_effect=="hurdle2_only"){
-          mm[,which(colnames(mm)=="browspres_merged")] <- mean(pred_smpl[,1])#pred_smpl[1,1]#mean(pred_smpl[,1])
+          mm[,which(colnames(mm)=="beitetrykk9")] <- mean(pred_smpl[,1])#pred_smpl[1,1]#mean(pred_smpl[,1]), changed from: "browpres_merged"
         }
         return(mm)
       }
@@ -229,7 +229,7 @@ resp_curve <- function(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2
         if (!class(xvals)=="numeric") xvals <- xvals[,1]
       }
       if (isfactor) xvals <- levels(dat1[, grep(focal1, names(dat1))])
-      if (focal1=="treartgruppe") xvals <- levels(dat2[, grep(focal2, names(dat2))])
+      if (focal1=="treartgruppe9") xvals <- levels(dat2[, grep(focal2, names(dat2))])
       if (focal=="disthus") xvals <- xvals2
       res <- output_function(pred_smpl, isfactor, xvals, plotit, ylab="perc. large trees")
     }
