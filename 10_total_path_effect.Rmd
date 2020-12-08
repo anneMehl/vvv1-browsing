@@ -21,35 +21,88 @@ library(glmmTMB)
 
 
 ## Load data and model
-** To load the data/ models to make the HOUSE plots, load chunks: Browsing pressure - Houses AND Recruits - Houses **
-** To load the data/ models to make the ROAD plots, load chunks: Browsing pressure - Roads AND Recruits - Roads **
+** HOUSE plots: To load the data/ models to make the house plots, load chunks: Browsing pressure - Houses AND Recruits - Houses **
+** ROAD plots: To load the data/ models to make the road plots, load chunks: Browsing pressure - Roads AND Recruits - Roads **
 
 ## Browsing pressure
 #### Houses
 ```{r}
-load("output/m1kbin2.rda")
-zeromod1 <- m1kbin2
+# load("output/m1kbin2.rda")
+# zeromod1 <- m1kbin2
+# Formula: factor(beitetrykkr > 0) ~ disthus_trunc_cut200_scale + log(distvei2 +  
+   #  1) + skogkategori + treartgruppe9 + ac_scale + kant + helling +  
+   #  HOH_scale + I(HOH_scale^2) + tretetthet9_trunc + (1 | KOMNR)
+   # Data: browse9.4_house
 
-load("output/m1ibeta2.rda")
-percmod1 <- m1ibeta2
+# load("output/m1ibeta2.rda")
+# percmod1 <- m1ibeta2
+# Formula:          bt100 ~ disthus_trunc_cut200_scale + log(distvei2 + 1) + skogkategori +  
+#     treartgruppe9 + ac_scale + kant + helling + HOH_scale + I(HOH_scale^2) +  
+#     tretetthet9_trunc + (1 | KOMNR)
+# Data: browse9.4_house_pos
 
-load("processdata/browse9.4_house.rda")
-dat1 <- browse9.4_house
+# load("processdata/browse9.4_house.rda")
+# dat1 <- browse9.4_house
+
+
+
+load("output/browse_04_12_2020/browse_h_bin1.rda")
+zeromod1 <- browse_h_bin1
+summary(browse_h_bin1)
+
+load("output/browse_04_12_2020/browse_h_beta2.rda")
+percmod1 <- browse_h_beta2
+
+load("processdata/browse_house.rda")
+str(browse_house)
+browse_house <- browse_house[ ,-c(4,8,16:20,22)]
+# Scale
+browse_house$tretetthet9 <- scale(browse_house$tretetthet9)
+browse_house$helling <- scale(browse_house$helling)
+browse_house$HOH <- scale(browse_house$HOH)
+browse_house$moose_density <- scale(browse_house$moose_density)
+browse_house$disthus_200 <- scale(browse_house$disthus_200)
+str(browse_house)
+
+dat1 <- browse_house
+head(dat1)
+
 ```
 
 #### Roads
 ```{r}
 load("output/m4abin2.rda")
-zeromod1 <- m4abin2
+# zeromod1 <- m4abin2
+# # summary(zeromod1)
+# Formula: factor(beitetrykkr > 0) ~ log(distvei2_trunc + 1) + skogkategori +  
+#     treartgruppe9 + ac_scale + kant + helling + HOH_scale + I(HOH_scale^2) +  
+#     tretetthet9_trunc + (1 | KOMNR)
+#    Data: browse9.4
+
+# load("output/m4abeta2.rda")
+# percmod1 <- m4abeta2 
+# # summary(percmod1)
+# Formula:          bt100 ~ log(distvei2_trunc + 1) + skogkategori + treartgruppe9 +  
+#     ac_scale + kant + helling + HOH_scale + I(HOH_scale^2) +      tretetthet9_trunc + (1 | KOMNR)
+# Data: browse9.4pos
+
+# load("processdata/browse9.4.rda")
+# # head(browse9.4)
+# dat1 <- browse9.4
+
+
+load("output/browse_04_12_2020/browse_r_bin1.rda")
+zeromod1 <- browse_r_bin1
 # summary(zeromod1)
 
-load("output/m4abeta2.rda")
-percmod1 <- m4abeta2 
+load("output/browse_04_12_2020/browse_r_beta3.rda")
+percmod1 <- browse_r_beta3 
 # summary(percmod1)
 
-load("processdata/browse9.4.rda")
-# head(browse9.4)
-dat1 <- browse9.4
+load("processdata/browse_roads.rda")
+str(browse_roads)
+dat1 <- browse_roads
+
 ```
 
 
@@ -74,13 +127,26 @@ dat1 <- browse9.4
 # load("processdata/browse9.5msc.rda")
 # dat2 <- browse9.5msc
 
-load("output/recruitment_01_12_2020/rec_h_bin7.rda")
+load("output/recruitment_07_12_2020/rec_h_bin7.rda")
 zeromod2 <- rec_h_bin7
 
-load("output/recruitment_01_12_2020/rec_h_beta7.rda")
+load("output/recruitment_07_12_2020/rec_h_beta7.rda")
 percmod2 <- rec_h_beta7
+# percmod2 <- rec_h_beta7_TMB
+
+load("processdata/recruits_house.rda")
+str(recruits_house)
+recruits_house <- recruits_house[ ,-c(7)]
+recruits_house$recruitment_bin <- ifelse(recruits_house$recruitment == 0, 0, 1)
+# scale
+recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
+recruits_house$helling <- scale(recruits_house$helling)
+recruits_house$HOH <- scale(recruits_house$HOH)
+recruits_house$moose_density <- scale(recruits_house$moose_density)
+str(recruits_house)
 
 dat2 <- recruits_house
+head(dat2)
 
 ```
 
@@ -106,13 +172,14 @@ dat2 <- recruits_house
 # dat2 <- browse9.6sc
 
 
-load("output/recruitment_01_12_2020/rec_r_bin4.rda")
-zeromod2 <- m2bin_roads
+load("output/recruitment_07_12_2020/rec_r_bin3.rda")
+zeromod2 <- rec_r_bin3
 
-load("output/recruitment_01_12_2020/rec_r_beta4.rda")
-percmod2 <- m3betaroad
+load("output/recruitment_07_12_2020/rec_r_beta4.rda")
+percmod2 <- rec_r_beta4
 
 load("processdata/recruits_roads.rda")
+str(recruits_house)
 dat2 <- recruits_roads
 
 ```
@@ -122,23 +189,26 @@ dat2 <- recruits_roads
 
 ## Load and run function
 ```{r}
-source("function_resp_curve_13012020.R")
+source("function_resp_curve_08_12_2020.R")
 ```
 
 #### Select focal variable
 ```{r}
-(focal = c("distvei", "skogkategori", "treartgruppe", "kant", 
-           "helling", "HOH", "tretetthet", "browspres_merged", "disthus")[9])
+(focal = c("distvei2", "skogkategori", "treartgruppe9", "kant", 
+           "helling", "HOH", "tretetthet9", "beitetrykk9", "disthus", "moose_density")[9])
 
 ```
 
 #### Run function for the different models/ focals and SAVE them
+hurdle1_only = browsing pressure hurdle
+hurdle2_only = recruitment hurdle
+total = total effect
 ```{r}
 bp_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[1], nvals=100, plotit=F, nb_btstrp=99)
 
-recruit_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
-           which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=T, nb_btstrp=99)
+recruit_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
+           which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
 
 total_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=99)
@@ -146,7 +216,7 @@ total_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, per
 
 #### Save function data!
 ```{r}
-save(total_hell, file = "total_hell.rda")
+save(bp_disthus, file = "output/function_results_08_12_2020/bp_disthus.rda")
 ```
 
 
@@ -155,14 +225,26 @@ save(total_hell, file = "total_hell.rda")
 ## load function data (These are the final function outputs)
 ```{r}
 # Browsing pressure (indirect)
-load("output/final_function_outputs/bp_disthus.rda")
-load("output/final_function_outputs/bp_distvei.rda")
-load("output/final_function_outputs/bp_skogkat.rda")
-load("output/final_function_outputs/bp_kant.rda")
-load("output/final_function_outputs/bp_treart.rda")
-load("output/final_function_outputs/bp_hell.rda")
-load("output/final_function_outputs/bp_hoh.rda")
-load("output/final_function_outputs/bp_tretett.rda")
+# load("output/final_function_outputs/bp_disthus.rda")
+# load("output/final_function_outputs/bp_distvei.rda")
+# load("output/final_function_outputs/bp_skogkat.rda")
+# load("output/final_function_outputs/bp_kant.rda")
+# load("output/final_function_outputs/bp_treart.rda")
+# load("output/final_function_outputs/bp_hell.rda")
+# load("output/final_function_outputs/bp_hoh.rda")
+# load("output/final_function_outputs/bp_tretett.rda")
+
+
+# Browsing pressure (indirect)
+load("output/function_results_08_12_2020/bp_disthus.rda")
+load("output/function_results_08_12_2020/bp_distvei.rda")
+load("output/function_results_08_12_2020/bp_skogkat.rda")
+load("output/function_results_08_12_2020/bp_kant.rda")
+load("output/function_results_08_12_2020/bp_treart.rda")
+load("output/function_results_08_12_2020/bp_hell.rda")
+load("output/function_results_08_12_2020/bp_hoh.rda")
+load("output/function_results_08_12_2020/bp_tretett.rda")
+
 
 # Recruits (direct)
 load("output/final_function_outputs/06012020/recruit_disthus.rda")
@@ -189,33 +271,67 @@ load("output/final_function_outputs/06012020/total_hoh.rda")
 ```
 
 
-## Re-scale (now should already be done for all variables, if the loaded function data is used)
+## Re-scale 
 ```{r}
-# attributes(browse9.2$HOH_scale)
-# attributes(browse9.2$disthus_trunc_cut200_scale)
-# 
 # d$s.x * attr(d$s.x, 'scaled:scale') + attr(d$s.x, 'scaled:center')
 
-# disthus
+
+## Browse (hurdle1)
+
+### House
+attributes(browse_house$disthus_200) # $`scaled:center` 192.2636 $`scaled:scale` 27.71453
 bp_disthus$var <- bp_disthus$var * 27.71453 + 192.2636
 
-recruit_disthus$var <- recruit_disthus$var * 88.52122 + 358.5594
-total_disthus$var <- total_disthus$var * 88.52122 + 358.5594 
+### Roads
+attributes(recruits_house$beitetrykk9) # $`scaled:center` 25.79263 $`scaled:scale` 30.96057
+attributes(recruits_house$helling) # $`scaled:center` 19.68501 $`scaled:scale` 20.08128
+attributes(recruits_house$HOH) # $`scaled:center` 365.9363 $`scaled:scale` 245.9447
+attributes(recruits_house$moose_density) # $`scaled:center` 180.4643 $`scaled:scale` 193.7676
+bp_beitetrykk$var <- bp_beitetrykk$var * 30.96057 + 25.79263
+bp_helling$var <- bp_helling$var * 20.08128 + 19.68501
+bp_HOH$var <- bp_HOH$var * 245.9447 + 365.9363
+bp_moose_density$var <- bp_moose_density$var * 193.7676 + 180.4643
 
-# road models
 bp_distvei$var <- exp(bp_distvei$var)-1
-bp_hoh$var <- bp_hoh$var * 244.7748 + 361.8423
 
 
-recruit_distvei$var <- exp(recruit_distvei$var)-1
-recruit_HOH$var <- recruit_HOH$var * 244.7748 + 361.8423
+## Recruitment (hurdle2)
+
+### House
+#### both unscaled
+
+### Roads
+attributes(recruits_house$beitetrykk9) # $`scaled:center` 25.79263 $`scaled:scale` 30.96057
+attributes(recruits_house$helling) # $`scaled:center` 19.68501 $`scaled:scale` 20.08128
+attributes(recruits_house$HOH) # $`scaled:center` 365.9363 $`scaled:scale` 245.9447
+attributes(recruits_house$moose_density) # $`scaled:center` 180.4643 $`scaled:scale` 193.7676
+recruits_beitetrykk$var <- recruits_beitetrykk$var * 30.96057 + 25.79263
+recruits_helling$var <- recruits_helling$var * 20.08128 + 19.68501
+recruits_HOH$var <- recruits_HOH$var * 245.9447 + 365.9363
+recruits_moose_density$var <- recruits_moose_density$var * 193.7676 + 180.4643
+
+recruits_distvei$var <- exp(recruits_distvei$var)-1
 
 
-total_distvei$var <- exp(total_distvei$var)-1
-total_HOH$var <- total_HOH$var * 244.7748 + 361.8423
 
 
-
+# # disthus
+# bp_disthus$var <- bp_disthus$var * 27.71453 + 192.2636
+# 
+# recruit_disthus$var <- recruit_disthus$var * 88.52122 + 358.5594
+# total_disthus$var <- total_disthus$var * 88.52122 + 358.5594 
+# 
+# # road models
+# bp_distvei$var <- exp(bp_distvei$var)-1
+# bp_hoh$var <- bp_hoh$var * 244.7748 + 361.8423
+# 
+# 
+# recruit_distvei$var <- exp(recruit_distvei$var)-1
+# recruit_HOH$var <- recruit_HOH$var * 244.7748 + 361.8423
+# 
+# 
+# total_distvei$var <- exp(total_distvei$var)-1
+# total_HOH$var <- total_HOH$var * 244.7748 + 361.8423
 
 ```
 
