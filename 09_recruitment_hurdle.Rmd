@@ -241,7 +241,7 @@ data = recruits_house)
 
 rec_h_bin7 <- glmer(recruitment_bin ~ disthus_500 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
 family = binomial(),
-data = recruits_house)
+data = recruits_house)  # BEST
 
 ```
 
@@ -506,6 +506,15 @@ family = poisson(),
 data = recruits_house) # BEST
 
 
+
+
+library(glmmTMB)
+rec_h_beta7_TMB <- glmmTMB(recruitment ~ disthus_600 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+                           zi = ~0,
+                           family = poisson,
+                           data = recruits_house) # Same as rec_h_beta7, just run with glmmTMB
+summary(rec_h_beta7_TMB)
+save(rec_h_beta7_TMB, file = "rec_h_beta7_TMB.rda")
 ```
 
 
@@ -829,7 +838,7 @@ library(ggplot2)
 
 ## House
 load("processdata/recruits_house.rda")
-str(recruits_house)
+str(recruits_house) # Check if variables are scales - if not scale
 load("output/recruitment_07_12_2020/rec_h_bin7.rda")
 recruits_house$recruitment_bin <- ifelse(recruits_house$recruitment == 0, 0, 1)
 summary(rec_h_bin7)
@@ -853,7 +862,7 @@ p_rec_bin1_house <- p_rec_bin1_house + theme_light() +
 
 ## Roads
 load("processdata/recruits_roads.rda")
-str(recruits_roads)
+str(recruits_roads) # Check if variables are scales - if not scale
 load("output/recruitment_07_12_2020/rec_r_bin3.rda")
 recruits_roads$recruitment_bin <- ifelse(recruits_roads$recruitment == 0, 0, 1)
 summary(rec_r_bin3)
@@ -931,11 +940,23 @@ p_rec_bin7 <- p_rec_bin7 + theme_light() +
   ylab("Recruitment\n")
 
 
+p_rec_bin8 <- plot_model(rec_r_bin3, type = c("eff"), transform = NULL, terms = c("beitetrykk9 [all]"))
+p_rec_bin8 <- p_rec_bin8 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Browsing pressure\n") +
+  ylab("Recruitment\n")
+
+
 
 
 library(gridExtra)
-grid.arrange(p_rec_bin1_house, p_rec_bin1, p_rec_bin2, p_rec_bin3, p_rec_bin4, p_rec_bin5, p_rec_bin6, p_rec_bin7,
-          nrow = 4, ncol = 2)
+grid.arrange(p_rec_bin1_house, p_rec_bin1, p_rec_bin2, p_rec_bin3,
+          nrow = 2, ncol = 2)
+
+grid.arrange(p_rec_bin8, p_rec_bin4, p_rec_bin5, p_rec_bin6, p_rec_bin7,
+          nrow = 3, ncol = 2)
 
 # type = "pred" = Predicted values (marginal effects) for specific model terms. See ggpredict for details.
 # type = "eff" = Similar to type = "pred", however, discrete predictors are held constant at their proportions (not reference level). See ggeffect for details. ggeffect() computes marginal effects by internally calling Effect. Effect constructs an "eff" object for a term (usually a high-order term), absorbing the lower-order terms marginal to the term in question, and averaging over other terms in the model.
@@ -971,6 +992,15 @@ p_rec_beta1_house <- p_rec_beta1_house + theme_light() +
   xlab("Distance to houses\n") +
   ylab("Recruitment\n")
 
+
+
+# p_rec_test <- plot_model(rec_h_beta7_TMB, type = c("eff"), transform = NULL, terms = c("disthus_600"))
+# p_rec_test <- p_rec_test + theme_light() +
+#   theme(plot.title = element_blank(),
+#     axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+#         axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+#   xlab("Distance to houses\n") +
+#   ylab("Recruitment\n")
 
 
 ## Roads
@@ -1043,10 +1073,19 @@ p_rec_beta6 <- p_rec_beta6 + theme_light() +
   ylab("Recruitment\n")
 
 
+p_rec_beta7 <- plot_model(rec_r_beta4, type = c("eff"), transform = NULL, terms = c("beitetrykk9 [all]"))
+p_rec_beta7 <- p_rec_beta7 + theme_light() +
+  theme(plot.title = element_blank(),
+    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
+        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
+  xlab("Browsing pressure\n") +
+  ylab("Recruitment\n")
+
+
 
 
 
 library(gridExtra)
-grid.arrange(p_rec_beta1_house, p_rec_beta1, p_rec_beta2, p_rec_beta3, p_rec_beta4, p_rec_beta5, p_rec_beta6,
+grid.arrange(p_rec_beta1_house, p_rec_beta1, p_rec_beta2, p_rec_beta3, p_rec_beta7, p_rec_beta4, p_rec_beta5, p_rec_beta6,
           nrow = 4, ncol = 2)
 ```
