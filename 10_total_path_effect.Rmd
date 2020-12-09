@@ -54,7 +54,7 @@ load("output/browse_04_12_2020/browse_h_beta2.rda")
 percmod1 <- browse_h_beta2
 
 load("processdata/browse_house.rda")
-str(browse_house)
+str(browse_house) # Check if variables are scaled, else scale below
 browse_house <- browse_house[ ,-c(4,8,16:20,22)]
 # Scale
 browse_house$tretetthet9 <- scale(browse_house$tretetthet9)
@@ -127,12 +127,15 @@ dat1 <- browse_roads
 # load("processdata/browse9.5msc.rda")
 # dat2 <- browse9.5msc
 
-load("output/recruitment_07_12_2020/rec_h_bin7.rda")
-zeromod2 <- rec_h_bin7
+load("output/recruitment_07_12_2020/rec_h_bin7_600.rda")
+# zeromod2 <- rec_h_bin7
+zeromod2 <- rec_h_bin7_600
+summary(zeromod2)
 
-load("output/recruitment_07_12_2020/rec_h_beta7.rda")
-percmod2 <- rec_h_beta7
-# percmod2 <- rec_h_beta7_TMB
+load("output/recruitment_07_12_2020/rec_h_beta7_TMB.rda")
+# percmod2 <- rec_h_beta7
+percmod2 <- rec_h_beta7_TMB
+summary(percmod2)
 
 load("processdata/recruits_house.rda")
 str(recruits_house)
@@ -143,6 +146,13 @@ recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
 recruits_house$helling <- scale(recruits_house$helling)
 recruits_house$HOH <- scale(recruits_house$HOH)
 recruits_house$moose_density <- scale(recruits_house$moose_density)
+recruits_house$disthus_600 <- scale(recruits_house$disthus_600)
+# recruits_house$disthus_500 <- scale(recruits_house$disthus_500)
+
+is.integer(recruits_house$recruitment)
+recruits_house$recruitment <- as.integer(recruits_house$recruitment)
+is.integer(recruits_house$recruitment)
+
 str(recruits_house)
 
 dat2 <- recruits_house
@@ -298,7 +308,8 @@ bp_distvei$var <- exp(bp_distvei$var)-1
 ## Recruitment (hurdle2)
 
 ### House
-#### both unscaled
+attributes(recruits_house$disthus_600) # $`scaled:center` 499.182 $`scaled:scale` 162.9665
+recruit_disthus$var <- recruit_disthus$var * 162.9665 + 499.182
 
 ### Roads
 attributes(recruits_house$beitetrykk9) # $`scaled:center` 25.79263 $`scaled:scale` 30.96057
@@ -312,6 +323,11 @@ recruits_moose_density$var <- recruits_moose_density$var * 193.7676 + 180.4643
 
 recruits_distvei$var <- exp(recruits_distvei$var)-1
 
+
+## Total 
+
+### House
+total_disthus$var <- total_disthus$var * 162.9665 + 499.182
 
 
 
