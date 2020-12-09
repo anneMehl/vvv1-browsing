@@ -243,6 +243,12 @@ rec_h_bin7 <- glmer(recruitment_bin ~ disthus_500 + log(distvei2+1) + skogkatego
 family = binomial(),
 data = recruits_house)  # BEST
 
+rec_h_bin7_600 <- glmer(recruitment_bin ~ disthus_600 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house) # Same as rec_h_bin7, only run with disthus_600, so that both recruits house models have the same disthus variables - easier in the function
+summary(rec_h_bin7_600)
+
+save(rec_h_bin7_600, file = "output/recruitment_07_12_2020/rec_h_bin7_600.rda")
 ```
 
 #### AIC selection bin models
@@ -505,12 +511,11 @@ rec_h_beta7 <- glmer(recruitment ~ disthus_600 + log(distvei2+1) + skogkategori 
 family = poisson(),
 data = recruits_house) # BEST
 
-
+summary(rec_h_beta7)
 
 
 library(glmmTMB)
 rec_h_beta7_TMB <- glmmTMB(recruitment ~ disthus_600 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
-                           zi = ~0,
                            family = poisson,
                            data = recruits_house) # Same as rec_h_beta7, just run with glmmTMB
 summary(rec_h_beta7_TMB)
