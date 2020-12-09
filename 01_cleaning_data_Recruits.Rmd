@@ -738,7 +738,7 @@ load("processdata/recruits.rda")
 names(recruits)
 recruits_roads <- recruits[,-c(4,17:23)]
 names(recruits_roads)
-recruits_roads <- recruits_roads[ which(recruits_roads$disthus > 600), ] # Threshold for the bin model was 500, but for the beta model 600
+recruits_roads <- recruits_roads[ which(recruits_roads$disthus > 600), ] # Threshold for the bin model was 500, but for the beta model 600 so we use 600 
 summary(recruits_roads$disthus)
 
 str(recruits_roads)
