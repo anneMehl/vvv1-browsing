@@ -55,7 +55,7 @@ percmod1 <- browse_h_beta2
 
 load("processdata/browse_house.rda")
 str(browse_house) # Check if variables are scaled, else scale below
-browse_house <- browse_house[ ,-c(4,8,16:20,22)]
+browse_house <- browse_house[ ,-c(4,16:20,22)] #8,
 # Scale
 browse_house$tretetthet9 <- scale(browse_house$tretetthet9)
 browse_house$helling <- scale(browse_house$helling)
@@ -139,7 +139,7 @@ summary(percmod2)
 
 load("processdata/recruits_house.rda")
 str(recruits_house)
-recruits_house <- recruits_house[ ,-c(7)]
+# recruits_house <- recruits_house[ ,-c(7)]
 recruits_house$recruitment_bin <- ifelse(recruits_house$recruitment == 0, 0, 1)
 # scale
 recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
@@ -205,7 +205,7 @@ source("function_resp_curve_08_12_2020.R")
 #### Select focal variable
 ```{r}
 (focal = c("distvei2", "skogkategori", "treartgruppe9", "kant", 
-           "helling", "HOH", "tretetthet9", "beitetrykk9", "disthus", "moose_density")[9])
+           "helling", "HOH", "tretetthet9", "beitetrykk9", "disthus", "moose_density")[7])
 
 ```
 
@@ -214,13 +214,13 @@ hurdle1_only = browsing pressure hurdle
 hurdle2_only = recruitment hurdle
 total = total effect
 ```{r}
-bp_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+bp_tretett <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[1], nvals=100, plotit=F, nb_btstrp=99)
 
-recruit_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
+recruit_HOH <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
 
-total_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+total_tretett <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=99)
 ```
 
@@ -293,10 +293,11 @@ attributes(browse_house$disthus_200) # $`scaled:center` 192.2636 $`scaled:scale`
 bp_disthus$var <- bp_disthus$var * 27.71453 + 192.2636
 
 ### Roads
-attributes(recruits_house$beitetrykk9) # $`scaled:center` 25.79263 $`scaled:scale` 30.96057
-attributes(recruits_house$helling) # $`scaled:center` 19.68501 $`scaled:scale` 20.08128
-attributes(recruits_house$HOH) # $`scaled:center` 365.9363 $`scaled:scale` 245.9447
-attributes(recruits_house$moose_density) # $`scaled:center` 180.4643 $`scaled:scale` 193.7676
+attributes(browse_house$beitetrykk9) # $`scaled:center` 25.79263 $`scaled:scale` 30.96057
+attributes(browse_house$helling) # $`scaled:center` 19.68501 $`scaled:scale` 20.08128
+attributes(browse_house$HOH) # $`scaled:center` 365.9363 $`scaled:scale` 245.9447
+attributes(browse_house$moose_density) # $`scaled:center` 180.4643 $`scaled:scale` 193.7676
+attributes(browse_house$tretetthet9) # $`scaled:center` 180.4643 $`scaled:scale` 193.7676
 bp_beitetrykk$var <- bp_beitetrykk$var * 30.96057 + 25.79263
 bp_helling$var <- bp_helling$var * 20.08128 + 19.68501
 bp_HOH$var <- bp_HOH$var * 245.9447 + 365.9363
@@ -316,20 +317,20 @@ attributes(recruits_house$beitetrykk9) # $`scaled:center` 25.79263 $`scaled:scal
 attributes(recruits_house$helling) # $`scaled:center` 19.68501 $`scaled:scale` 20.08128
 attributes(recruits_house$HOH) # $`scaled:center` 365.9363 $`scaled:scale` 245.9447
 attributes(recruits_house$moose_density) # $`scaled:center` 180.4643 $`scaled:scale` 193.7676
-recruits_beitetrykk$var <- recruits_beitetrykk$var * 30.96057 + 25.79263
-recruits_helling$var <- recruits_helling$var * 20.08128 + 19.68501
-recruits_HOH$var <- recruits_HOH$var * 245.9447 + 365.9363
-recruits_moose_density$var <- recruits_moose_density$var * 193.7676 + 180.4643
+recruit_beitetrykk$var <- recruit_beitetrykk$var * 30.96057 + 25.79263
+recruit_helling$var <- recruit_helling$var * 20.08128 + 19.68501
+recruit_HOH$var <- recruit_HOH$var * 245.9447 + 365.9363
+recruit_moose_density$var <- recruit_moose_density$var * 193.7676 + 180.4643
 
-recruits_distvei$var <- exp(recruits_distvei$var)-1
+recruit_distvei$var <- exp(recruits_distvei$var)-1
 
 
 ## Total 
 
 ### House
 total_disthus$var <- total_disthus$var * 162.9665 + 499.182
-
-
+total_distvei$var <- exp(total_distvei$var)-1
+total_helling$var <- total_helling$var * 20.08128 + 19.68501
 
 # # disthus
 # bp_disthus$var <- bp_disthus$var * 27.71453 + 192.2636
@@ -387,17 +388,17 @@ pdt_disthus <- ggplot() +
   geom_line(data = total_disthus, aes(var, point, color = "total", linetype = "total"), size =
               1.5, show.legend = T) +
   
-  scale_linetype_manual("Effect on Recruits (%)",
+  scale_linetype_manual("Recruitment",
                         values = c("direct (only\non probability)" = 3,"total" = 1)) +
   xlab("\nDistance to house (m)") + 
-  ylab("Recruits (%)\n") +
+  ylab("Recruitment\n") +
   theme_light()+
   theme(axis.text = element_text(size = 50), # face = "bold"
         axis.title = element_text(family = "sans", size = 50),
         legend.position = c(0.7, 0.9),
         legend.text = element_text(size = 30),
         legend.title = element_text(size = 40)) +
-  scale_color_manual(name = "Effect on Recruits (%)", 
+  scale_color_manual(name = "Recruitment", 
                      values = cbPalette) +
     scale_fill_manual(values = "#009E73")
 #,legend.title = element_text(size = 50)
@@ -407,22 +408,22 @@ pt_disthus <- ggplot() +
   geom_line(data = total_disthus, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = total_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   xlab("\nDistance to house (m)") + 
-  ylab("Recruits (%)\n") +
+  ylab("Recruitment\n") +
   theme_light()+
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
-  scale_color_manual(name = "Effect on \nRecruits (%)", 
+  scale_color_manual(name = "Effect on \nRecruitment", 
                      values = c("total" = "#009292", "direct" = "#004949"))
 
 pd_disthus <- ggplot() + 
   geom_line(data = recruit_disthus, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
   geom_ribbon(data = recruit_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   xlab("\nDistance to house (m)") + 
-  ylab("Recruits (%)\n") +
+  ylab("Recruitment\n") +
   theme_light()+
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
-  scale_color_manual(name = "Effect on \nRecruits (%)", 
+  scale_color_manual(name = "Effect on \nRecruitment", 
                      values = c("total" = "#009292", "direct" = "#004949"))
 
 ph_disthus <- ggplot() +
@@ -638,7 +639,7 @@ pd_kant_TEST <- ggplot() +
   theme_light() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
-  xlab("\nTree species group") + 
+  xlab("\nEdge effect") + 
   ylab("Recruits (%)\n") +
   scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-20m", "Edge information\nmissing"))
 
@@ -669,13 +670,13 @@ ph_kant <- ggplot(data = bp_kant, aes(var, point)) +
 
 # hell ----
 pdt_hell <- ggplot() + 
-  geom_ribbon(data = recruit_hell, aes(x = var, ymin = CI025, ymax = CI975), 
+  geom_ribbon(data = recruit_helling, aes(x = var, ymin = CI025, ymax = CI975), 
               linetype = 0, alpha = 0.2, show.legend = F) +  
-  geom_line(data = recruit_hell, aes(var, point, color = "direct", linetype = "direct"), 
+  geom_line(data = recruit_helling, aes(var, point, color = "direct", linetype = "direct"), 
             size = 1.5, show.legend = T) +
   
-  geom_ribbon(data = total_hell, aes(x = var, ymin = CI025, ymax = CI975), fill = "#009E73", linetype = 0, alpha = 0.2, show.legend = F) +
-  geom_line(data = total_hell, aes(var, point, color = "total", linetype = "total"), 
+  geom_ribbon(data = total_helling, aes(x = var, ymin = CI025, ymax = CI975), fill = "#009E73", linetype = 0, alpha = 0.2, show.legend = F) +
+  geom_line(data = total_helling, aes(var, point, color = "total", linetype = "total"), 
             size = 1.5, show.legend = T) +
   
   scale_linetype_manual("Effect on Recruits (%)",
@@ -694,8 +695,8 @@ pdt_hell <- ggplot() +
 
 
 pt_hell <- ggplot() + 
-  geom_line(data = total_hell, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = total_hell, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  geom_line(data = total_helling, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = total_helling, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   xlab("\nSlope (%)") + 
   ylab("Recruits (%)\n") +
   theme_light()+
@@ -705,8 +706,8 @@ pt_hell <- ggplot() +
                      values = c("total" = "#009292", "direct" = "#004949"))
 
 pd_hell <- ggplot() + 
-  geom_line(data = recruit_hell, aes(var, point, color = "direct\n(only on\nprobability)"), linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = recruit_hell, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  geom_line(data = recruit_helling, aes(var, point, color = "direct\n(only on\nprobability)"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = recruit_helling, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   xlab("\nSlope (%)") + 
   ylab("Recruits (%)\n") +
   theme_light()+
@@ -716,9 +717,9 @@ pd_hell <- ggplot() +
                      values = c("total" = "#009292", "direct\n(only on\nprobability)" = "#004949"))
 
 ph_hell <- ggplot() +
-  geom_ribbon(data = bp_hell, aes(x = var, ymin = CI025, ymax = CI975), show.legend = F, 
+  geom_ribbon(data = bp_helling, aes(x = var, ymin = CI025, ymax = CI975), show.legend = F, 
               fill = "#0072B2", linetype = 0, alpha = 0.2) + 
-  geom_line(data = bp_hell, aes(var, point),colour = "#0072B2", linetype = 1, size = 1.5)+
+  geom_line(data = bp_helling, aes(var, point),colour = "#0072B2", linetype = 1, size = 1.5)+
   theme_light() +
   theme(axis.text = element_text(size = 50),
         axis.title = element_text(family = "sans", size = 50),

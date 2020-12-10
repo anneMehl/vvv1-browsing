@@ -134,7 +134,7 @@ resp_curve <- function(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2
   if (focal=="disthus") { 
     xvals1 <- seq(-6.714585, 11.10379, length.out=nvals) 
     dat1[c(1:nvals),focal1] <- ifelse(xvals1>0.2791458, 0.2791458, xvals1)
-    xvals2 <- seq(-3.025222, 0.5421167, length.out=nvals) # changed from: -3.980824, need to change 1.59322 as well; 1.59322 = the point on the y axis where the line should start? Look for the untruncated value of the disthus (not that value) or 500 on the scaled (nope)?
+    xvals2 <- seq(-3.025222, 1.59322, length.out=nvals) # changed from: -3.980824, need to change 1.59322 as well; 1.59322 = the point on the y axis where the line should start? Look for the untruncated value of the disthus (not that value) or 500 on the scaled (nope)?
     dat2[c(1:nvals),focal2] <- ifelse(xvals2>0.6186424, 0.6186424, xvals2) # think 0.6186424 (600m) instead of 0.2791458 (200m), changed: xvals2>0.2791458, 0.2791458
   } 
 
@@ -153,7 +153,7 @@ resp_curve <- function(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2
     predzero_smpl <- inv.logit(mm3 %*% zeromat) 
     
     percmat <- bootstrap_focal(mod=percmod2, focal=focal2, isfactor=isfactor, nb_btstrp=nb_btstrp, whurdle="trees", type="perc")
-    predperc_smpl <- exp(mm4 %*% percmat) # changed inv.logit(mm4 %*% percmat)*100 to exp and delete *100
+    predperc_smpl <- inv.logit(mm4 %*% percmat)*100 
     
     pred_smpl <- predzero_smpl*predperc_smpl
     
@@ -171,7 +171,7 @@ resp_curve <- function(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2
     predzero_smpl <- inv.logit(mm1 %*% zeromat) 
 
     percmat <- bootstrap_focal(mod=percmod1, focal=focal1, isfactor=isfactor, nb_btstrp=nb_btstrp, whurdle="BP", type="perc")
-    predperc_smpl <- exp(mm2 %*% percmat) # changed inv.logit(mm4 %*% percmat)*100 to exp and delete *100
+    predperc_smpl <- inv.logit(mm2 %*% percmat)*100 
   
     pred_smpl <- predzero_smpl*predperc_smpl
   
@@ -219,7 +219,7 @@ resp_curve <- function(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2
       predzero_smpl <- do.call("cbind", lpredzero_smpl)
       
       percmat2 <- bootstrap_focal(mod=percmod2, focal=focal2, isfactor=isfactor, nb_btstrp=nb_btstrp, whurdle="trees", type="perc")
-      lpredperc_smpl <- lapply(lmm4, function(x, mat){exp(x %*% mat)}, mat=percmat2) #deleted: *100; changed inv.logit to exp, because of the Poisson
+      lpredperc_smpl <- lapply(lmm4, function(x, mat){exp(x %*% mat)}, mat=percmat2) #deleted: *100; changed inv.logit to exp, because of the Poisson 09_12_2020
       predperc_smpl <- do.call("cbind", lpredperc_smpl)
       
       pred_smpl <- predzero_smpl*predperc_smpl
