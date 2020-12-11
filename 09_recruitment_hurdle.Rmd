@@ -767,9 +767,15 @@ data = recruits_roads)
 
 rec_r_beta4 <- glmer(recruitment ~ log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = poisson(),
-data = recruits_roads)
+data = recruits_roads) # BEST
 
 
+library(glmmTMB)
+rec_r_beta4_TMB <- glmmTMB(recruitment ~ log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+                           family = poisson,
+                           data = recruits_roads) # Same as rec_r_beta4, just run with glmmTMB
+summary(rec_r_beta4_TMB)
+save(rec_r_beta4_TMB, file = "rec_r_beta4_TMB.rda")
 
 
 ```

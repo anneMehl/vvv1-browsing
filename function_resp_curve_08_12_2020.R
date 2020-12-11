@@ -153,7 +153,7 @@ resp_curve <- function(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2
     predzero_smpl <- inv.logit(mm3 %*% zeromat) 
     
     percmat <- bootstrap_focal(mod=percmod2, focal=focal2, isfactor=isfactor, nb_btstrp=nb_btstrp, whurdle="trees", type="perc")
-    predperc_smpl <- inv.logit(mm4 %*% percmat)*100 
+    predperc_smpl <- exp(mm4 %*% percmat) # changed from: inv.logit(mm4 %*% percmat)*100 
     
     pred_smpl <- predzero_smpl*predperc_smpl
     
