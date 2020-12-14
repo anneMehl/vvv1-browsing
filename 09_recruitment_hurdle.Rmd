@@ -642,12 +642,14 @@ rec_r_bin2 <- glmer(recruitment_bin ~ skogkategori + treartgruppe9 + beitetrykk9
 family = binomial(),
 data = recruits_roads) 
 
-
 rec_r_bin3  <- glmer(recruitment_bin ~ log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
 family = binomial(),
 data = recruits_roads) # BEST
 
 
+rec_r_bin4  <- glmer(recruitment_bin ~ moose_density*log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+family = binomial(),
+data = recruits_roads)
 
 ```
 
@@ -743,7 +745,7 @@ is.integer(recruits_roads$recruitment)
 recruits_roads$beitetrykk9 <- scale(recruits_roads$beitetrykk9)
 recruits_roads$helling <- scale(recruits_roads$helling)
 recruits_roads$HOH <- scale(recruits_roads$HOH)
-recruits_roads$moose_density <- scale(recruits_roads$moose_density)
+# recruits_roads$moose_density <- scale(recruits_roads$moose_density)
 
 
 ```
@@ -767,7 +769,7 @@ data = recruits_roads)
 
 rec_r_beta4 <- glmer(recruitment ~ log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = poisson(),
-data = recruits_roads) # BEST
+data = recruits_roads) # (BEST)
 
 
 library(glmmTMB)
@@ -778,7 +780,21 @@ summary(rec_r_beta4_TMB)
 save(rec_r_beta4_TMB, file = "rec_r_beta4_TMB.rda")
 
 
+rec_r_beta5_TMB <- glmmTMB(recruitment ~ moose_density*log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+                           family = poisson,
+                           data = recruits_roads) # BEST
+# Warning messages:
+# 1: In (function (start, objective, gradient = NULL, hessian = NULL,  :
+#   NA/NaN function evaluation
+summary(rec_r_beta5_TMB)
+save(rec_r_beta5_TMB, file = "rec_r_beta5_TMB.rda")
+
 ```
+NA/NaN function evaluation
+Example: Warning in nlminb(start = par, objective = fn, gradient = gr) : NA/NaN function evaluation
+
+This warning occurs when the optimizer visits a region of parameter space that is invalid. It is not a problem as long as the optimizer has left that region of parameter space upon convergence, which is indicated by an absence of the model convergence warnings described above.
+
 
 
 #### AIC selection beta models
@@ -786,6 +802,7 @@ save(rec_r_beta4_TMB, file = "rec_r_beta4_TMB.rda")
 library(AICcmodavg)
 
 candmods_rec_roads_beta <- list(rec_r_beta1, rec_r_beta2, rec_r_beta3, rec_r_beta4)
+candmods_rec_roads_beta <- list(rec_r_beta4_TMB, rec_r_beta5_TMB)
 aictab(candmods_rec_roads_beta, modnames = NULL,
                        second.ord = TRUE, nobs = NULL, sort = TRUE)
 
@@ -796,6 +813,10 @@ aictab(candmods_rec_roads_beta, modnames = NULL,
 # Mod1 18 484607.9     977.76      0      1 -242285.9
 # Mod2 17 484608.2     978.08      0      1 -242287.0
 # Mod3 16 485370.0    1739.88      0      1 -242669.0
+
+#       K      AICc Delta_AICc AICcWt Cum.Wt        LL
+# Mod2 19  483585.9        0.0      1      1 -241773.9
+# Mod1 17 1397869.6   914283.7      0      1 -698917.8
 ```
 
 
@@ -816,7 +837,7 @@ summary(rec_r_beta4)
 
 library(performance)
 check_model(rec_r_beta4)
-model_performance(rec_r_beta4)
+model_performance(rec_r_beta5_TMB)
 
 library(sjPlot)
 plot_model(rec_r_beta4, type = "diag")
@@ -1017,14 +1038,14 @@ p_rec_beta1_house <- p_rec_beta1_house + theme_light() +
 ## Roads
 load("processdata/recruits_roads.rda")
 str(recruits_roads)
-load("output/recruitment_07_12_2020/rec_r_beta4.rda")
-summary(rec_r_beta4)
+load("output/recruitment_07_12_2020/rec_r_beta5_TMB.rda")
+summary(rec_r_beta5_TMB)
 
 # scale
 recruits_roads$beitetrykk9 <- scale(recruits_roads$beitetrykk9)
 recruits_roads$helling <- scale(recruits_roads$helling)
 recruits_roads$HOH <- scale(recruits_roads$HOH)
-recruits_roads$moose_density <- scale(recruits_roads$moose_density)
+# recruits_roads$moose_density <- scale(recruits_roads$moose_density)
 
 
 

@@ -566,6 +566,7 @@ browse_roads$helling <- scale(browse_roads$helling)
 browse_roads$HOH <- scale(browse_roads$HOH)
 browse_roads$moose_density <- scale(browse_roads$moose_density)
 
+str(browse_roads)
 summary(browse_roads$tretetthet9)
 ```
 
@@ -591,6 +592,12 @@ summary(browse_r_bin4)
 browse_r_bin5 <- glmer(beite_bin ~ sqrt(distvei2) + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
 family = binomial(),
 data = browse_roads)
+
+
+browse_r_bin6 <- glmer(beite_bin ~  moose_density*log(distvei2+1) + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + ac + (1|KOMNR),
+family = binomial(),
+data = browse_roads) 
+summary(browse_r_bin6)
 
 ```
 
@@ -712,7 +719,24 @@ browse_r_beta4 <- glmmTMB(bt100 ~ skogkategori + treartgruppe9 + tretetthet9 + k
             data = browse_roads,
             family = beta_family())
 
+
+
+
+browse_r_beta5 <- glmmTMB(bt100 ~ moose_density*log(distvei2+1) + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + ac + (1|KOMNR),
+            data = browse_roads,
+            family = beta_family())
+# Warning messages:
+# 1: In (function (start, objective, gradient = NULL, hessian = NULL,  :
+#   NA/NaN function evaluation
+summary(browse_r_beta5)
+
+
 ```
+NA/NaN function evaluation
+Example: Warning in nlminb(start = par, objective = fn, gradient = gr) : NA/NaN function evaluation
+
+This warning occurs when the optimizer visits a region of parameter space that is invalid. It is not a problem as long as the optimizer has left that region of parameter space upon convergence, which is indicated by an absence of the model convergence warnings described above.
+
 
 
 #### AIC selection beta models

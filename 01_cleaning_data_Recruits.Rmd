@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-
+# Old analysis
 ## For browse9.5 (tree height classes, not tree density)
 
 ```{r}
@@ -359,8 +359,8 @@ browse9.6sc_test_pos$moose_density <- ifelse(is.na(browse9.6sc_test_pos$moose_de
 
 
 
-###############################################
-##         NEW data set                     ##
+# ##############################################
+# #         NEW data set                     ##
 #############################################
 
 

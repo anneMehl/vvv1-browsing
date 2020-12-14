@@ -10,8 +10,8 @@ editor_options:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-# For browse9.2 (for browsing pressure response)
+# Old analysis
+## For browse9.2 (for browsing pressure response)
 
 ##### Data structure -> factor levels
 
@@ -535,8 +535,8 @@ load("output/m4abeta2.rda")
 
 
 
-###############################################
-##         NEW data set                     ##
+# ############################################
+#         NEW data set                     ##
 #############################################
 
 

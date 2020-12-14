@@ -194,8 +194,8 @@ head(dat2)
 load("output/recruitment_07_12_2020/rec_r_bin3.rda")
 zeromod2 <- rec_r_bin3
 
-load("output/recruitment_07_12_2020/rec_r_beta4_TMB.rda")
-percmod2 <- rec_r_beta4_TMB
+load("output/recruitment_07_12_2020/rec_r_beta5_TMB.rda")
+percmod2 <- rec_r_beta5_TMB # Interaction moose_density*distvei2
 
 load("processdata/recruits_roads.rda")
 str(recruits_roads)
