@@ -814,9 +814,9 @@ aictab(candmods_rec_roads_beta, modnames = NULL,
 # Mod2 17 484608.2     978.08      0      1 -242287.0
 # Mod3 16 485370.0    1739.88      0      1 -242669.0
 
-#       K      AICc Delta_AICc AICcWt Cum.Wt        LL
-# Mod2 19  483585.9        0.0      1      1 -241773.9
-# Mod1 17 1397869.6   914283.7      0      1 -698917.8
+#       K     AICc Delta_AICc AICcWt Cum.Wt        LL
+# Mod2 19 483585.9        0.0      1      1 -241773.9
+# Mod1 17 483630.2       44.3      0      1 -241798.0
 ```
 
 
@@ -838,6 +838,9 @@ summary(rec_r_beta4)
 library(performance)
 check_model(rec_r_beta4)
 model_performance(rec_r_beta5_TMB)
+compare_performance(rec_r_beta4_TMB, rec_r_beta5_TMB, rank = T, bayesfactor = F)
+
+
 
 library(sjPlot)
 plot_model(rec_r_beta4, type = "diag")
