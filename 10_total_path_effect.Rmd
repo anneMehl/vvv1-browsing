@@ -193,9 +193,14 @@ head(dat2)
 
 load("output/recruitment_07_12_2020/rec_r_bin3.rda")
 zeromod2 <- rec_r_bin3
+load("output/recruitment_07_12_2020/rec_r_bin3_test.rda")
+zeromod2 <- rec_r_bin3_test
 
 load("output/recruitment_07_12_2020/rec_r_beta5_TMB.rda")
 percmod2 <- rec_r_beta5_TMB # Interaction moose_density*distvei2
+load("output/recruitment_07_12_2020/rec_r_beta4_TMB_test.rda")
+percmod2 <- rec_r_beta4_TMB_test
+
 
 load("processdata/recruits_roads.rda")
 str(recruits_roads)
@@ -204,7 +209,7 @@ is.integer(recruits_roads$recruitment)
 recruits_roads$recruitment <- as.integer(recruits_roads$recruitment)
 is.integer(recruits_roads$recruitment)
 # Scale
-recruits_roads$beitetrykk9 <- scale(recruits_roads$beitetrykk9)
+# recruits_roads$beitetrykk9 <- scale(recruits_roads$beitetrykk9)
 recruits_roads$helling <- scale(recruits_roads$helling)
 recruits_roads$HOH <- scale(recruits_roads$HOH)
 recruits_roads$moose_density <- scale(recruits_roads$moose_density)
@@ -225,7 +230,7 @@ source("function_resp_curve_08_12_2020.R")
 #### Select focal variable
 ```{r}
 (focal = c("distvei", "skogkategori", "treartgruppe9", "kant", 
-           "helling", "HOH", "tretetthet9", "beitetrykk9", "disthus", "moose_density")[8])
+           "helling", "HOH", "tretetthet9", "beitetrykk9", "disthus", "moose_density")[1])
 
 ```
 
@@ -234,13 +239,13 @@ hurdle1_only = browsing pressure hurdle
 hurdle2_only = recruitment hurdle
 total = total effect
 ```{r}
-bp_tretett <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+bp_distvei <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[1], nvals=100, plotit=F, nb_btstrp=99)
 
-recruit_bp <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
+recruit_distvei <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
 
-total_bp <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+total_distvei <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=99)
 ```
 
@@ -343,7 +348,7 @@ recruit_disthus$var <- recruit_disthus$var * 162.9665 + 499.182
 # attributes(recruits_roads$helling) # $`scaled:center` 19.10349 $`scaled:scale` 19.60225
 # attributes(recruits_roads$HOH) # $`scaled:center` 365.9363 $`scaled:scale` 245.9447
 # attributes(recruits_roads$moose_density) # $`scaled:center` 200.6176 $`scaled:scale` 203.1264
-recruit_bp$var <- recruit_bp$var * 30.81325 + 26.01752
+# recruit_bp$var <- recruit_bp$var * 30.81325 + 26.01752
 recruit_helling$var <- recruit_helling$var * 19.60225 + 19.10349
 recruit_HOH$var <- recruit_HOH$var * 245.9447 + 365.9363
 recruit_moose_density$var <- recruit_moose_density$var * 203.1264 + 200.6176
@@ -362,7 +367,7 @@ total_disthus$var <- total_disthus$var * 162.9665 + 499.182
 # attributes(recruits_roads$tretetthet9) # $`scaled:center` 984.6252 $`scaled:scale` 1193.3
 total_helling$var <- total_helling$var * 19.60225 + 19.10349
 total_tretett$var <- total_tretett$var * 1193.3 + 984.6252
-total_bp$var <- total_bp$var * 30.81325 + 26.01752
+# total_bp$var <- total_bp$var * 30.81325 + 26.01752
 
 total_distvei$var <- exp(total_distvei$var)-1
 

@@ -206,7 +206,6 @@ browse_house$helling <- scale(browse_house$helling)
 browse_house$HOH <- scale(browse_house$HOH)
 browse_house$moose_density <- scale(browse_house$moose_density)
 
-
 browse_house$disthus_200 <- scale(browse_house$disthus_200)
 
 summary(browse_house$disthus_200)
