@@ -24,6 +24,7 @@ library(glmmTMB)
 ** HOUSE plots: To load the data/ models to make the house plots, load chunks: Browsing pressure - Houses AND Recruits - Houses **
 ** ROAD plots: To load the data/ models to make the road plots, load chunks: Browsing pressure - Roads AND Recruits - Roads **
 
+# Old
 ## Browsing pressure
 #### Houses
 ```{r}
@@ -44,28 +45,6 @@ library(glmmTMB)
 # load("processdata/browse9.4_house.rda")
 # dat1 <- browse9.4_house
 
-
-
-load("output/browse_04_12_2020/browse_h_bin1.rda")
-zeromod1 <- browse_h_bin1
-summary(browse_h_bin1)
-
-load("output/browse_04_12_2020/browse_h_beta2.rda")
-percmod1 <- browse_h_beta2
-
-load("processdata/browse_house.rda")
-str(browse_house) # Check if variables are scaled, else scale below
-browse_house <- browse_house[ ,-c(4,16:20,22)] #8,
-# Scale
-browse_house$tretetthet9 <- scale(browse_house$tretetthet9)
-browse_house$helling <- scale(browse_house$helling)
-browse_house$HOH <- scale(browse_house$HOH)
-browse_house$moose_density <- scale(browse_house$moose_density)
-browse_house$disthus_200 <- scale(browse_house$disthus_200)
-str(browse_house)
-
-dat1 <- browse_house
-head(dat1)
 
 ```
 
@@ -91,26 +70,6 @@ head(dat1)
 # dat1 <- browse9.4
 
 
-load("output/browse_04_12_2020/browse_r_bin1.rda")
-zeromod1 <- browse_r_bin1
-# summary(zeromod1)
-
-load("output/browse_04_12_2020/browse_r_beta3.rda")
-percmod1 <- browse_r_beta3 
-# summary(percmod1)
-
-load("processdata/browse_roads.rda")
-str(browse_roads)
-browse_roads$beite_bin <- ifelse(browse_roads$beitetrykk9 == 0, 0, 1)
-# Scale
-browse_roads$tretetthet9 <- scale(browse_roads$tretetthet9)
-browse_roads$helling <- scale(browse_roads$helling)
-browse_roads$HOH <- scale(browse_roads$HOH)
-browse_roads$moose_density <- scale(browse_roads$moose_density)
-str(browse_roads)
-
-dat1 <- browse_roads
-head(dat1)
 
 ```
 
@@ -136,36 +95,7 @@ head(dat1)
 # load("processdata/browse9.5msc.rda")
 # dat2 <- browse9.5msc
 
-load("output/recruitment_07_12_2020/rec_h_bin7_600.rda")
-# zeromod2 <- rec_h_bin7
-zeromod2 <- rec_h_bin7_600
-summary(zeromod2)
 
-load("output/recruitment_07_12_2020/rec_h_beta7_TMB.rda")
-# percmod2 <- rec_h_beta7
-percmod2 <- rec_h_beta7_TMB
-summary(percmod2)
-
-load("processdata/recruits_house.rda")
-str(recruits_house)
-# recruits_house <- recruits_house[ ,-c(7)]
-recruits_house$recruitment_bin <- ifelse(recruits_house$recruitment == 0, 0, 1)
-# scale
-recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
-recruits_house$helling <- scale(recruits_house$helling)
-recruits_house$HOH <- scale(recruits_house$HOH)
-recruits_house$moose_density <- scale(recruits_house$moose_density)
-recruits_house$disthus_600 <- scale(recruits_house$disthus_600)
-# recruits_house$disthus_500 <- scale(recruits_house$disthus_500)
-
-is.integer(recruits_house$recruitment)
-recruits_house$recruitment <- as.integer(recruits_house$recruitment)
-is.integer(recruits_house$recruitment)
-
-str(recruits_house)
-
-dat2 <- recruits_house
-head(dat2)
 
 ```
 
@@ -191,16 +121,104 @@ head(dat2)
 # dat2 <- browse9.6sc
 
 
-load("output/recruitment_07_12_2020/rec_r_bin3.rda")
-zeromod2 <- rec_r_bin3
+```
+
+
+
+# New
+## Load HOUSE models data
+```{r}
+#### Browsing pressure----
+load("output/browse_04_12_2020/browse_h_bin1.rda")
+zeromod1 <- browse_h_bin1
+summary(zeromod1)
+
+load("output/browse_04_12_2020/browse_h_beta2.rda")
+percmod1 <- browse_h_beta2
+summary(percmod1)
+
+load("processdata/browse_house.rda")
+str(browse_house) # Check if variables are scaled, else scale below
+browse_house <- browse_house[ ,-c(4,16:20,22)] #8,
+# Scale
+browse_house$tretetthet9 <- scale(browse_house$tretetthet9)
+browse_house$helling <- scale(browse_house$helling)
+browse_house$HOH <- scale(browse_house$HOH)
+browse_house$moose_density <- scale(browse_house$moose_density)
+browse_house$disthus_200 <- scale(browse_house$disthus_200)
+str(browse_house)
+
+dat1 <- browse_house
+head(dat1)
+
+
+#### Recruitment ----
+load("output/recruitment_07_12_2020/rec_h_bin7_600_test.rda")
+zeromod2 <- rec_h_bin7_600_test
+summary(zeromod2)
+
+load("output/recruitment_07_12_2020/rec_h_beta7_TMB_test.rda")
+percmod2 <- rec_h_beta7_TMB_test
+summary(percmod2)
+
+load("processdata/recruits_house.rda")
+str(recruits_house)
+# recruits_house <- recruits_house[ ,-c(7)]
+recruits_house$recruitment_bin <- ifelse(recruits_house$recruitment == 0, 0, 1)
+# scale
+# recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
+recruits_house$helling <- scale(recruits_house$helling)
+recruits_house$HOH <- scale(recruits_house$HOH)
+recruits_house$moose_density <- scale(recruits_house$moose_density)
+recruits_house$disthus_600 <- scale(recruits_house$disthus_600)
+# recruits_house$disthus_500 <- scale(recruits_house$disthus_500)
+
+is.integer(recruits_house$recruitment)
+recruits_house$recruitment <- as.integer(recruits_house$recruitment)
+is.integer(recruits_house$recruitment)
+
+str(recruits_house)
+
+dat2 <- recruits_house
+head(dat2)
+
+```
+
+
+
+## Load ROAD models and data
+```{r}
+#### Browsing pressure ----
+load("output/browse_04_12_2020/browse_r_bin1.rda")
+zeromod1 <- browse_r_bin1
+summary(zeromod1)
+
+load("output/browse_04_12_2020/browse_r_beta3.rda")
+percmod1 <- browse_r_beta3 
+summary(percmod1)
+
+load("processdata/browse_roads.rda")
+str(browse_roads)
+browse_roads$beite_bin <- ifelse(browse_roads$beitetrykk9 == 0, 0, 1)
+# Scale
+browse_roads$tretetthet9 <- scale(browse_roads$tretetthet9)
+browse_roads$helling <- scale(browse_roads$helling)
+browse_roads$HOH <- scale(browse_roads$HOH)
+browse_roads$moose_density <- scale(browse_roads$moose_density)
+str(browse_roads)
+
+dat1 <- browse_roads
+head(dat1)
+
+
+#### Recruitment ----
 load("output/recruitment_07_12_2020/rec_r_bin3_test.rda")
 zeromod2 <- rec_r_bin3_test
+summary(zeromod2)
 
-load("output/recruitment_07_12_2020/rec_r_beta5_TMB.rda")
-percmod2 <- rec_r_beta5_TMB # Interaction moose_density*distvei2
 load("output/recruitment_07_12_2020/rec_r_beta4_TMB_test.rda")
 percmod2 <- rec_r_beta4_TMB_test
-
+summary(percmod2)
 
 load("processdata/recruits_roads.rda")
 str(recruits_roads)
@@ -213,7 +231,7 @@ is.integer(recruits_roads$recruitment)
 recruits_roads$helling <- scale(recruits_roads$helling)
 recruits_roads$HOH <- scale(recruits_roads$HOH)
 recruits_roads$moose_density <- scale(recruits_roads$moose_density)
-recruits_roads$tretetthet9 <- scale(recruits_roads$tretetthet9)
+recruits_roads$tretetthet9 <- scale(recruits_roads$tretetthet9) # this is not in the recruitment model, but is used when the total effect gets calculated
 
 dat2 <- recruits_roads
 head(dat2)
@@ -230,8 +248,8 @@ source("function_resp_curve_08_12_2020.R")
 #### Select focal variable
 ```{r}
 (focal = c("distvei", "skogkategori", "treartgruppe9", "kant", 
-           "helling", "HOH", "tretetthet9", "beitetrykk9", "disthus", "moose_density")[1])
-
+           "helling", "HOH", "tretetthet9", "beitetrykk9", "disthus", "moose_density")[10])
+## REMEMBER to load the road datasets and models after doing the house model!!!!!
 ```
 
 #### Run function for the different models/ focals and SAVE them
@@ -239,13 +257,13 @@ hurdle1_only = browsing pressure hurdle
 hurdle2_only = recruitment hurdle
 total = total effect
 ```{r}
-bp_distvei <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+bp_moose <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[1], nvals=100, plotit=F, nb_btstrp=99)
 
-recruit_distvei <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
+recruit_moose <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
 
-total_distvei <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+total_moose <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=99)
 ```
 
@@ -366,6 +384,7 @@ total_disthus$var <- total_disthus$var * 162.9665 + 499.182
 ### Roads
 # attributes(recruits_roads$tretetthet9) # $`scaled:center` 984.6252 $`scaled:scale` 1193.3
 total_helling$var <- total_helling$var * 19.60225 + 19.10349
+total_HOH$var <- total_HOH$var * 245.9447 + 365.9363
 total_tretett$var <- total_tretett$var * 1193.3 + 984.6252
 # total_bp$var <- total_bp$var * 30.81325 + 26.01752
 
@@ -417,28 +436,30 @@ cbPalette <- c("#999999", "#009E73", "#56B4E9", "#E69F00", "#F0E442", "#0072B2",
   
   
 # disthus ----
-pdt_disthus <- ggplot() +
-    geom_ribbon(data = recruit_disthus, aes(x = var, ymin = CI025, ymax = CI975), 
-              linetype = 0, alpha = 0.2,show.legend = F) +
-    geom_line(data = recruit_disthus, aes(var, point, color = "direct (only\non probability)",
-                                        linetype = "direct (only\non probability)"), 
+pdt_disthus <- ggplot() + 
+  geom_ribbon(data = recruit_disthus, aes(x = var, ymin = CI025, ymax = CI975), 
+              linetype = 0, alpha = 0.2, show.legend = F) +
+  geom_line(data = recruit_disthus, aes(var, point, 
+                                        color = "direct", 
+                                        linetype = "direct"),
             size = 1.5, show.legend = T) +
-    
-    geom_ribbon(data = total_disthus, aes(x = var, ymin = CI025, ymax = CI975), linetype = 0, alpha = 0.2, show.legend = F, fill = "#009E73") +
-  geom_line(data = total_disthus, aes(var, point, color = "total", linetype = "total"), size =
-              1.5, show.legend = T) +
   
-  scale_linetype_manual("Recruitment",
-                        values = c("direct (only\non probability)" = 3,"total" = 1)) +
-  xlab("\nDistance to house (m)") + 
-  ylab("Recruitment\n") +
+  geom_line(data = total_disthus, aes(var, point, color = "total", linetype = "total"), 
+            size = 1.5, show.legend = T) +
+  geom_ribbon(data = total_disthus, aes(x = var, ymin = CI025, ymax = CI975), 
+              fill = "#009E73", linetype = 0, alpha = 0.2, show.legend = F) +
+  
+  scale_linetype_manual("Effect on Recruitment",
+                        values = c("direct" = 3,"total" = 1)) +
+  xlab("\nDistance to road (m)") + 
+  ylab("Recruitment") +
   theme_light()+
   theme(axis.text = element_text(size = 50), # face = "bold"
         axis.title = element_text(family = "sans", size = 50),
-        legend.position = c(0.7, 0.9),
+        legend.position = c(0.8, 0.85),
         legend.text = element_text(size = 30),
-        legend.title = element_text(size = 40)) +
-  scale_color_manual(name = "Recruitment", 
+        legend.title = element_text(size = 30)) +
+  scale_color_manual(name = "Effect on Recruitment", 
                      values = cbPalette) +
     scale_fill_manual(values = "#009E73")
 #,legend.title = element_text(size = 50)
@@ -485,8 +506,8 @@ pdt_distvei <- ggplot() +
   geom_ribbon(data = recruit_distvei, aes(x = var, ymin = CI025, ymax = CI975), 
               linetype = 0, alpha = 0.2, show.legend = F) +
   geom_line(data = recruit_distvei, aes(var, point, 
-                                        color = "direct (only\non probability)", 
-                                        linetype = "direct (only\non probability)"),
+                                        color = "direct", 
+                                        linetype = "direct"),
             size = 1.5, show.legend = T) +
   
   geom_line(data = total_distvei, aes(var, point, color = "total", linetype = "total"), 
@@ -494,17 +515,17 @@ pdt_distvei <- ggplot() +
   geom_ribbon(data = total_distvei, aes(x = var, ymin = CI025, ymax = CI975), 
               fill = "#009E73", linetype = 0, alpha = 0.2, show.legend = F) +
   
-  scale_linetype_manual("Effect on Recruits (%)",
-                        values = c("direct (only\non probability)" = 3,"total" = 1)) +
+  scale_linetype_manual("Effect on Recruitment",
+                        values = c("direct" = 3,"total" = 1)) +
   xlab("\nDistance to road (m)") + 
   ylab("") +
   theme_light()+
   theme(axis.text = element_text(size = 50), # face = "bold"
         axis.title = element_text(family = "sans", size = 50),
-        legend.position = c(0.7, 0.9),
+        legend.position = c(0.8, 0.85),
         legend.text = element_text(size = 30),
-        legend.title = element_text(size = 40)) +
-  scale_color_manual(name = "Effect on Recruits (%)", 
+        legend.title = element_text(size = 30)) +
+  scale_color_manual(name = "Effect on Recruitment", 
                      values = cbPalette) +
     scale_fill_manual(values = "#009E73")
 #,legend.title = element_text(size = 50)
@@ -538,9 +559,9 @@ ph_distvei <- ggplot() +
   theme_light() +
   theme(axis.text = element_text(size = 50),
         axis.title = element_text(family = "sans", size = 50),
-        legend.position = c(0.7, 0.9),
+        legend.position = c(0.7, 0.85),
         legend.text = element_text(size = 30),
-        legend.title = element_text(size = 40)) +
+        legend.title = element_text(size = 30)) +
   xlab("Distance to road (m)\n") + 
   ylab("") +
     scale_fill_manual(values = "#0072B2")
@@ -554,16 +575,16 @@ pdt_skogkat <- ggplot() +
   
   geom_pointrange(data = total_skogkat, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "total"), size = 1, position = position_nudge(-0.1, -0.1)) +
   
-  theme(axis.text.x = element_text(size = 40, angle = 30, vjust = 1, hjust = 1), # face = "bold"
+  theme(axis.text.x = element_text(size = 40, angle = 40, vjust = 1, hjust = 1), # face = "bold"
         axis.text.y = element_text(size = 50),
         axis.title = element_text(family = "sans", size = 50),
-        legend.position = c(0.7, 0.9),
+        legend.position = c(0.8, 0.87),
         legend.text = element_text(size = 30),
-        legend.title = element_text(size = 40)) +
+        legend.title = element_text(size = 30)) +
   xlab("Forest category") + 
-  ylab("Recruits (%)\n") +
+  ylab("Recruitment\n") +
   scale_x_discrete(labels = c("Highproductive \nold forest", "Highproductive \nyoung forest", "Lowproductive \nold forest", "Lowproductive \nyoung forest", "Unproductive \nforest"))+
-   scale_color_manual(name = "Effect on Recruits (%)", 
+   scale_color_manual(name = "Effect on Recruitment", 
                      values = cbPalette)
 
 
@@ -611,13 +632,13 @@ pdt_treart <- ggplot() +
   theme_light() +
   theme(axis.text = element_text(size = 50), # face = "bold"
         axis.title = element_text(family = "sans", size = 50),
-        legend.position = c(0.5, 0.9),
+        legend.position = c(0.85, 0.85),
         legend.text = element_text(size = 30),
-        legend.title = element_text(size = 40)) +
+        legend.title = element_text(size = 30)) +
   xlab("Tree species group\n") + 
   ylab("") +
   scale_x_discrete(labels = c("Pine", "Other deciduous \ntrees", "Rowan, aspen, \nwillow")) +
-  scale_color_manual(name = "Effect on Recruits (%)", 
+  scale_color_manual(name = "Effect on Recruitment", 
                      values = cbPalette)
 
 
@@ -647,7 +668,7 @@ pd_treart <- ggplot() +
 ph_treart <- ggplot(data = bp_treart,aes(var, point)) +
   geom_pointrange(aes(ymin = CI025, ymax = CI975), colour = "#0072B2", size = 1.5) +
   theme_light() +
-  theme(axis.text.x = element_text(size = 50, angle = 45, vjust = 1, hjust = 1),
+  theme(axis.text.x = element_text(size = 50, angle = 35, vjust = 1, hjust = 1),
         axis.text.y = element_text(size = 50),
         axis.title = element_text(family = "sans", size = 50),
         legend.position = c(0.7, 0.9)) +
@@ -657,33 +678,33 @@ ph_treart <- ggplot(data = bp_treart,aes(var, point)) +
 
 # kant ----
 pdt_kant <- ggplot() +
-  geom_pointrange(data = total_kant, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "indirect (only\non probability)"), size = 1) +
+  geom_pointrange(data = recruit_kant, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "direct"), size = 1, position = position_nudge(0.1, 0.1)) +
+  
+  geom_pointrange(data = total_kant, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "total"), size = 1, position = position_nudge(-0.1, -0.1)) +
   
   theme_light() +
-  theme(axis.text.x = element_text(size = 50, angle = 45, vjust = 1, hjust = 1), # face = "bold"
+  theme(axis.text.x = element_text(size = 50, angle = 35, vjust = 1, hjust = 1), # face = "bold"
         axis.text.y = element_text(size = 50),
         axis.title = element_text(family = "sans", size = 50),
-        legend.position = c(0.5, 0.9),
+        legend.position = c(0.85, 0.85),
         legend.text = element_text(size = 30),
-        legend.title = element_text(size = 40)) +
+        legend.title = element_text(size = 30)) +
   xlab("Edge effect\n") +
   ylab("") +
   scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-20m", "Edge information\nmissing")) +
-  scale_color_manual(name = "Effect on Recruits (%)", 
-                     values = "#009E73")
+  scale_color_manual(name = "Effect on Recruitment", 
+                     values = cbPalette)
 
 
 
-pd_kant_TEST <- ggplot() +
+pd_kant <- ggplot() +
   geom_pointrange(data = recruit_kant, aes(x = var, y = point, ymin = CI025, ymax = CI975, colour = "direct"), size = 1) +
   theme_light() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nEdge effect") + 
-  ylab("Recruits (%)\n") +
+  ylab("Recruitment\n") +
   scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-20m", "Edge information\nmissing"))
-
-
 
 
 pt_kant <- ggplot() +
@@ -692,9 +713,9 @@ pt_kant <- ggplot() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   xlab("\nEdge effect") + 
-  ylab("Recruits (%)\n") +
+  ylab("Recruitment\n") +
   scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-20m", "Edge information\nmissing")) +
-  scale_color_manual(name = "Effect on \nRecruits (%)", 
+  scale_color_manual(name = "Effect on \nRecruitment", 
                      values = c("indirect" = "#009292", "direct" = "#004949"))
 
 ph_kant <- ggplot(data = bp_kant, aes(var, point)) +
@@ -719,17 +740,17 @@ pdt_hell <- ggplot() +
   geom_line(data = total_helling, aes(var, point, color = "total", linetype = "total"), 
             size = 1.5, show.legend = T) +
   
-  scale_linetype_manual("Effect on Recruits (%)",
+  scale_linetype_manual("Effect on Recruitment",
                         values = c("direct" = 3,"total" = 1)) +
   xlab("Slope (%)\n") +
   ylab("") +
   theme_light()+
   theme(axis.text = element_text(size = 50), # face = "bold"
         axis.title = element_text(family = "sans", size = 50),
-        legend.position = c(0.5, 0.9),
+        legend.position = c(0.2, 0.85),
         legend.text = element_text(size = 30),
-        legend.title = element_text(size = 40)) +
-  scale_color_manual(name = "Effect on Recruits (%)", 
+        legend.title = element_text(size = 30)) +
+  scale_color_manual(name = "Effect on Recruitment", 
                      values = cbPalette) +
     scale_fill_manual(values = "#009E73")
 
@@ -780,18 +801,18 @@ pdt_hoh <- ggplot() +
   geom_line(data = total_HOH, aes(var, point, color = "total", linetype = "total"), 
             size = 1.5, show.legend = T) +
   
-  scale_linetype_manual("Effect on Recruits (%)",
+  scale_linetype_manual("Effect on Recruitment",
                         values = c("direct" = 3,"total" = 1)) +
   
   xlab("Altitude (masl)\n") + 
-  ylab("Recruits (%)\n") +
+  ylab("Recruitment\n") +
   theme_light()+
   theme(axis.text = element_text(size = 50), # face = "bold"
         axis.title = element_text(family = "sans", size = 50),
         legend.position = c(0.5, 0.9),
         legend.text = element_text(size = 30),
-        legend.title = element_text(size = 40)) +
-  scale_color_manual(name = "Effect on Recruits (%)", 
+        legend.title = element_text(size = 30)) +
+  scale_color_manual(name = "Effect on Recruitment", 
                      values = cbPalette) +
     scale_fill_manual(values = "#009E73")
 
@@ -819,9 +840,9 @@ pd_hoh <- ggplot() +
                      values = c("total" = "#009292", "direct" = "#004949"))
 
 ph_hoh <- ggplot() +
-  geom_ribbon(data = bp_hoh, aes(x = var, ymin = CI025, ymax = CI975), show.legend = F, 
+  geom_ribbon(data = bp_HOH, aes(x = var, ymin = CI025, ymax = CI975), show.legend = F, 
               fill = "#0072B2", linetype = 0, alpha = 0.2) + 
-  geom_line(data = bp_hoh, aes(var, point),colour = "#0072B2", linetype = 1, size = 1.5)+
+  geom_line(data = bp_HOH, aes(var, point),colour = "#0072B2", linetype = 1, size = 1.5)+
   theme_light() +
   theme(axis.text = element_text(size = 50),
         axis.title = element_text(family = "sans", size = 50),
@@ -836,17 +857,17 @@ pdt_tretett <- ggplot() +
   geom_line(data = total_tretett, aes(var, point, color = "indirect", linetype = "indirect"),
             size = 1.5, show.legend = T) +
   
-  scale_linetype_manual("Effect on Recruits (%)",
+  scale_linetype_manual("Effect on Recruitment",
                         values = c("indirect" = 1)) +
   xlab("Tree density\n") + 
-  ylab("Recruits (%)\n") +
+  ylab("Recruitment\n") +
   theme_light()+
   theme(axis.text = element_text(size = 50), # face = "bold"
         axis.title = element_text(family = "sans", size = 50),
         legend.position = c(0.7, 0.9),
         legend.text = element_text(size = 30),
-        legend.title = element_text(size = 40)) +
-  scale_color_manual(name = "Effect on Recruits (%)", 
+        legend.title = element_text(size = 30)) +
+  scale_color_manual(name = "Effect on Recruitment", 
                      values = "#009E73") +
     scale_fill_manual(values = "#009E73")
 
@@ -869,7 +890,7 @@ ph_tretett <- ggplot() +
               fill = "#0072B2", linetype = 0, alpha = 0.2) + 
   geom_line(data = bp_tretett, aes(var, point),colour = "#0072B2", linetype = 1, size = 1.5)+
   theme_light() +
-  theme(axis.text.x = element_text(size = 50, angle = 10, vjust = 1, hjust = 1), 
+  theme(axis.text.x = element_text(size = 50, angle = 0, vjust = 1, hjust = 1), 
         axis.text.y = element_text(size = 50),
         axis.title = element_text(family = "sans", size = 50),
         legend.position = c(0.7, 0.9)) +
@@ -879,22 +900,22 @@ ph_tretett <- ggplot() +
 
 # beite ----
 pdt_beite <- ggplot() + 
-  geom_ribbon(data = recruit_bp, aes(x = var, ymin = CI025, ymax = CI975), 
+  geom_ribbon(data = recruit_beite, aes(x = var, ymin = CI025, ymax = CI975), 
               linetype = 0, alpha = 0.2, show.legend = F) +
-  geom_line(data = recruit_bp, aes(var, point, color = "direct", linetype = "direct"), 
+  geom_line(data = recruit_beite, aes(var, point, color = "direct", linetype = "direct"), 
             size = 1.5, show.legend = T) +
   
-  scale_linetype_manual("Effect on Recruits (%)",
+  scale_linetype_manual("Effect on Recruitment",
                         values = c("direct" = 3)) +
   xlab("Browsing pressure (%)\n") + 
-  ylab("Recruits (%)\n") +
+  ylab("Recruitment\n") +
   theme_light()+
   theme(axis.text = element_text(size = 50), # face = "bold"
         axis.title = element_text(family = "sans", size = 50),
         legend.position = c(0.7, 0.9),
         legend.text = element_text(size = 30),
-        legend.title = element_text(size = 40)) +
-  scale_color_manual(name = "Effect on Recruits (%)", 
+        legend.title = element_text(size = 30)) +
+  scale_color_manual(name = "Effect on Recruitment", 
                      values = cbPalette) +
     scale_fill_manual(values = cbPalette)
 
@@ -911,8 +932,8 @@ pt_beite <- ggplot() +
                      values = c("total" = "#009292", "direct" = "#004949"))
 
 pd_beite <- ggplot() + 
-  geom_line(data = recruit_bp, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = recruit_bp, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  geom_line(data = recruit_beite, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = recruit_beite, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
   xlab("\nBrowsing pressure (%)") + 
   ylab("Recruits (%)\n") +
   theme_light()+
@@ -920,6 +941,48 @@ pd_beite <- ggplot() +
         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
   scale_color_manual(name = "Effect on \nRecruits (%)", 
                      values = c("total" = "#009292", "direct" = "#004949"))
+
+
+# moose_density ----
+
+pdt_moose <- ggplot() + 
+  geom_ribbon(data = recruit_moose, aes(x = var, ymin = CI025, ymax = CI975), 
+              linetype = 0, alpha = 0.2, show.legend = F) +
+  geom_line(data = recruit_moose, aes(var, point, color = "direct (only\n on probability)", linetype = "direct (only\n on probability)"), 
+            size = 1.5, show.legend = T) +
+  
+  geom_ribbon(data = total_moose, aes(x = var, ymin = CI025, ymax = CI975), fill = "#009E73", linetype = 0, alpha = 0.2, show.legend = F) +
+  geom_line(data = total_moose, aes(var, point, color = "total", linetype = "total"), 
+            size = 1.5, show.legend = T) +
+  
+  scale_linetype_manual("Effect on Recruitment",
+                        values = c("direct (only\n on probability)" = 3,"total" = 1)) +
+  
+  xlab("Moose density\n") + 
+  ylab("Recruitment\n") +
+  theme_light()+
+  theme(axis.text = element_text(size = 50), # face = "bold"
+        axis.title = element_text(family = "sans", size = 50),
+        legend.position = c(0.5, 0.9),
+        legend.text = element_text(size = 30),
+        legend.title = element_text(size = 30)) +
+  scale_color_manual(name = "Effect on Recruitment", 
+                     values = cbPalette) +
+    scale_fill_manual(values = "#009E73")
+
+
+ph_moose <- ggplot() +
+  geom_ribbon(data = bp_moose, aes(x = var, ymin = CI025, ymax = CI975), show.legend = F, 
+              fill = "#0072B2", linetype = 0, alpha = 0.2) + 
+  geom_line(data = bp_moose, aes(var, point),colour = "#0072B2", linetype = 1, size = 1.5)+
+  theme_light() +
+  theme(axis.text = element_text(size = 50),
+        axis.title = element_text(family = "sans", size = 50),
+        legend.position = c(0.7, 0.9)) +
+  xlab("Moose density\n") + 
+  ylab("") +
+    scale_fill_manual(values = "#0072B2")
+
 
 
 ```
