@@ -241,20 +241,16 @@ data = recruits_house)
 
 rec_h_bin7 <- glmer(recruitment_bin ~ disthus_500 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
 family = binomial(),
-data = recruits_house)  # BEST
+data = recruits_house)  # (BEST)
+
 
 rec_h_bin7_600 <- glmer(recruitment_bin ~ disthus_600 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
 family = binomial(),
-data = recruits_house) # Same as rec_h_bin7, only run with disthus_600, so that both recruits house models have the same disthus variables - easier in the function
+data = recruits_house) # BEST; Same as rec_h_bin7, only run with disthus_600, so that both recruits house models have the same disthus variables - easier in the function
 summary(rec_h_bin7_600)
-
-rec_h_bin7_600_test <- glmer(recruitment_bin ~ disthus_600 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
-family = binomial(),
-data = recruits_house)
 
 
 save(rec_h_bin7_600, file = "output/recruitment_07_12_2020/rec_h_bin7_600.rda")
-save(rec_h_bin7_600_test, file = "output/recruitment_07_12_2020/rec_h_bin7_600_test.rda")
 ```
 
 #### AIC selection bin models
@@ -277,7 +273,7 @@ aictab(candmods_rec_house_bin, modnames = NULL,
 
 #### Summary bin house
 ```{r}
-summary(rec_h_bin7)
+summary(rec_h_bin7_600)
 # vcov(rec_h_bin5)
 ```
 
@@ -285,36 +281,27 @@ summary(rec_h_bin7)
 
 #### Plots bin house
 ```{r}
-# library(effects)
-# 
-# plot(allEffects(rec_h_bin)5)
-# plot(effect("skogkategori", rec_h_bin5))
+library(sjPlot)
+plot_model(rec_h_bin7_600, type = "diag")
+plot_model(rec_h_bin7_600, type = "eff")
+plot_model(rec_h_bin7_600, type = "est")
 
 ## TRY also performance::check_model for model assumptions and model performance summaries with performance::model_performance; to test performance between models use compare_performance (can be for glm, lm, lmerMod at the same time)
-library(sjPlot)
-plot_model(rec_h_bin7, type = "diag")
-plot_model(rec_h_bin7, type = "eff")
-plot_model(rec_h_bin7, type = "est")
-
 library(performance)
 # check_model(rec_h_bin7)
-model_performance(rec_h_bin7)
+model_performance(rec_h_bin7_600)
 compare_performance(rec_h_bin7_600, rec_h_bin7_600_test)
 
  
-# tab_model(rec_h_bin5, transform = NULL, 
-#           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
+tab_model(rec_h_bin7_600, transform = NULL,
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, p.threshold = c(0.05, 0.01, 0.001))
 
-ggstatsplot::ggcoefstats(
-  x = rec_h_bin7,
-  title = "generalized linear mixed-effects model"
-)
 
 ```
 
 #### Save bin house
 ```{r}
-save(rec_h_bin7, file = "rec_h_bin7.rda")
+save(rec_h_bin7_600, file = "rec_h_bin7_600.rda")
 
 ```
 
@@ -482,7 +469,7 @@ recruits_house$disthus_600 <- scale(recruits_house$disthus_600)
 
 # recruits_house$disthus_500 <- scale(recruits_house$disthus_500)
 
-summary(recruits_house$disthus_600)
+# summary(recruits_house$disthus_600)
 ```
 
 
@@ -516,7 +503,7 @@ data = recruits_house)
 
 rec_h_beta7 <- glmer(recruitment ~ disthus_600 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = poisson(),
-data = recruits_house) # BEST
+data = recruits_house) # (BEST)
 
 summary(rec_h_beta7)
 
@@ -524,15 +511,10 @@ summary(rec_h_beta7)
 library(glmmTMB)
 rec_h_beta7_TMB <- glmmTMB(recruitment ~ disthus_600 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
                            family = poisson,
-                           data = recruits_house) # Same as rec_h_beta7, just run with glmmTMB
+                           data = recruits_house) # BEST; Same as rec_h_beta7, just run with glmmTMB
 summary(rec_h_beta7_TMB)
 save(rec_h_beta7_TMB, file = "output/recruitment_07_12_2020/rec_h_beta7_TMB.rda")
 
-rec_h_beta7_TMB_test <- glmmTMB(recruitment ~ disthus_600 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
-                           family = poisson,
-                           data = recruits_house)
-summary(rec_h_beta7_TMB_test)
-save(rec_h_beta7_TMB_test, file = "output/recruitment_07_12_2020/rec_h_beta7_TMB_test.rda")
 ```
 
 
@@ -559,7 +541,7 @@ aictab(candmods_rec_house_beta, modnames = NULL,
 
 #### Summary beta house
 ```{r}
-summary(rec_h_beta7)
+summary(rec_h_beta7_TMB)
 # vcov(rec_h_bin5)
 ```
 
@@ -567,38 +549,24 @@ summary(rec_h_beta7)
 
 #### Plots beta house
 ```{r}
-# library(effects)
-# plot(allEffects(rec_h_beta7))
-# plot(effect("skogkategori", rec_h_beta7))
-
 library(sjPlot)
-plot_model(rec_h_beta7, type = "diag")
-plot_model(rec_h_beta7, type = "eff")
-plot_model(rec_h_beta7, type = "est")
+plot_model(rec_h_beta7_TMB, type = "diag")
+plot_model(rec_h_beta7_TMB, type = "eff")
+plot_model(rec_h_beta7_TMB, type = "est")
 
 library(performance)
-check_model(rec_h_bin7)
-model_performance(rec_h_bin7)
+# check_model(rec_h_beta7_TMB)
+model_performance(rec_h_beta7_TMB)
 
-# tab_model(rec_h_beta7, transform = NULL,
-#           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001)) 
-# Is it not working because of the scaled variables?
-
-
-
-
-
-ggstatsplot::ggcoefstats(
-  x = rec_h_beta7,
-  title = "generalized linear mixed-effects model"
-) # Not sure what exactly this shows.
+tab_model(rec_h_beta7_TMB, transform = NULL,
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, p.threshold = c(0.05, 0.01, 0.001))
 
 ```
 
 
 #### Save house beta model
 ```{r}
-save(rec_h_beta7, file = "rec_h_beta7.rda")
+save(rec_h_beta7_TMB, file = "rec_h_beta7_TMB.rda")
 ```
 
 
@@ -638,7 +606,7 @@ recruits_roads$helling <- scale(recruits_roads$helling)
 recruits_roads$HOH <- scale(recruits_roads$HOH)
 recruits_roads$moose_density <- scale(recruits_roads$moose_density)
 
-summary(recruits_roads$beitetrykk9)
+# summary(recruits_roads$beitetrykk9)
 ```
 
 
@@ -660,11 +628,6 @@ family = binomial(),
 data = recruits_roads) # BEST
 save(rec_r_bin3, file = "output/recruitment_07_12_2020/rec_r_bin3.rda")
 
-
-rec_r_bin3_test  <- glmer(recruitment_bin ~ log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
-family = binomial(),
-data = recruits_roads)
-save(rec_r_bin3_test, file = "output/recruitment_07_12_2020/rec_r_bin3_test.rda")
 
 rec_r_bin4  <- glmer(recruitment_bin ~ moose_density*log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
 family = binomial(),
@@ -699,11 +662,6 @@ summary(rec_r_bin3)
 
 #### Plots bin roads
 ```{r}
-# library(effects)
-# 
-# plot(allEffects(rec_r_bin7))
-# plot(effect("skogkategori", rec_r_bin7))
-
 library(performance)
 # check_model(rec_r_bin3)
 model_performance(rec_r_bin3)
@@ -713,13 +671,8 @@ plot_model(rec_r_bin3, type = "diag")
 plot_model(rec_r_bin3, type = "eff")
 plot_model(rec_r_bin3, type = "est")
 
-# tab_model(rec_r_bin7, transform = NULL,
-#           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
-
-ggstatsplot::ggcoefstats(
-  x = rec_r_bin3,
-  title = "generalized linear mixed-effects model"
-)
+tab_model(rec_r_bin3, transform = NULL,
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, p.threshold = c(0.05, 0.01, 0.001))
 
 ```
 
@@ -794,14 +747,10 @@ data = recruits_roads) # (BEST)
 library(glmmTMB)
 rec_r_beta4_TMB <- glmmTMB(recruitment ~ log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
                            family = poisson,
-                           data = recruits_roads) # Same as rec_r_beta4, just run with glmmTMB
+                           data = recruits_roads) # BEST; Same as rec_r_beta4, just run with glmmTMB
 summary(rec_r_beta4_TMB)
-save(rec_r_beta4_TMB, file = "rec_r_beta4_TMB.rda")
+save(rec_r_beta4_TMB, file = "output/recruitment_07_12_2020/rec_r_beta4_TMB.rda")
 
-rec_r_beta4_TMB_test <- glmmTMB(recruitment ~ log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
-                           family = poisson,
-                           data = recruits_roads) # Very big difference in estimates when beitetrykk is not scaled
-save(rec_r_beta4_TMB_test, file = "rec_r_beta4_TMB_test.rda")
 
 rec_r_beta5_TMB <- glmmTMB(recruitment ~ moose_density*log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
                            family = poisson,
@@ -845,7 +794,7 @@ aictab(candmods_rec_roads_beta, modnames = NULL,
 
 #### Summary beta roads
 ```{r}
-summary(rec_r_beta4)
+summary(rec_r_beta4_TMB)
 # vcov(rec_h_bin5)
 ```
 
@@ -859,31 +808,27 @@ summary(rec_r_beta4)
 # plot(effect("skogkategori", rec_r_beta4))
 
 library(performance)
-check_model(rec_r_beta4)
-model_performance(rec_r_beta5_TMB)
+# check_model(rec_r_beta4)
+model_performance(rec_r_beta4_TMB)
 compare_performance(rec_r_beta4_TMB, rec_r_beta5_TMB, rank = T, bayesfactor = F)
 
 
 
 library(sjPlot)
-plot_model(rec_r_beta4, type = "diag")
-plot_model(rec_r_beta4, type = "eff") 
-plot_model(rec_r_beta4, type = "est")
+plot_model(rec_r_beta4_TMB, type = "diag")
+plot_model(rec_r_beta4_TMB, type = "eff") 
+plot_model(rec_r_beta4_TMB, type = "est")
 
-# tab_model(rec_h_beta4, transform = NULL,
-#           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
+tab_model(rec_r_beta4_TMB, transform = NULL,
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, p.threshold = c(0.05, 0.01, 0.001))
 
-ggstatsplot::ggcoefstats(
-  x = rec_r_beta4,
-  title = "generalized linear mixed-effects model"
-)
 
 ```
 
 
 #### Save roads beta model
 ```{r}
-save(rec_r_beta4, file = "rec_r_beta4.rda")
+save(rec_r_beta4_TMB, file = "rec_r_beta4_TMB.rda")
 ```
 
 
@@ -897,18 +842,18 @@ library(ggplot2)
 ## House
 load("processdata/recruits_house.rda")
 str(recruits_house) # Check if variables are scales - if not scale
-load("output/recruitment_07_12_2020/rec_h_bin7.rda")
+load("output/recruitment_07_12_2020/rec_h_bin7_600.rda")
 recruits_house$recruitment_bin <- ifelse(recruits_house$recruitment == 0, 0, 1)
 summary(rec_h_bin7)
 
 # scale
-recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
+# recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
 recruits_house$helling <- scale(recruits_house$helling)
 recruits_house$HOH <- scale(recruits_house$HOH)
 recruits_house$moose_density <- scale(recruits_house$moose_density)
 
 
-p_rec_bin1_house <- plot_model(rec_h_bin7, type = c("eff"), transform = NULL, terms = c("disthus_500"))
+p_rec_bin1_house <- plot_model(rec_h_bin7_600, type = c("eff"), transform = NULL, terms = c("disthus_600"))
 p_rec_bin1_house <- p_rec_bin1_house + theme_light() +
   theme(plot.title = element_blank(),
     axis.text = element_text(family = "sans", size = 20, color = "grey30"),
@@ -926,7 +871,7 @@ recruits_roads$recruitment_bin <- ifelse(recruits_roads$recruitment == 0, 0, 1)
 summary(rec_r_bin3)
 
 # scale
-recruits_roads$beitetrykk9 <- scale(recruits_roads$beitetrykk9)
+# recruits_roads$beitetrykk9 <- scale(recruits_roads$beitetrykk9)
 recruits_roads$helling <- scale(recruits_roads$helling)
 recruits_roads$HOH <- scale(recruits_roads$HOH)
 recruits_roads$moose_density <- scale(recruits_roads$moose_density)
@@ -947,7 +892,7 @@ p_rec_bin2 <- p_rec_bin2 + theme_light() +
   theme(plot.title = element_blank(),
     axis.text = element_text(family = "sans", size = 12, color = "grey30"),
         axis.title = element_text(family = "sans", size = 20, color = "grey30"),
-    axis.text.x = element_text(angle = 30)) +
+    axis.text.x = element_text(angle = 40, vjust = 1, hjust = 1)) +
   xlab("Forest category\n") +
   ylab("Recruitment\n") 
 
@@ -966,7 +911,7 @@ p_rec_bin4 <- p_rec_bin4 + theme_light() +
   theme(plot.title = element_blank(),
     axis.text = element_text(family = "sans", size = 12, color = "grey30"),
         axis.title = element_text(family = "sans", size = 20, color = "grey30"),
-    axis.text.x = element_text(angle = 30)) +
+    axis.text.x = element_text(angle = 20, vjust = 1, hjust = 1)) +
   xlab("Edge\n") +
   ylab("Recruitment\n")
 
@@ -1036,13 +981,13 @@ recruits_house$recruitment_bin <- ifelse(recruits_house$recruitment == 0, 0, 1)
 summary(rec_h_beta7)
 
 # scale
-recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
+# recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
 recruits_house$helling <- scale(recruits_house$helling)
 recruits_house$HOH <- scale(recruits_house$HOH)
 recruits_house$moose_density <- scale(recruits_house$moose_density)
 
 
-p_rec_beta1_house <- plot_model(rec_h_beta7, type = c("eff"), transform = NULL, terms = c("disthus_600"))
+p_rec_beta1_house <- plot_model(rec_h_beta7_TMB, type = c("eff"), transform = NULL, terms = c("disthus_600"))
 p_rec_beta1_house <- p_rec_beta1_house + theme_light() +
   theme(plot.title = element_blank(),
     axis.text = element_text(family = "sans", size = 20, color = "grey30"),
@@ -1068,14 +1013,14 @@ load("output/recruitment_07_12_2020/rec_r_beta5_TMB.rda")
 summary(rec_r_beta5_TMB)
 
 # scale
-recruits_roads$beitetrykk9 <- scale(recruits_roads$beitetrykk9)
+# recruits_roads$beitetrykk9 <- scale(recruits_roads$beitetrykk9)
 recruits_roads$helling <- scale(recruits_roads$helling)
 recruits_roads$HOH <- scale(recruits_roads$HOH)
 # recruits_roads$moose_density <- scale(recruits_roads$moose_density)
 
 
 
-p_rec_beta1 <- plot_model(rec_r_beta4, type = c("eff"), transform = NULL, terms = c("distvei2  [0:500]"))
+p_rec_beta1 <- plot_model(rec_r_beta4_TMB, type = c("eff"), transform = NULL, terms = c("distvei2  [0:500]"))
 p_rec_beta1 <- p_rec_beta1 + theme_light() +
   theme(plot.title = element_blank(),
     axis.text = element_text(family = "sans", size = 20, color = "grey30"),
@@ -1084,17 +1029,17 @@ p_rec_beta1 <- p_rec_beta1 + theme_light() +
   ylab("Recruitment\n")
 
 
-p_rec_beta2 <- plot_model(rec_r_beta4, type = c("eff"), transform = NULL, terms = c("skogkategori"))
+p_rec_beta2 <- plot_model(rec_r_beta4_TMB, type = c("eff"), transform = NULL, terms = c("skogkategori"))
 p_rec_beta2 <- p_rec_beta2 + theme_light() +
   theme(plot.title = element_blank(),
     axis.text = element_text(family = "sans", size = 12, color = "grey30"),
         axis.title = element_text(family = "sans", size = 20, color = "grey30"),
-    axis.text.x = element_text(angle = 30)) +
+    axis.text.x = element_text(angle = 20, vjust = 1, hjust = 1)) +
   xlab("Forest category\n") +
   ylab("Recruitment\n") 
 
 
-p_rec_beta3 <- plot_model(rec_r_beta4, type = c("eff"), transform = NULL, terms = c("treartgruppe9"))
+p_rec_beta3 <- plot_model(rec_r_beta4_TMB, type = c("eff"), transform = NULL, terms = c("treartgruppe9"))
 p_rec_beta3 <- p_rec_beta3 + theme_light() +
   theme(plot.title = element_blank(),
     axis.text = element_text(family = "sans", size = 20, color = "grey30"),
@@ -1103,17 +1048,17 @@ p_rec_beta3 <- p_rec_beta3 + theme_light() +
   ylab("Recruitment\n") 
 
 
-p_rec_beta4 <- plot_model(rec_r_beta4, type = c("eff"), transform = NULL, terms = c("kant"))
+p_rec_beta4 <- plot_model(rec_r_beta4_TMB, type = c("eff"), transform = NULL, terms = c("kant"))
 p_rec_beta4 <- p_rec_beta4 + theme_light() +
   theme(plot.title = element_blank(),
     axis.text = element_text(family = "sans", size = 12, color = "grey30"),
         axis.title = element_text(family = "sans", size = 20, color = "grey30"),
-    axis.text.x = element_text(angle = 30)) +
+    axis.text.x = element_text(angle = 20, vjust = 1, hjust = 1)) +
   xlab("Edge\n") +
   ylab("Recruitment\n")
 
 
-p_rec_beta5 <- plot_model(rec_r_beta4, type = c("eff"), transform = NULL, terms = c("helling [all]"))
+p_rec_beta5 <- plot_model(rec_r_beta4_TMB, type = c("eff"), transform = NULL, terms = c("helling [all]"))
 p_rec_beta5 <- p_rec_beta5 + theme_light() +
   theme(plot.title = element_blank(),
     axis.text = element_text(family = "sans", size = 20, color = "grey30"),
@@ -1122,7 +1067,7 @@ p_rec_beta5 <- p_rec_beta5 + theme_light() +
   ylab("Recruitment\n")
 
 
-p_rec_beta6 <- plot_model(rec_r_beta4, type = c("eff"), transform = NULL, terms = c("HOH [all]"))
+p_rec_beta6 <- plot_model(rec_r_beta4_TMB, type = c("eff"), transform = NULL, terms = c("HOH [all]"))
 p_rec_beta6 <- p_rec_beta6 + theme_light() +
   theme(plot.title = element_blank(),
     axis.text = element_text(family = "sans", size = 20, color = "grey30"),
@@ -1131,7 +1076,7 @@ p_rec_beta6 <- p_rec_beta6 + theme_light() +
   ylab("Recruitment\n")
 
 
-p_rec_beta7 <- plot_model(rec_r_beta4, type = c("eff"), transform = NULL, terms = c("beitetrykk9 [all]"))
+p_rec_beta7 <- plot_model(rec_r_beta4_TMB, type = c("eff"), transform = NULL, terms = c("beitetrykk9 [all]"))
 p_rec_beta7 <- p_rec_beta7 + theme_light() +
   theme(plot.title = element_blank(),
     axis.text = element_text(family = "sans", size = 20, color = "grey30"),
