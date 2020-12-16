@@ -151,19 +151,19 @@ library(AICcmodavg)
 
 candmods_bin_cuthouse <- list(bin_cuthouse1, bin_cuthouse2, bin_cuthouse3, bin_cuthouse4, bin_cuthouse5, bin_cuthouse6, bin_cuthouse7, bin_cuthouse8)
 aictab(candmods_bin_cuthouse, modnames = NULL,
-                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+                       second.ord = F, nobs = NULL, sort = TRUE)
 
 # Model selection based on AICc:
-# 
-#       K     AICc Delta_AICc AICcWt Cum.Wt        LL
-# Mod7 19 21514.35       0.00   0.69   0.69 -10738.16
-# Mod8 19 21516.61       2.26   0.22   0.91 -10739.29
-# Mod6 19 21518.53       4.17   0.09   1.00 -10740.25
-# Mod5 19 21526.92      12.57   0.00   1.00 -10744.44
-# Mod4 19 21533.96      19.60   0.00   1.00 -10747.96
-# Mod3 19 21545.22      30.87   0.00   1.00 -10753.59
-# Mod2 19 21556.32      41.97   0.00   1.00 -10759.14
-# Mod1 19 21589.06      74.70   0.00   1.00 -10775.51
+#
+#       K      AIC Delta_AIC AICWt Cum.Wt        LL
+# Mod7 19 21514.32      0.00  0.69   0.69 -10738.16
+# Mod8 19 21516.58      2.26  0.22   0.91 -10739.29
+# Mod6 19 21518.49      4.17  0.09   1.00 -10740.25
+# Mod5 19 21526.89     12.57  0.00   1.00 -10744.44
+# Mod4 19 21533.92     19.60  0.00   1.00 -10747.96
+# Mod3 19 21545.19     30.87  0.00   1.00 -10753.59
+# Mod2 19 21556.29     41.97  0.00   1.00 -10759.14
+# Mod1 19 21589.02     74.70  0.00   1.00 -10775.51
 
 ```
 
@@ -240,13 +240,13 @@ library(AICcmodavg)
 
 candmods_browse_house_bin <- list(browse_h_bin1, browse_h_bin2)
 aictab(candmods_browse_house_bin, modnames = NULL,
-                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+                       second.ord = FALSE, nobs = NULL, sort = TRUE)
 
 # Model selection based on AICc:
 # 
-#       K     AICc Delta_AICc AICcWt Cum.Wt        LL
-# Mod1 19 21487.76       0.00   0.98   0.98 -10724.87
-# Mod2 15 21495.42       7.66   0.02   1.00 -10732.70
+#       K      AIC Delta_AIC AICWt Cum.Wt        LL
+# Mod1 19 21487.73      0.00  0.98   0.98 -10724.87
+# Mod2 15 21495.40      7.67  0.02   1.00 -10732.70
 
 ```
 
@@ -386,21 +386,21 @@ beta_cuthouse8 <- glmmTMB(bt100 ~ disthus_150 + distvei2 + skogkategori + treart
 library(AICcmodavg)
 
 candmods_beta_cuthouse <- list(beta_cuthouse1, beta_cuthouse2, beta_cuthouse3, beta_cuthouse4, beta_cuthouse5, beta_cuthouse6, beta_cuthouse7, beta_cuthouse8)
-candmods_beta_cuthouse <- list(beta_cuthouse1, beta_cuthouse2, beta_cuthouse3)
+# candmods_beta_cuthouse <- list(beta_cuthouse1, beta_cuthouse2, beta_cuthouse3)
 aictab(candmods_beta_cuthouse, modnames = NULL,
-                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+                       second.ord = F, nobs = NULL, sort = TRUE)
 
 # Model selection based on AICc:
 # 
-#       K     AICc Delta_AICc AICcWt Cum.Wt      LL
-# Mod7 20 -9735.44       0.00   0.92   0.92 4887.75
-# Mod8 20 -9729.12       6.32   0.04   0.95 4884.59
-# Mod5 20 -9729.12       6.33   0.04   0.99 4884.58
-# Mod6 20 -9724.88      10.57   0.00   1.00 4882.46
-# Mod4 20 -9722.41      13.03   0.00   1.00 4881.23
-# Mod3 20 -9719.25      16.19   0.00   1.00 4879.65
-# Mod2 20 -9714.73      20.72   0.00   1.00 4877.39
-# Mod1 20 -9702.34      33.10   0.00   1.00 4871.20
+#       K      AIC Delta_AIC AICWt Cum.Wt      LL
+# Mod7 20 -9735.49      0.00  0.92   0.92 4887.75
+# Mod8 20 -9729.17      6.32  0.04   0.95 4884.59
+# Mod5 20 -9729.17      6.33  0.04   0.99 4884.58
+# Mod6 20 -9724.93     10.57  0.00   1.00 4882.46
+# Mod4 20 -9722.46     13.03  0.00   1.00 4881.23
+# Mod3 20 -9719.30     16.19  0.00   1.00 4879.65
+# Mod2 20 -9714.78     20.72  0.00   1.00 4877.39
+# Mod1 20 -9702.39     33.10  0.00   1.00 4871.20
 
 ```
 
@@ -427,6 +427,7 @@ aictab(candmods_beta_cuthouse, modnames = NULL,
 
 Prepare data set for second part of the hurdle
 ```{r}
+load("processdata/browse_house.rda")
 browse_house <- browse_house[browse_house$bt100 > 0, ]
 str(browse_house)
 summary(browse_house$bt100)
@@ -461,7 +462,7 @@ summary(browse_h_beta1)
 
 browse_h_beta2 <- glmmTMB(bt100 ~ disthus_200 + log(distvei2+1) + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
             data = browse_house,
-            family = beta_family())
+            family = beta_family()) # BEST
 
 
 
@@ -474,13 +475,13 @@ library(AICcmodavg)
 
 candmods_browse_house_beta <- list(browse_h_beta1,browse_h_beta2)
 aictab(candmods_browse_house_beta, modnames = NULL,
-                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+                       second.ord = F, nobs = NULL, sort = TRUE)
 
 # Model selection based on AICc:
 # 
-#       K     AICc Delta_AICc AICcWt Cum.Wt      LL
-# Mod2 19 -9764.42       0.00   0.59   0.59 4901.23
-# Mod1 20 -9763.69       0.73   0.41   1.00 4901.87
+#       K      AIC Delta_AIC AICWt Cum.Wt      LL
+# Mod2 19 -9764.46      0.00  0.59   0.59 4901.23
+# Mod1 20 -9763.74      0.72  0.41   1.00 4901.87
 
 ```
 
@@ -593,11 +594,6 @@ family = binomial(),
 data = browse_roads)
 
 
-browse_r_bin6 <- glmer(beite_bin ~  moose_density*log(distvei2+1) + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + ac + (1|KOMNR),
-family = binomial(),
-data = browse_roads) 
-summary(browse_r_bin6)
-
 ```
 
 #### AIC selection bin models
@@ -606,15 +602,15 @@ library(AICcmodavg)
 
 candmods_browse_roads_bin <- list(browse_r_bin1, browse_r_bin2, browse_r_bin4, browse_r_bin5)
 aictab(candmods_browse_roads_bin, modnames = NULL,
-                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+                       second.ord = F, nobs = NULL, sort = TRUE)
 
 # Model selection based on AICc:
 # 
-#       K     AICc Delta_AICc AICcWt Cum.Wt       LL
-# Mod1 18 19057.81       0.00   0.99   0.99 -9510.89
-# Mod2 17 19069.15      11.34   0.00   1.00 -9517.56
-# Mod3 18 19070.50      12.69   0.00   1.00 -9517.23
-# Mod4 18 19070.60      12.79   0.00   1.00 -9517.28
+#       K      AIC Delta_AIC AICWt Cum.Wt       LL
+# Mod1 18 19057.78      0.00  0.99   0.99 -9510.89
+# Mod2 17 19069.12     11.34  0.00   1.00 -9517.56
+# Mod3 18 19070.47     12.69  0.00   1.00 -9517.23
+# Mod4 18 19070.57     12.79  0.00   1.00 -9517.28
 
 ```
 
@@ -718,23 +714,8 @@ browse_r_beta4 <- glmmTMB(bt100 ~ skogkategori + treartgruppe9 + tretetthet9 + k
             data = browse_roads,
             family = beta_family())
 
-
-
-
-browse_r_beta5 <- glmmTMB(bt100 ~ moose_density*log(distvei2+1) + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + ac + (1|KOMNR),
-            data = browse_roads,
-            family = beta_family())
-# Warning messages:
-# 1: In (function (start, objective, gradient = NULL, hessian = NULL,  :
-#   NA/NaN function evaluation
-summary(browse_r_beta5)
-
-
 ```
-NA/NaN function evaluation
-Example: Warning in nlminb(start = par, objective = fn, gradient = gr) : NA/NaN function evaluation
 
-This warning occurs when the optimizer visits a region of parameter space that is invalid. It is not a problem as long as the optimizer has left that region of parameter space upon convergence, which is indicated by an absence of the model convergence warnings described above.
 
 
 
@@ -744,15 +725,15 @@ library(AICcmodavg)
 
 candmods_browse_roads_beta <- list(browse_r_beta1, browse_r_beta2, browse_r_beta3, browse_r_beta4)
 aictab(candmods_browse_roads_beta, modnames = NULL,
-                       second.ord = TRUE, nobs = NULL, sort = TRUE)
+                       second.ord = F, nobs = NULL, sort = TRUE)
 
 # Model selection based on AICc:
 # 
-#       K     AICc Delta_AICc AICcWt Cum.Wt      LL
-# Mod3 18 -8794.52       0.00   0.63   0.63 4415.28
-# Mod1 19 -8793.44       1.08   0.37   1.00 4415.75
-# Mod2 19 -8773.41      21.11   0.00   1.00 4405.73
-# Mod4 17 -8769.52      25.00   0.00   1.00 4401.78
+#       K      AIC Delta_AIC AICWt Cum.Wt      LL
+# Mod3 18 -8794.57      0.00  0.63   0.63 4415.28
+# Mod1 19 -8793.49      1.08  0.37   1.00 4415.75
+# Mod2 19 -8773.46     21.10  0.00   1.00 4405.73
+# Mod4 17 -8769.56     25.00  0.00   1.00 4401.78
 
 ```
 
