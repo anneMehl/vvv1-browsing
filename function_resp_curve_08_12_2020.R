@@ -133,10 +133,10 @@ resp_curve <- function(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2
 
   if (focal=="disthus") { 
     xvals1 <- seq(-6.714585, 11.10379, length.out=nvals) 
-    dat1[c(1:nvals),focal1] <- ifelse(xvals1>0.2791458, 0.2791458, xvals1)
+    dat1[c(1:nvals),focal1] <- ifelse(xvals1>0.2791458, 0.2791458, xvals1) 
     xvals2 <- seq(-3.025222, 1.59322, length.out=nvals) # changed from: -3.980824, need to change 1.59322 as well; 1.59322 = the point on the y axis where the line should start? Look for the untruncated value of the disthus (not that value) or 500 on the scaled (nope)?
     dat2[c(1:nvals),focal2] <- ifelse(xvals2>0.6186424, 0.6186424, xvals2) # think 0.6186424 (600m) instead of 0.2791458 (200m), changed: xvals2>0.2791458, 0.2791458
-  } 
+  }  # -1.835838 is 200 scaled in focal2
 
   if (focal=="distvei") {
     rng2 <- rng1 <- c(0, road_upper)

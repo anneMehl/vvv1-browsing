@@ -1,5 +1,8 @@
-## Load HOUSE models data----
+setwd("P:/12894100_stipendiat_anne_mehlhoop_anvendt_okologi_og_natu/01_Browsing_pressure/analysis/Bram_Anne/")
+#install.packages("glmmTMB")
+library(glmmTMB)
 
+## Load HOUSE models data----
 
 #### Browsing pressure 
 load("output/browse_04_12_2020/browse_h_bin1.rda")
@@ -39,7 +42,7 @@ str(recruits_house)
 # recruits_house <- recruits_house[ ,-c(7)]
 recruits_house$recruitment_bin <- ifelse(recruits_house$recruitment == 0, 0, 1)
 # scale
-recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
+# recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
 recruits_house$helling <- scale(recruits_house$helling)
 recruits_house$HOH <- scale(recruits_house$HOH)
 recruits_house$moose_density <- scale(recruits_house$moose_density)
@@ -101,7 +104,7 @@ is.integer(recruits_roads$recruitment)
 recruits_roads$recruitment <- as.integer(recruits_roads$recruitment)
 is.integer(recruits_roads$recruitment)
 # Scale
-recruits_roads$beitetrykk9 <- scale(recruits_roads$beitetrykk9)
+# recruits_roads$beitetrykk9 <- scale(recruits_roads$beitetrykk9)
 recruits_roads$helling <- scale(recruits_roads$helling)
 recruits_roads$HOH <- scale(recruits_roads$HOH)
 recruits_roads$moose_density <- scale(recruits_roads$moose_density)
@@ -120,25 +123,83 @@ head(dat2)
 source("function_resp_curve_08_12_2020.R")
 
 
+
+
+## To reproduce the errors/warnings and problems: ----
+
+### Warning with HOH ----
+# Remember that I still get a warning, but I can plot the results and they look ok.
 #### Select focal variable
 (focal = c("distvei", "skogkategori", "treartgruppe9", "kant", 
-           "helling", "HOH", "tretetthet9", "beitetrykk9", "disthus", "moose_density")[1])
+           "helling", "HOH", "tretetthet9", "beitetrykk9", "disthus", "moose_density")[6])
 
 
 
-#### Run function for the different models/ focals and SAVE them
+#### Run function for the different models
 # hurdle1_only = browsing pressure hurdle
 # hurdle2_only = recruitment hurdle (indirect effect)
 # total = total effect
 
-bp_distvei <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+bp_HOH <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
                          which_effect=c("hurdle1_only", "hurdle2_only", "total")[1], nvals=100, plotit=F, nb_btstrp=99)
 
-recruit_distvei <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
+recruit_HOH <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
                          which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
 
-total_distvei <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+total_HOH <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
                        which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=99)
+
+
+
+
+
+
+### Errors with moose_density ----
+# Remember that moose density is all new and only in the binary models
+#### Select focal variable
+(focal = c("distvei", "skogkategori", "treartgruppe9", "kant", 
+           "helling", "HOH", "tretetthet9", "beitetrykk9", "disthus", "moose_density")[10])
+
+
+
+#### Run function for the different models
+
+bp_moose <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+                     which_effect=c("hurdle1_only", "hurdle2_only", "total")[1], nvals=100, plotit=F, nb_btstrp=99)
+
+recruit_moose <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
+                          which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
+
+total_moose <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+                        which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=99)
+
+
+
+
+
+
+## Problems with disthus ----
+# Remember to load the house models and data for that
+#### Select focal variable
+(focal = c("distvei", "skogkategori", "treartgruppe9", "kant", 
+           "helling", "HOH", "tretetthet9", "beitetrykk9", "disthus", "moose_density")[9])
+
+
+
+#### Run function for the different models
+
+bp_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+                       which_effect=c("hurdle1_only", "hurdle2_only", "total")[1], nvals=100, plotit=T, nb_btstrp=99)
+
+recruit_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
+                            which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=T, nb_btstrp=99)
+
+total_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+                          which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=T, nb_btstrp=99)
+
+# Just got an idea since I used the plot here and see the scaling. I probably need the scaled
+# value for 200 of the scaling from the recruits disthus? But I tried to add that but 
+# could not find the right spot in the function.
 
 
 
