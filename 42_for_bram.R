@@ -30,6 +30,7 @@ head(dat1)
 
 #### Recruitment
 load("output/recruitment_07_12_2020/rec_h_bin7_600.rda")
+
 zeromod2 <- rec_h_bin7_600
 summary(zeromod2)
 
@@ -42,7 +43,7 @@ str(recruits_house)
 # recruits_house <- recruits_house[ ,-c(7)]
 recruits_house$recruitment_bin <- ifelse(recruits_house$recruitment == 0, 0, 1)
 # scale
-# recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
+recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
 recruits_house$helling <- scale(recruits_house$helling)
 recruits_house$HOH <- scale(recruits_house$HOH)
 recruits_house$moose_density <- scale(recruits_house$moose_density)
@@ -60,6 +61,28 @@ head(dat2)
 
 
 
+source("function_resp_curve_08_12_2020.R")
+
+
+#### Select focal variable
+(focal = c("distvei", "skogkategori", "treartgruppe9", "kant", 
+           "helling", "HOH", "tretetthet9", "beitetrykk9", "disthus", "moose_density")[9])
+
+
+
+#### Run function for the different models/ focals and SAVE them
+# hurdle1_only = browsing pressure hurdle
+# hurdle2_only = recruitment hurdle (indirect effect)
+# total = total effect
+
+resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+           which_effect=c("hurdle1_only", "hurdle2_only", "total")[1], nvals=20, plotit=T, nb_btstrp=9)
+
+resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
+           which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=20, plotit=T, nb_btstrp=9)
+
+resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+           which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=20, plotit=T, nb_btstrp=9)
 
 
 ## Load ROAD models and data ----
@@ -104,7 +127,7 @@ is.integer(recruits_roads$recruitment)
 recruits_roads$recruitment <- as.integer(recruits_roads$recruitment)
 is.integer(recruits_roads$recruitment)
 # Scale
-# recruits_roads$beitetrykk9 <- scale(recruits_roads$beitetrykk9)
+recruits_roads$beitetrykk9 <- scale(recruits_roads$beitetrykk9)
 recruits_roads$helling <- scale(recruits_roads$helling)
 recruits_roads$HOH <- scale(recruits_roads$HOH)
 recruits_roads$moose_density <- scale(recruits_roads$moose_density)
@@ -123,85 +146,40 @@ head(dat2)
 source("function_resp_curve_08_12_2020.R")
 
 
-
-
-## To reproduce the errors/warnings and problems: ----
-
-### Warning with HOH ----
-# Remember that I still get a warning, but I can plot the results and they look ok.
-#### Select focal variable
-(focal = c("distvei", "skogkategori", "treartgruppe9", "kant", 
-           "helling", "HOH", "tretetthet9", "beitetrykk9", "disthus", "moose_density")[6])
-
-
-
-#### Run function for the different models
-# hurdle1_only = browsing pressure hurdle
-# hurdle2_only = recruitment hurdle (indirect effect)
-# total = total effect
-
-bp_HOH <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
-                         which_effect=c("hurdle1_only", "hurdle2_only", "total")[1], nvals=100, plotit=F, nb_btstrp=99)
-
-recruit_HOH <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
-                         which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
-
-total_HOH <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
-                       which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=99)
-
-
-
-
-
-
-### Errors with moose_density ----
-# Remember that moose density is all new and only in the binary models
-#### Select focal variable
-(focal = c("distvei", "skogkategori", "treartgruppe9", "kant", 
-           "helling", "HOH", "tretetthet9", "beitetrykk9", "disthus", "moose_density")[10])
-
-
-
-#### Run function for the different models
-
-bp_moose <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
-                     which_effect=c("hurdle1_only", "hurdle2_only", "total")[1], nvals=100, plotit=F, nb_btstrp=99)
-
-recruit_moose <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
-                          which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
-
-total_moose <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
-                        which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=99)
-
-
-
-
-
-
-## Problems with disthus ----
-# Remember to load the house models and data for that
 #### Select focal variable
 (focal = c("distvei", "skogkategori", "treartgruppe9", "kant", 
            "helling", "HOH", "tretetthet9", "beitetrykk9", "disthus", "moose_density")[9])
 
 
 
-#### Run function for the different models
+#### Run function for the different models/ focals and SAVE them
+# hurdle1_only = browsing pressure hurdle
+# hurdle2_only = recruitment hurdle (indirect effect)
+# total = total effect
 
 bp_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
-                       which_effect=c("hurdle1_only", "hurdle2_only", "total")[1], nvals=100, plotit=T, nb_btstrp=99)
+                         which_effect=c("hurdle1_only", "hurdle2_only", "total")[1], nvals=20, plotit=F, nb_btstrp=9)
 
 recruit_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
-                            which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=T, nb_btstrp=99)
+                         which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=20, plotit=F, nb_btstrp=9)
 
 total_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
-                          which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=T, nb_btstrp=99)
-
-# Just got an idea since I used the plot here and see the scaling. I probably need the scaled
-# value for 200 of the scaling from the recruits disthus? But I tried to add that but 
-# could not find the right spot in the function.
+                                  which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=9)
 
 
+### Browse
+# attributes(browse_house$disthus_200) # $`scaled:center` 192.2636 $`scaled:scale` 27.71453
+bp_disthus$var <- bp_disthus$var * 27.71453 + 192.2636
+
+### Recruitment
+# attributes(recruits_house$disthus_600) # $`scaled:center` 499.182 $`scaled:scale` 162.9665
+recruit_disthus$var <- recruit_disthus$var * 162.9665 + 499.182
+
+### Total
+total_disthus$var <- total_disthus$var * 162.9665 + 499.182
+head(total_disthus)
+
+plot(point~var, data=total_disthus, type="l")
 
 
 
