@@ -626,7 +626,7 @@ browse$bt100 <- browse$beitetrykk9/100
 ```
 
 
-#### Make new variable moose density (mean over 5 year period to datasets and models)
+#### Make new variable moose density (mean over 5 year period)
 ```{r}
 library(readr)
 moose_mean_density <- read_csv("processdata/five_y_mean_density.csv", na = "NA")
