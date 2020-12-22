@@ -280,41 +280,43 @@ save(total_moose, file = "output/function_results_18_12_2020/total_moose.rda")
 ## load function data (These are the final function outputs)
 ```{r}
 # Browsing pressure (indirect)
-# load("output/final_function_outputs/bp_disthus.rda")
-# load("output/final_function_outputs/bp_distvei.rda")
-# load("output/final_function_outputs/bp_skogkat.rda")
-# load("output/final_function_outputs/bp_kant.rda")
-# load("output/final_function_outputs/bp_treart.rda")
-# load("output/final_function_outputs/bp_hell.rda")
-# load("output/final_function_outputs/bp_hoh.rda")
-# load("output/final_function_outputs/bp_tretett.rda")
+load("output/function_results_18_12_2020/bp_disthus.rda")
+load("output/function_results_18_12_2020/bp_distvei.rda")
+load("output/function_results_18_12_2020/bp_skogkat.rda")
+load("output/function_results_18_12_2020/bp_kant.rda")
+load("output/function_results_18_12_2020/bp_treart.rda")
+load("output/function_results_18_12_2020/bp_helling.rda")
+load("output/function_results_18_12_2020/bp_HOH.rda")
+load("output/function_results_18_12_2020/bp_tretett.rda")
+load("output/function_results_18_12_2020/bp_moose.rda")
 
-# # Recruits (direct)
-# load("output/final_function_outputs/06012020/recruit_disthus.rda")
-# load("output/final_function_outputs/06012020/recruit_distvei.rda")
-# load("output/final_function_outputs/06012020/recruit_skogkat.rda")
-# load("output/final_function_outputs/06012020/recruit_kant.rda")
-# load("output/final_function_outputs/06012020/recruit_treart.rda")
-# load("output/final_function_outputs/06012020/recruit_hell.rda")
-# load("output/final_function_outputs/06012020/recruit_bp.rda")
-# load("output/final_function_outputs/06012020/recruit_hoh.rda")
-# 
-# # Total (indirect + direct)
-# load("output/final_function_outputs/06012020/total_disthus.rda")
-# load("output/final_function_outputs/06012020/total_distvei.rda")
-# load("output/final_function_outputs/06012020/total_skogkat.rda")
-# load("output/final_function_outputs/06012020/total_kant.rda")
-# load("output/final_function_outputs/06012020/total_treart.rda")
-# load("output/final_function_outputs/06012020/total_hell.rda")
-# load("output/final_function_outputs/06012020/total_bp.rda")
-# load("output/final_function_outputs/06012020/total_tretett.rda")
-# load("output/final_function_outputs/06012020/total_hoh.rda")
+# Recruits (direct)
+load("output/function_results_18_12_2020/recruit_disthus.rda")
+load("output/function_results_18_12_2020/recruit_distvei.rda")
+load("output/function_results_18_12_2020/recruit_skogkat.rda")
+load("output/function_results_18_12_2020/recruit_kant.rda")
+load("output/function_results_18_12_2020/recruit_treart.rda")
+load("output/function_results_18_12_2020/recruit_helling.rda")
+# load("output/function_results_18_12_2020/recruit_beite.rda")
+load("output/function_results_18_12_2020/recruit_HOH.rda")
+load("output/function_results_18_12_2020/recruit_moose.rda")
 
+# Total (indirect + direct)
+load("output/function_results_18_12_2020/total_disthus.rda")
+load("output/function_results_18_12_2020/total_distvei.rda")
+load("output/function_results_18_12_2020/total_skogkat.rda")
+load("output/function_results_18_12_2020/total_kant.rda")
+load("output/function_results_18_12_2020/total_treart.rda")
+load("output/function_results_18_12_2020/total_helling.rda")
+load("output/function_results_18_12_2020/total_beite.rda")
+load("output/function_results_18_12_2020/total_tretett.rda")
+load("output/function_results_18_12_2020/total_HOH.rda")
+load("output/function_results_18_12_2020/total_moose.rda")
 
 ```
 
 
-## Re-scale 
+## Re-scale (NOT when using loaded function outputs!!!)
 ```{r}
 # d$s.x * attr(d$s.x, 'scaled:scale') + attr(d$s.x, 'scaled:center')
 
@@ -334,7 +336,7 @@ bp_disthus$var <- bp_disthus$var * 27.71453 + 192.2636
 # attributes(browse_roads$moose_density) # $`scaled:center` 184.0303 $`scaled:scale` 196.1478
 # attributes(browse_roads$tretetthet9) # $`scaled:center` 993.2908 $`scaled:scale` 1152.076
 bp_helling$var <- bp_helling$var * 20.63004 + 19.83571
-bp_HOH$var <- bp_HOH$var * 243.1602 + 378.861
+bp_HOH$var <- as.integer(bp_HOH$var * 243.1602 + 378.861) # for some reason I got scientific notation here, solves by using as.integer
 bp_moose$var <- bp_moose$var * 196.1478 + 184.0303
 bp_tretett$var <- bp_tretett$var * 1152.076 + 993.2908
 
@@ -358,7 +360,7 @@ recruit_disthus$var <- recruit_disthus$var * 162.9665 + 499.182
 # attributes(recruits_roads$moose_density) # $`scaled:center` 200.6176 $`scaled:scale` 203.1264
 # recruit_bp$var <- recruit_bp$var * 30.81325 + 26.01752
 recruit_helling$var <- recruit_helling$var * 19.60225 + 19.10349
-recruit_HOH$var <- recruit_HOH$var * 245.9447 + 365.9363
+recruit_HOH$var <- as.integer(recruit_HOH$var * 245.9447 + 365.9363)
 recruit_moose$var <- recruit_moose$var * 203.1264 + 200.6176
 
 recruit_distvei$var <- exp(recruit_distvei$var)-1
@@ -374,7 +376,7 @@ total_disthus$var <- total_disthus$var * 162.9665 + 499.182
 ### Roads
 # attributes(recruits_roads$tretetthet9) # $`scaled:center` 984.6252 $`scaled:scale` 1193.3
 total_helling$var <- total_helling$var * 19.60225 + 19.10349
-total_HOH$var <- total_HOH$var * 245.9447 + 365.9363
+total_HOH$var <- as.integer(total_HOH$var * 245.9447 + 365.9363)
 total_tretett$var <- total_tretett$var * 1193.3 + 984.6252
 total_moose$var <- total_moose$var * 203.1264 + 200.6176
 
@@ -441,8 +443,8 @@ pdt_disthus <- ggplot() +
   
   scale_linetype_manual("Effect",
                         values = c("direct" = 3,"total" = 1)) +
-  xlab("\nDistance to road (m)") + 
-  ylab("Recruitment") +
+  xlab("\nDistance to house (m)") + 
+  ylab("Recruitment (ha 10yr)") +
   theme_light()+
   theme(axis.text = element_text(size = 20), # face = "bold"
         axis.title = element_text(family = "sans", size = 25),
@@ -459,22 +461,22 @@ pdt_disthus <- ggplot() +
 #   geom_line(data = total_disthus, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
 #   geom_ribbon(data = total_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
 #   xlab("\nDistance to house (m)") + 
-#   ylab("Recruitment\n") +
+#   ylab("Recruitment (ha 10yr) (ha 10yr)\n") +
 #   theme_light()+
 #   theme(axis.text = element_text(size = 10),
 #         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
-#   scale_color_manual(name = "Effect on \nRecruitment", 
+#   scale_color_manual(name = "Effect on \nRecruitment (ha 10yr) (ha 10yr)", 
 #                      values = c("total" = "#009292", "direct" = "#004949"))
 # 
 # pd_disthus <- ggplot() + 
 #   geom_line(data = recruit_disthus, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
 #   geom_ribbon(data = recruit_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
 #   xlab("\nDistance to house (m)") + 
-#   ylab("Recruitment\n") +
+#   ylab("Recruitment (ha 10yr) (ha 10yr)\n") +
 #   theme_light()+
 #   theme(axis.text = element_text(size = 10),
 #         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
-#   scale_color_manual(name = "Effect on \nRecruitment", 
+#   scale_color_manual(name = "Effect on \nRecruitment (ha 10yr) (ha 10yr)", 
 #                      values = c("total" = "#009292", "direct" = "#004949"))
 
 ph_disthus <- ggplot() +
@@ -566,7 +568,7 @@ pdt_skogkat <- ggplot() +
         legend.text = element_text(size = 15),
         legend.title = element_text(size = 15)) +
   xlab("Forest category") + 
-  ylab("Recruitment\n") +
+  ylab("Recruitment (ha 10yr)\n") +
   scale_x_discrete(labels = c("High-prod. \nold forest", "High-prod. \nyoung forest", "Low-prod. \nold forest", "Low-prod. \nyoung forest", "Unproductive \nforest"))+
    scale_color_manual(name = "Effect", 
                      values = cbPalette)
@@ -685,7 +687,7 @@ pdt_kant <- ggplot() +
 #   theme(axis.text = element_text(size = 10),
 #         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
 #   xlab("\nEdge effect") + 
-#   ylab("Recruitment\n") +
+#   ylab("Recruitment (ha 10yr) (ha 10yr)\n") +
 #   scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-20m", "Edge information\nmissing"))
 # 
 # 
@@ -695,9 +697,9 @@ pdt_kant <- ggplot() +
 #   theme(axis.text = element_text(size = 10),
 #         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
 #   xlab("\nEdge effect") + 
-#   ylab("Recruitment\n") +
+#   ylab("Recruitment (ha 10yr) (ha 10yr)\n") +
 #   scale_x_discrete(labels = c("Edge <10m", "Edge >20m", "Edge 10-20m", "Edge information\nmissing")) +
-#   scale_color_manual(name = "Effect on \nRecruitment", 
+#   scale_color_manual(name = "Effect on \nRecruitment (ha 10yr) (ha 10yr)", 
 #                      values = c("indirect" = "#009292", "direct" = "#004949"))
 
 
@@ -787,7 +789,7 @@ pdt_hoh <- ggplot() +
                         values = c("direct" = 3,"total" = 1)) +
   
   xlab("Altitude (masl)\n") + 
-  ylab("Recruitment\n") +
+  ylab("Recruitment (ha 10yr)\n") +
   theme_light()+
   theme(axis.text = element_text(size = 20), # face = "bold"
         axis.title = element_text(family = "sans", size = 25),
@@ -842,8 +844,8 @@ pdt_tretett <- ggplot() +
   
   scale_linetype_manual("Effect",
                         values = c("indirect" = 1)) +
-  xlab("Tree density\n") + 
-  ylab("Recruitment\n") +
+  xlab("Tree density (ha)\n") + 
+  ylab("") +
   theme_light()+
   theme(axis.text = element_text(size = 20), # face = "bold"
         axis.title = element_text(family = "sans", size = 25),
@@ -877,7 +879,7 @@ ph_tretett <- ggplot() +
   theme(axis.text.x = element_text(size = 18), 
         axis.text.y = element_text(size = 20),
         axis.title = element_text(family = "sans", size = 25)) +
-  xlab("Tree density\n") + 
+  xlab("Tree density (ha)\n") + 
   ylab("") +
     scale_fill_manual(values = "#0072B2")
 
@@ -892,7 +894,7 @@ pdt_beite <- ggplot() +
   scale_linetype_manual("Effect",
                         values = c("direct" = 3)) +
   xlab("Browsing pressure (%)\n") + 
-  ylab("Recruitment\n") +
+  ylab("Recruitment (ha 10yr)\n") +
   theme_light()+
   theme(axis.text = element_text(size = 20), # face = "bold"
         axis.title = element_text(family = "sans", size = 25),
@@ -941,7 +943,7 @@ pdt_moose <- ggplot() +
   scale_linetype_manual("Effect",
                         values = c("direct (only\n on probability)" = 3,"total (only\n on probability)" = 1)) +
   xlab("Moose density (5 year mean)\n") + 
-  ylab("Recruitment\n") +
+  ylab("Recruitment (ha 10yr)\n") +
   theme_light()+
   theme(axis.text = element_text(size = 20), # face = "bold"
         axis.title = element_text(family = "sans", size = 25),
@@ -975,6 +977,8 @@ library(egg)
 library(cowplot)
 library(grid)
 
+## !! For high resolution figures either increase dpi to 300-600 or use .pdf instead of .tiff. 300-600 dpi figures will be very large in terms of MB
+
 ## browsing pressure #############
 
 # disthus and distvei
@@ -985,11 +989,11 @@ hurdle_husvei <- ggarrange(nullplot, nullplot, ph_disthus, ph_distvei,
           nrow = 2,
           heights = c(0.1,1),
           labels = c("","", "(a)", "(b)"),
-          label.args = list(gp = gpar(font = 2, fontsize = 15), x = unit(1,"line"), hjust = -1, vjust = 1),
+          label.args = list(gp = gpar(font = 2, fontsize = 15), x = unit(1,"line"), hjust = -1, vjust = 0),
           widths = c(1,1),
           draw = F
           )
-ggsave(file = "function_browse_hurdle_husvei.pdf", hurdle_husvei, width = 30, height = 15, units = "cm")
+ggsave(file = "function_browse_hurdle_husvei.pdf", hurdle_husvei, width = 30, height = 15, units = "cm") #, dpi = 150
 
 # rest
 nullplot <- ggplot()+
@@ -999,12 +1003,12 @@ hurdle_grid <- ggarrange(nullplot, nullplot, nullplot, ph_treart, ph_skogkat, nu
           ncol = 3,
           nrow = 5,
           heights = c(0.2,1, 1, 1, 1),
-          labels = c("","", "(a)", "(b)", "(c)", "(d)", "(e)", "(f)", "(g)"),
+          labels = c("","","","(a)", "(b)","", "(c)", "(d)","", "(e)", "(f)","", "(g)"),
           label.args = list(gp = gpar(font = 2, fontsize = 15), x = unit(1,"line"), hjust = -2.5, vjust = -1),
           widths = c(1,1,0.1),
           draw = F
           )
-ggsave(file = "function_browse_hurdle_grid.pdf", hurdle_grid, width = 30, height = 45, units = "cm")
+ggsave(file = "function_browse_hurdle_grid.tiff", hurdle_grid, width = 30, height = 45, units = "cm", dpi = 150) #, dpi = 150
 
  
 
@@ -1019,24 +1023,24 @@ total_direct_husvei <- ggarrange(nullplot, nullplot, pdt_disthus, pdt_distvei,
           labels = c("","", "(a)", "(b)"),
           label.args = list(gp = gpar(font = 2, fontsize = 15), x = unit(1,"line"), hjust = -1, vjust = 0),
           widths = c(1,1),
-          draw = T
+          draw = F
           )
-ggsave(file = "function_total_direct_husvei.pdf", total_direct_husvei, width = 30, height = 15, units = "cm")
+ggsave(file = "function_total_direct_husvei.tiff", total_direct_husvei, width = 30, height = 15, units = "cm", dpi = 150) #, dpi = 150
 
 # rest
 nullplot <- ggplot()+
   theme_void()
 
-total_direct_grid <- ggarrange(nullplot, nullplot, pdt_beite, pdt_treart, pdt_skogkat, pdt_kant,  pdt_hoh, pdt_hell,  pdt_moose,
+total_direct_grid <- ggarrange(nullplot, nullplot, pdt_beite, pdt_treart, pdt_skogkat, pdt_kant,  pdt_hoh, pdt_hell,  pdt_moose, pdt_tretett,
           ncol = 2,
           nrow = 5,
           heights = c(0.2,1, 1, 1, 1),
-          labels = c("","", "(a)", "(b)", "(c)", "(d)", "(e)", "(f)", "(g)"),
+          labels = c("","", "(a)", "(b)", "(c)", "(d)", "(e)", "(f)", "(g)", "(h)"),
           label.args = list(gp = gpar(font = 2, fontsize = 15), x = unit(1,"line"), hjust = -2.5, vjust = -1),
           widths = c(1,1),
           draw = F
           )
-ggsave(file = "function_total_direct_grid.pdf", total_direct_grid, width = 30, height = 45, units = "cm")
+ggsave(file = "function_total_direct_grid.pdf", total_direct_grid, width = 30, height = 45, units = "cm") #, dpi = 150
 
 ```
 
