@@ -276,8 +276,8 @@ library(performance)
 model_performance(browse_h_bin1)
 
  
-# tab_model(rec_h_bin5, transform = NULL, 
-#           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
+tab_model(browse_h_bin1, transform = NULL,
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, p.threshold = c(0.05, 0.01, 0.001))
 
 ggstatsplot::ggcoefstats(
   x = browse_h_bin1,
@@ -509,10 +509,10 @@ library(performance)
 # check_model(browse_h_beta2)
 model_performance(browse_h_beta2)
 
-# tab_model(rec_h_beta7, transform = NULL,
-#           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001)) 
-# Is it not working because of the scaled variables?
 
+
+tab_model(browse_h_beta2, transform = NULL,
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, p.threshold = c(0.05, 0.01, 0.001))
 
 
 
@@ -638,8 +638,8 @@ plot_model(browse_r_bin1, type = "diag")
 plot_model(browse_r_bin1, type = "eff")
 plot_model(browse_r_bin1, type = "est")
 
-# tab_model(rec_r_bin7, transform = NULL,
-#           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
+tab_model(browse_r_bin1, transform = NULL,
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, p.threshold = c(0.05, 0.01, 0.001))
 
 ggstatsplot::ggcoefstats(
   x = browse_r_bin1,
@@ -762,8 +762,8 @@ plot_model(browse_r_beta3, type = "diag")
 plot_model(browse_r_beta3, type = "eff") 
 plot_model(browse_r_beta3, type = "est")
 
-# tab_model(rec_h_beta4, transform = NULL,
-#           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, show.se = TRUE, show.std = NULL, show.p = TRUE, show.stat = FALSE, show.df = FALSE, show.zeroinf = FALSE, show.r2 = TRUE, show.icc = TRUE, show.adj.icc = FALSE, show.re.var = TRUE, show.aic = TRUE, show.dev = FALSE, show.obs = TRUE, p.threshold = c(0.05, 0.01, 0.001))
+tab_model(browse_r_beta3, transform = NULL,
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, p.threshold = c(0.05, 0.01, 0.001))
 
 ggstatsplot::ggcoefstats(
   x = browse_r_beta3,
