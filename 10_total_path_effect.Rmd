@@ -1047,94 +1047,46 @@ ggsave(file = "function_total_direct_grid.pdf", total_direct_grid, width = 30, h
 
 
 
-
-
-
-
-## Testing AIC weight for best models and model without dist house/ dist road
+## Figures data forest category and tree species group for the results/ appendix
 ```{r}
+library(ggplot2)
 
-# HOUSE ----
-load("processdata/browse9.5msc.rda")
-load("processdata/browse9.5mpossc.rda")
-#bin
-library(lme4)
-load("output/mhusabin.rda")
+fp1 <- ggplot(data = browse_roads, aes(treartgruppe9)) +
+  geom_bar()+
+  theme_light()+
+  scale_x_discrete(labels = c("pine", "deciduous \ntrees", "RAW")) +
+  xlab("\nTree species groups") + 
+  ylab("Count\n")
 
-mhusabin_2 <- glmer(factor(proplt > 0) ~ log(distvei2+1) + skogkategori + treartgruppe9 + browspres_merged + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
-family = binomial(),
-data = browse9.5msc)
+fp2 <- ggplot(data = browse_roads, aes(skogkategori)) +
+  geom_bar()+
+  theme_light()+
+  scale_x_discrete(labels = c("Lowproductive \nold forest", "Highproductive \nold forest", "Highproductive \nyoung forest", "Lowproductive \nyoung forest", "Unproductive \nforest")) +
+  xlab("\nForest category") + 
+  ylab("Count\n")
 
-#       K     AICc Delta_AICc AICcWt Cum.Wt       LL
-# Mod1 17 14213.08       0.00   0.97   0.97 -7089.51
-# Mod2 16 14220.23       7.15   0.03   1.00 -7094.09
-# Mod 1 = mhusabin
 
-# beta
-library(glmmTMB)
-load("output/m16abeta_house.rda")
+library(gridExtra)
+fp_grid <- grid.arrange(fp1, fp2,
+          nrow = 2, ncol = 1)
 
-m16abeta_house2 <- glmmTMB(proplt ~ log(distvei2+1) + skogkategori + treartgruppe9 + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
-            data = browse9.5mpossc,
-            family = beta_family())
-
-#                 dAIC df weight
-# m16abeta_house   0.0 12 0.5   
-# m16abeta_house2  0.0 12 0.5   
-# > AIC(m16abeta_house, m16abeta_house2)
-#                 df      AIC
-# m16abeta_house  12 -809.593
-# m16abeta_house2 12 -809.593
-# The original model is already without distance to houses...
-
-# ROAD ----
-load("processdata/browse9.6sc.rda")
-load("processdata/browse9.6scpos.rda")
-# bin
-library(lme4)
-load("output/m2bin_roads.rda")
-
-m2bin_roads2 <- glmer(factor(proplt > 0) ~ skogkategori + treartgruppe9 + browspres_merged + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
-family = binomial(),
-data = browse9.6sc)
-
-#       K     AICc Delta_AICc AICcWt Cum.Wt       LL
-# Mod1 13 10902.98        0.0      1      1 -5438.47
-# Mod2 12 10917.68       14.7      0      1 -5446.82
-# Mod 1 = m2bin_roads
-
-# beta
-library(glmmTMB)
-load("output/m3betaroad.rda")
-
-m3betaroad2 <- glmmTMB(proplt ~ skogkategori + treartgruppe9 + ac + helling + HOH + I(HOH^2) + browspres_merged + (1|KOMNR),
-            data = browse9.6scpos,
-            family = beta_family())
-
-#             dAIC df weight
-# m3betaroad   0.0 13 0.5   
-# m3betaroad2  0.0 13 0.5   
-# > AIC(m3betaroad, m3betaroad2)
-#             df       AIC
-# m3betaroad  13 -603.6964
-# m3betaroad2 13 -603.6964
-# The original model is already without distance to roads...
-
+ggsave(file = "fp_grid.pdf", fp_grid, width = 15, height = 30, units = "cm") #, dpi = 150
 ```
 
+
+
+
+## min, max, se and more of some variables
 ```{r}
-library(AICcmodavg)
-candmods <- list(mhusabin, mhusabin_2)
-
-glmmbeta_tab <- aictab(candmods, modnames = NULL,
-                       second.ord = FALSE, nobs = NULL, sort = TRUE)
-
-library(bbmle)
-ICtab(m3betaroad, m3betaroad2, type = "AIC", weights = TRUE, delta = TRUE)
-AIC(m3betaroad, m3betaroad2)
-
-
-
-
+describe(browse_roads$beitetrykk9)
+describe(recruits_roads$recruitment)
+# describe(recruits_roads$recruitment_ratio)
 ```
+
+
+
+
+
+
+
 
