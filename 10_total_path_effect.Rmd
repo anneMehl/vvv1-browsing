@@ -1085,7 +1085,20 @@ describe(recruits_roads$recruitment)
 
 
 
+## % of plots within 200m from roads/ houses (for how much of the forest lies within these areas)
+```{r}
+## Browsing
 
+length(levels(as.factor(browse$FLATEID[browse$distvei2 <= "200"]))) # 2844 (total: 11561), 24.60 %
+length(levels(as.factor(browse$FLATEID[browse$disthus <= "200"]))) # 3748 (total: 11561), 32.42 %
+
+
+## Recruitment
+length(levels(as.factor(recruits$FLATEID[recruits$distvei2 <= "200"]))) # 2602 (total: 10547), 24.67 %
+length(levels(as.factor(recruits$FLATEID[recruits$disthus_600 <= "200"]))) # 662 (total: 10547), 6.28 %
+
+
+```
 
 
 
