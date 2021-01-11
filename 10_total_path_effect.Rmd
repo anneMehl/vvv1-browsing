@@ -1103,3 +1103,38 @@ length(levels(as.factor(recruits$FLATEID[recruits$disthus_600 <= "200"]))) # 662
 
 
 
+## correlation plot explanatory variables
+```{r}
+library(ggplot2)
+library(GGally)
+
+## Browsing pressure
+# house
+ggcorr(browse_house, nbreaks = 6, label = T, low = "red3", high = "green3",  
+       label_round = 2, name = "Correlation Scale", label_alpha = T, hjust = 0.75) +
+  ggtitle(label = "Correlation Plot") +
+  theme(plot.title = element_text(hjust = 0.6))
+
+# road
+ggcorr(browse_roads, nbreaks = 6, label = T, low = "red3", high = "green3",  
+       label_round = 2, name = "Correlation Scale", label_alpha = T, hjust = 0.75) +
+  ggtitle(label = "Correlation Plot") +
+  theme(plot.title = element_text(hjust = 0.6))
+
+
+
+
+## Recruits
+# house
+ggcorr(recruits_house, use = "pearson", nbreaks = 6, label = T, low = "red3", high = "green3",  
+       label_round = 2, name = "Correlation Scale", label_alpha = T, hjust = 0.75) +
+  ggtitle(label = "Correlation Plot") +
+  theme(plot.title = element_text(hjust = 0.6))
+
+# road
+ggcorr(recruits_roads, use = "pearson", nbreaks = 6, label = T, low = "red3", high = "green3", label_round = 2, name = "Correlation Scale", label_alpha = T, hjust = 0.75) +
+  ggtitle(label = "Correlation Plot") +
+  theme(plot.title = element_text(hjust = 0.6))
+
+
+```
