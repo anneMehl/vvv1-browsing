@@ -71,7 +71,7 @@ check_zeroinflation(m_test_zi)
 
 #### Load data house models
 ```{r}
-load("processdata/browse.rda")
+load("processdata/browse_2021_02_01.rda")
 names(browse)
 
 browse_house <- browse
@@ -156,26 +156,26 @@ aictab(candmods_bin_cuthouse, modnames = NULL,
 # Model selection based on AICc:
 #
 #       K      AIC Delta_AIC AICWt Cum.Wt        LL
-# Mod7 19 21514.32      0.00  0.69   0.69 -10738.16
-# Mod8 19 21516.58      2.26  0.22   0.91 -10739.29
-# Mod6 19 21518.49      4.17  0.09   1.00 -10740.25
-# Mod5 19 21526.89     12.57  0.00   1.00 -10744.44
-# Mod4 19 21533.92     19.60  0.00   1.00 -10747.96
-# Mod3 19 21545.19     30.87  0.00   1.00 -10753.59
-# Mod2 19 21556.29     41.97  0.00   1.00 -10759.14
-# Mod1 19 21589.02     74.70  0.00   1.00 -10775.51
+# Mod7 19 21508.86      0.00  0.66   0.66 -10735.43
+# Mod8 19 21510.71      1.84  0.26   0.92 -10736.35
+# Mod6 19 21513.22      4.35  0.07   1.00 -10737.61
+# Mod5 19 21521.55     12.69  0.00   1.00 -10741.77
+# Mod4 19 21528.51     19.65  0.00   1.00 -10745.26
+# Mod3 19 21539.56     30.70  0.00   1.00 -10750.78
+# Mod2 19 21550.45     41.59  0.00   1.00 -10756.23
+# Mod1 19 21581.44     72.57  0.00   1.00 -10771.72
 
 ```
 
 #### Save browse_house dataset
 ```{r}
 names(browse_house)
-# browse_house <- browse_house[, -c(19:23)]
+browse_house <- browse_house[, -c(16:20,22)]
 names(browse_house)
 browse_house$beite_bin <- ifelse(browse_house$beitetrykk9 == 0, 0, 1)
 
 str(browse_house)
-save(browse_house, file = "browse_house.rda")
+save(browse_house, file = "browse_house_2021_02_01.rda")
 
 
 
@@ -189,7 +189,7 @@ save(browse_house, file = "browse_house.rda")
 
 #### Load data
 ```{r}
-load("processdata/browse_house.rda")
+load("processdata/browse_house_2021_02_01.rda")
 str(browse_house)
 
 ```
@@ -245,8 +245,9 @@ aictab(candmods_browse_house_bin, modnames = NULL,
 # Model selection based on AICc:
 # 
 #       K      AIC Delta_AIC AICWt Cum.Wt        LL
-# Mod1 19 21487.73      0.00  0.98   0.98 -10724.87
-# Mod2 15 21495.40      7.67  0.02   1.00 -10732.70
+# Mod1 19 21483.80      0.00  0.98   0.98 -10722.90
+# Mod2 15 21491.83      8.03  0.02   1.00 -10730.92
+
 
 ```
 
@@ -271,18 +272,18 @@ plot_model(browse_h_bin1, type = "diag")
 plot_model(browse_h_bin1, type = "eff")
 plot_model(browse_h_bin1, type = "est")
 
-library(performance)
-# check_model(browse_h_bin1)
-model_performance(browse_h_bin1)
+# library(performance)
+# # check_model(browse_h_bin1)
+# model_performance(browse_h_bin1)
 
  
 tab_model(browse_h_bin1, transform = NULL,
           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, p.threshold = c(0.05, 0.01, 0.001))
 
-ggstatsplot::ggcoefstats(
-  x = browse_h_bin1,
-  title = "generalized linear mixed-effects model"
-)
+# ggstatsplot::ggcoefstats(
+#   x = browse_h_bin1,
+#   title = "generalized linear mixed-effects model"
+# )
 
 ```
 
@@ -302,12 +303,9 @@ save(browse_h_bin1, file = "browse_h_bin1.rda")
 
 ## Load data house models
 ```{r}
-
-## !! Use browse_house - all variables needed are in there !! ##
 load("processdata/browse_house.rda")
 
-# load("processdata/recruits.rda")
-# recruits_house <- recruits
+
 str(browse_house)
 names(browse_house)
 ```
@@ -505,9 +503,9 @@ plot_model(browse_h_beta2, type = "diag")
 plot_model(browse_h_beta2, type = "eff")
 plot_model(browse_h_beta2, type = "est")
 
-library(performance)
-# check_model(browse_h_beta2)
-model_performance(browse_h_beta2)
+# library(performance)
+# # check_model(browse_h_beta2)
+# model_performance(browse_h_beta2)
 
 
 
@@ -517,10 +515,10 @@ tab_model(browse_h_beta2, transform = NULL,
 
 
 
-ggstatsplot::ggcoefstats(
-  x = browse_h_beta2,
-  title = "generalized linear mixed-effects model"
-) # Not sure what exactly this shows.
+# ggstatsplot::ggcoefstats(
+#   x = browse_h_beta2,
+#   title = "generalized linear mixed-effects model"
+# ) # Not sure what exactly this shows.
 
 ```
 
@@ -545,7 +543,7 @@ save(browse_h_beta2, file = "browse_h_beta2.rda")
 
 #### Load data roads models
 ```{r}
-load("processdata/browse_roads.rda")
+load("processdata/browse_roads_2021_02_02.rda")
 str(browse_roads)
 names(browse_roads)
 
@@ -580,16 +578,19 @@ family = binomial(),
 data = browse_roads) # BEST
 summary(browse_r_bin1) 
 
-browse_r_bin2 <- glmer(beite_bin ~ skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+browse_r_bin1_log <- glmer(beite_bin ~ distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = browse_roads)
+
+browse_r_bin2 <- glmer(beite_bin ~ log(distvei2+1) + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
 family = binomial(),
 data = browse_roads) 
 
-browse_r_bin4 <- glmer(beite_bin ~ distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+browse_r_bin3 <- glmer(beite_bin ~ log(distvei2+1) + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + moose_density +  ac + (1|KOMNR),
 family = binomial(),
 data = browse_roads)
-summary(browse_r_bin4)
 
-browse_r_bin5 <- glmer(beite_bin ~ sqrt(distvei2) + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+browse_r_bin4 <- glmer(beite_bin ~ log(distvei2+1) + treartgruppe9 + tretetthet9 + kant + helling  + moose_density +  ac + (1|KOMNR),
 family = binomial(),
 data = browse_roads)
 
@@ -600,17 +601,20 @@ data = browse_roads)
 ```{r}
 library(AICcmodavg)
 
-candmods_browse_roads_bin <- list(browse_r_bin1, browse_r_bin2, browse_r_bin4, browse_r_bin5)
+candmods_browse_roads_bin <- list(browse_r_bin1, browse_r_bin1_log, browse_r_bin2, browse_r_bin3, browse_r_bin4)
 aictab(candmods_browse_roads_bin, modnames = NULL,
                        second.ord = F, nobs = NULL, sort = TRUE)
 
 # Model selection based on AICc:
 # 
 #       K      AIC Delta_AIC AICWt Cum.Wt       LL
-# Mod1 18 19057.78      0.00  0.99   0.99 -9510.89
-# Mod2 17 19069.12     11.34  0.00   1.00 -9517.56
-# Mod3 18 19070.47     12.69  0.00   1.00 -9517.23
-# Mod4 18 19070.57     12.79  0.00   1.00 -9517.28
+# Mod1 18 19051.56      0.00  0.95   0.95 -9507.78
+# Mod3 14 19057.74      6.19  0.04   1.00 -9514.87
+# Mod2 18 19062.89     11.34  0.00   1.00 -9513.45
+# Mod4 16 19079.85     28.29  0.00   1.00 -9523.93
+# Mod5 12 19091.59     40.04  0.00   1.00 -9533.80
+
+
 
 ```
 
@@ -629,9 +633,9 @@ summary(browse_r_bin1)
 # plot(allEffects(rec_r_bin7))
 # plot(effect("skogkategori", rec_r_bin7))
 
-library(performance)
-# check_model(browse_r_bin1)
-model_performance(browse_r_bin1)
+# library(performance)
+# # check_model(browse_r_bin1)
+# model_performance(browse_r_bin1)
 
 library(sjPlot)
 plot_model(browse_r_bin1, type = "diag")
@@ -641,10 +645,10 @@ plot_model(browse_r_bin1, type = "est")
 tab_model(browse_r_bin1, transform = NULL,
           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, p.threshold = c(0.05, 0.01, 0.001))
 
-ggstatsplot::ggcoefstats(
-  x = browse_r_bin1,
-  title = "generalized linear mixed-effects model"
-)
+# ggstatsplot::ggcoefstats(
+#   x = browse_r_bin1,
+#   title = "generalized linear mixed-effects model"
+# )
 
 ```
 
@@ -702,17 +706,14 @@ browse_r_beta1 <- glmmTMB(bt100 ~ log(distvei2+1) + skogkategori + treartgruppe9
             family = beta_family())
 summary(browse_r_beta1)
 
-browse_r_beta2 <- glmmTMB(bt100 ~ distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
-            data = browse_roads,
-            family = beta_family())
-
-browse_r_beta3 <- glmmTMB(bt100 ~ log(distvei2+1) + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + ac + (1|KOMNR),
+browse_r_beta2 <- glmmTMB(bt100 ~ log(distvei2+1) + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
             data = browse_roads,
             family = beta_family()) # BEST
 
-browse_r_beta4 <- glmmTMB(bt100 ~ skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + ac + (1|KOMNR),
+browse_r_beta3 <- glmmTMB(bt100 ~ distvei2 + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + ac + (1|KOMNR),
             data = browse_roads,
-            family = beta_family())
+            family = beta_family()) 
+
 
 ```
 
@@ -723,24 +724,23 @@ browse_r_beta4 <- glmmTMB(bt100 ~ skogkategori + treartgruppe9 + tretetthet9 + k
 ```{r}
 library(AICcmodavg)
 
-candmods_browse_roads_beta <- list(browse_r_beta1, browse_r_beta2, browse_r_beta3, browse_r_beta4)
+candmods_browse_roads_beta <- list(browse_r_beta1, browse_r_beta2, browse_r_beta3)
 aictab(candmods_browse_roads_beta, modnames = NULL,
                        second.ord = F, nobs = NULL, sort = TRUE)
 
 # Model selection based on AICc:
 # 
 #       K      AIC Delta_AIC AICWt Cum.Wt      LL
-# Mod3 18 -8794.57      0.00  0.63   0.63 4415.28
+# Mod2 18 -8794.57      0.00  0.63   0.63 4415.28
 # Mod1 19 -8793.49      1.08  0.37   1.00 4415.75
-# Mod2 19 -8773.46     21.10  0.00   1.00 4405.73
-# Mod4 17 -8769.56     25.00  0.00   1.00 4401.78
+# Mod3 18 -8774.53     20.04  0.00   1.00 4405.26
 
 ```
 
 
 #### Summary beta roads
 ```{r}
-summary(browse_r_beta3)
+summary(browse_r_beta2)
 # vcov(rec_h_bin5)
 ```
 
@@ -753,29 +753,29 @@ summary(browse_r_beta3)
 # plot(allEffects(rec_r_beta4))
 # plot(effect("skogkategori", rec_r_beta4))
 
-library(performance)
-# check_model(browse_r_beta3)
-model_performance(browse_r_beta3)
+# library(performance)
+# # check_model(browse_r_beta3)
+# model_performance(browse_r_beta3)
 
 library(sjPlot)
-plot_model(browse_r_beta3, type = "diag")
-plot_model(browse_r_beta3, type = "eff") 
-plot_model(browse_r_beta3, type = "est")
+plot_model(browse_r_beta2, type = "diag")
+plot_model(browse_r_beta2, type = "eff") 
+plot_model(browse_r_beta2, type = "est")
 
-tab_model(browse_r_beta3, transform = NULL,
+tab_model(browse_r_beta2, transform = NULL,
           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, p.threshold = c(0.05, 0.01, 0.001))
 
-ggstatsplot::ggcoefstats(
-  x = browse_r_beta3,
-  title = "generalized linear mixed-effects model"
-)
+# ggstatsplot::ggcoefstats(
+#   x = browse_r_beta3,
+#   title = "generalized linear mixed-effects model"
+# )
 
 ```
 
 
 #### Save roads beta model
 ```{r}
-save(browse_r_beta3, file = "browse_r_beta3.rda")
+save(browse_r_beta2, file = "browse_r_beta2.rda")
 ```
 
 
@@ -790,7 +790,7 @@ library(ggplot2)
 ## House
 load("processdata/browse_house.rda")
 str(browse_house) # Check if variables are scales - if not scale
-load("output/browse_04_12_2020/browse_h_bin1.rda")
+load("output/browsing_2021_02_02/browse_h_bin1.rda")
 browse_house$beite_bin <- ifelse(browse_house$beitetrykk9 == 0, 0, 1)
 summary(browse_h_bin1)
 
@@ -817,15 +817,15 @@ p_browse_bin1_house <- p_browse_bin1_house + theme_light() +
 ## Roads
 load("processdata/browse_roads.rda")
 str(browse_roads) # Check if variables are scales - if not scale
-load("output/browse_04_12_2020/browse_r_bin1.rda")
+load("output/browsing_2021_02_02/browse_r_bin1.rda")
 summary(browse_r_bin1)
 browse_roads$beite_bin <- ifelse(browse_roads$beitetrykk9 == 0, 0, 1)
 
 # Scale
-browse_roads$tretetthet9 <- scale(browse_roads$tretetthet9)
-browse_roads$helling <- scale(browse_roads$helling)
-browse_roads$HOH <- scale(browse_roads$HOH)
-browse_roads$moose_density <- scale(browse_roads$moose_density)
+# browse_roads$tretetthet9 <- scale(browse_roads$tretetthet9)
+# browse_roads$helling <- scale(browse_roads$helling)
+# browse_roads$HOH <- scale(browse_roads$HOH)
+# browse_roads$moose_density <- scale(browse_roads$moose_density)
 
 
 
@@ -926,7 +926,7 @@ library(ggplot2)
 ## House
 load("processdata/browse_house.rda")
 str(browse_house) # Check if variables are scales - if not scale
-load("output/browse_04_12_2020/browse_h_beta2.rda")
+load("output/browsing_2021_02_02/browse_h_beta2.rda")
 browse_house <- browse_house[browse_house$bt100 > 0, ]
 summary(browse_h_beta2)
 
@@ -952,8 +952,8 @@ p_browse_beta1_house <- p_browse_beta1_house + theme_light() +
 ## Roads
 load("processdata/browse_roads.rda")
 str(browse_roads) # Check if variables are scales - if not scale
-load("output/browse_04_12_2020/browse_r_beta3.rda")
-summary(browse_r_beta3)
+load("output/browsing_2021_02_02/browse_r_beta2.rda")
+summary(browse_r_beta2)
 browse_roads <- browse_roads[browse_roads$bt100 > 0, ]
 
 # Scale
@@ -965,7 +965,7 @@ browse_roads$moose_density <- scale(browse_roads$moose_density)
 
 
 
-p_browse_beta1 <- plot_model(browse_r_beta3, type = c("eff"), transform = NULL, terms = c("distvei2  [0:500]"))
+p_browse_beta1 <- plot_model(browse_r_beta2, type = c("eff"), transform = NULL, terms = c("distvei2  [0:500]"))
 p_browse_beta1 <- p_browse_beta1 + theme_light() +
   theme(plot.title = element_blank(),
     axis.text = element_text(family = "sans", size = 20, color = "grey30"),
@@ -974,7 +974,7 @@ p_browse_beta1 <- p_browse_beta1 + theme_light() +
   ylab("Browsing pressure\n")
 
 
-p_browse_beta2 <- plot_model(browse_r_beta3, type = c("eff"), transform = NULL, terms = c("skogkategori"))
+p_browse_beta2 <- plot_model(browse_r_beta2, type = c("eff"), transform = NULL, terms = c("skogkategori"))
 p_browse_beta2 <- p_browse_beta2 + theme_light() +
   theme(plot.title = element_blank(),
     axis.text = element_text(family = "sans", size = 12, color = "grey30"),
@@ -984,7 +984,7 @@ p_browse_beta2 <- p_browse_beta2 + theme_light() +
   ylab("Browsing pressure\n") 
 
 
-p_browse_beta3 <- plot_model(browse_r_beta3, type = c("eff"), transform = NULL, terms = c("treartgruppe9"))
+p_browse_beta3 <- plot_model(browse_r_beta2, type = c("eff"), transform = NULL, terms = c("treartgruppe9"))
 p_browse_beta3 <- p_browse_beta3 + theme_light() +
   theme(plot.title = element_blank(),
     axis.text = element_text(family = "sans", size = 20, color = "grey30"),
@@ -993,7 +993,7 @@ p_browse_beta3 <- p_browse_beta3 + theme_light() +
   ylab("Browsing pressure\n") 
 
 
-p_browse_beta4 <- plot_model(browse_r_beta3, type = c("eff"), transform = NULL, terms = c("kant"))
+p_browse_beta4 <- plot_model(browse_r_beta2, type = c("eff"), transform = NULL, terms = c("kant"))
 p_browse_beta4 <- p_browse_beta4 + theme_light() +
   theme(plot.title = element_blank(),
     axis.text = element_text(family = "sans", size = 12, color = "grey30"),
@@ -1003,7 +1003,7 @@ p_browse_beta4 <- p_browse_beta4 + theme_light() +
   ylab("Browsing pressure\n")
 
 
-p_browse_beta5 <- plot_model(browse_r_beta3, type = c("eff"), transform = NULL, terms = c("helling [all]"))
+p_browse_beta5 <- plot_model(browse_r_beta2, type = c("eff"), transform = NULL, terms = c("helling [all]"))
 p_browse_beta5 <- p_browse_beta5 + theme_light() +
   theme(plot.title = element_blank(),
     axis.text = element_text(family = "sans", size = 20, color = "grey30"),
@@ -1012,7 +1012,7 @@ p_browse_beta5 <- p_browse_beta5 + theme_light() +
   ylab("Browsing pressure\n")
 
 
-p_browse_beta6 <- plot_model(browse_r_beta3, type = c("eff"), transform = NULL, terms = c("HOH [all]"))
+p_browse_beta6 <- plot_model(browse_r_beta2, type = c("eff"), transform = NULL, terms = c("HOH [all]"))
 p_browse_beta6 <- p_browse_beta6 + theme_light() +
   theme(plot.title = element_blank(),
     axis.text = element_text(family = "sans", size = 20, color = "grey30"),
@@ -1021,7 +1021,7 @@ p_browse_beta6 <- p_browse_beta6 + theme_light() +
   ylab("Browsing pressure\n")
 
 
-p_browse_beta7 <- plot_model(browse_r_beta3, type = c("eff"), transform = NULL, terms = c("tretetthet9 [all]"))
+p_browse_beta7 <- plot_model(browse_r_beta2, type = c("eff"), transform = NULL, terms = c("tretetthet9 [all]"))
 p_browse_beta7 <- p_browse_beta7 + theme_light() +
   theme(plot.title = element_blank(),
     axis.text = element_text(family = "sans", size = 20, color = "grey30"),

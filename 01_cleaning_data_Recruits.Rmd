@@ -566,7 +566,7 @@ sum(is.na(recruits$recruitment_ratio)) #0
 #### Make new variable moose density (mean over 5 year period to datasets and models)
 ```{r}
 library(readr)
-moose_mean_density <- read_csv("processdata/five_y_mean_density.csv", na = "NA")
+moose_mean_density <- read_csv("processdata/five_y_mean_density_2021_02_01.csv", na = "NA")
 str(moose_mean_density)
 library(tidyverse)
 moose_mean_density <- moose_mean_density %>%
@@ -576,7 +576,7 @@ str(moose_mean_density)
 
 recruits <- left_join(recruits, moose_mean_density, by = "KOMNR")
 str(recruits$moose_density)
-sum(is.na(recruits$moose_density))
+sum(is.na(recruits$moose_density)) # 4560 --> Either "elgareal" was 0 or NA
 which(is.na(recruits$moose_density))
 recruits$moose_density <- ifelse(is.na(recruits$moose_density), 0, recruits$moose_density)
 sum(is.na(recruits$moose_density))
@@ -725,7 +725,7 @@ names(recruits)
 recruits <- recruits[,-c(3:5,16:17,21)]
 names(recruits)
 
-save(recruits, file = "recruits.rda")
+save(recruits, file = "recruits_2021_02_01.rda")
 
 
 ```
@@ -734,9 +734,9 @@ save(recruits, file = "recruits.rda")
 
 ## Roads data set
 ```{r}
-load("processdata/recruits.rda")
+load("processdata/recruits_2021_02_01.rda")
 names(recruits)
-recruits_roads <- recruits[,-c(4,17:23)]
+recruits_roads <- recruits[,-c(4,18:23)]
 names(recruits_roads)
 recruits_roads <- recruits_roads[ which(recruits_roads$disthus > 600), ] # Threshold for the bin model was 500, but for the beta model 600 so we use 600 
 summary(recruits_roads$disthus)
@@ -744,7 +744,7 @@ summary(recruits_roads$disthus)
 str(recruits_roads)
 
 
-save(recruits_roads, file = "recruits_roads.rda")
+save(recruits_roads, file = "recruits_roads_2021_02_03.rda")
 
 ```
 

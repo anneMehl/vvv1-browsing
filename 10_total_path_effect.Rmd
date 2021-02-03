@@ -129,17 +129,18 @@ library(glmmTMB)
 ## Load HOUSE models data
 ```{r}
 #### Browsing pressure----
-load("output/browse_04_12_2020/browse_h_bin1.rda")
+load("output/browsing_2021_02_02/browse_h_bin1.rda")
 zeromod1 <- browse_h_bin1
 summary(zeromod1)
 
-load("output/browse_04_12_2020/browse_h_beta2.rda")
+load("output/browsing_2021_02_02/browse_h_beta2.rda")
 percmod1 <- browse_h_beta2
 summary(percmod1)
 
-load("processdata/browse_house.rda")
+load("processdata/browse_house_2021_02_01.rda")
 str(browse_house) # Check if variables are scaled, else scale below
-browse_house <- browse_house[ ,-c(4,16:20,22)] #8,
+# browse_house <- browse_house[ ,-c(4,16:20,22)] #8,
+
 # Scale
 browse_house$tretetthet9 <- scale(browse_house$tretetthet9)
 browse_house$helling <- scale(browse_house$helling)
@@ -153,15 +154,15 @@ head(dat1)
 
 
 #### Recruitment ----
-load("output/recruitment_07_12_2020/rec_h_bin7_600.rda")
-zeromod2 <- rec_h_bin7_600
+load("output/recruitment_2021_02_02/rec_h_bin2_600.rda")
+zeromod2 <- rec_h_bin2_600
 summary(zeromod2)
 
-load("output/recruitment_07_12_2020/rec_h_beta7_TMB.rda")
-percmod2 <- rec_h_beta7_TMB
+load("output/recruitment_2021_02_02/rec_h_beta3_TMB.rda")
+percmod2 <- rec_h_beta3_TMB
 summary(percmod2)
 
-load("processdata/recruits_house.rda")
+load("processdata/recruits_house_2021_02_02.rda")
 str(recruits_house)
 # recruits_house <- recruits_house[ ,-c(7)]
 recruits_house$recruitment_bin <- ifelse(recruits_house$recruitment == 0, 0, 1)
@@ -189,15 +190,15 @@ head(dat2)
 ## Load ROAD models and data
 ```{r}
 #### Browsing pressure ----
-load("output/browse_04_12_2020/browse_r_bin1.rda")
+load("output/browsing_2021_02_02/browse_r_bin1.rda")
 zeromod1 <- browse_r_bin1
 summary(zeromod1)
 
-load("output/browse_04_12_2020/browse_r_beta3.rda")
-percmod1 <- browse_r_beta3 
+load("output/browsing_2021_02_02/browse_r_beta2.rda")
+percmod1 <- browse_r_beta2 
 summary(percmod1)
 
-load("processdata/browse_roads.rda")
+load("processdata/browse_roads_2021_02_02.rda")
 str(browse_roads)
 browse_roads$beite_bin <- ifelse(browse_roads$beitetrykk9 == 0, 0, 1)
 # Scale
@@ -212,15 +213,15 @@ head(dat1)
 
 
 #### Recruitment ----
-load("output/recruitment_07_12_2020/rec_r_bin3.rda")
+load("output/recruitment_2021_02_02/rec_r_bin3.rda")
 zeromod2 <- rec_r_bin3
 summary(zeromod2)
 
-load("output/recruitment_07_12_2020/rec_r_beta4_TMB.rda")
-percmod2 <- rec_r_beta4_TMB
+load("output/recruitment_2021_02_02/rec_r_beta2_TMB.rda")
+percmod2 <- rec_r_beta2_TMB
 summary(percmod2)
 
-load("processdata/recruits_roads.rda")
+load("processdata/recruits_roads_2021_02_03.rda")
 str(recruits_roads)
 recruits_roads$recruitment_bin <- ifelse(recruits_roads$recruitment == 0, 0, 1)
 is.integer(recruits_roads$recruitment)
@@ -249,7 +250,7 @@ source("function_resp_curve_08_12_2020_rev_BVM.R")
 ```{r}
 (focal = c( "disthus", "distvei", "skogkategori", "treartgruppe9", "kant", 
            "helling", "HOH", "tretetthet9", "beitetrykk9", "moose_density")[10])
-## REMEMBER to load the road datasets and models after doing the house model!!!!!
+## REMEMBER to load the road datasets and models after disthus (house model)!!!!!
 ```
 
 #### Run function for the different models/ focals and SAVE them
@@ -269,9 +270,9 @@ total_moose <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percm
 
 #### Save function data!
 ```{r}
-save(bp_moose, file = "output/function_results_18_12_2020/bp_moose.rda")
-save(recruit_moose, file = "output/function_results_18_12_2020/recruit_moose.rda")
-save(total_moose, file = "output/function_results_18_12_2020/total_moose.rda")
+save(bp_moose, file = "output/function_results_2021_02_03/bp_moose.rda")
+save(recruit_moose, file = "output/function_results_2021_02_03/recruit_moose.rda")
+save(total_moose, file = "output/function_results_2021_02_03/total_moose.rda")
 ```
 
 
@@ -280,38 +281,38 @@ save(total_moose, file = "output/function_results_18_12_2020/total_moose.rda")
 ## load function data (These are the final function outputs)
 ```{r}
 # Browsing pressure (indirect)
-load("output/function_results_18_12_2020/bp_disthus.rda")
-load("output/function_results_18_12_2020/bp_distvei.rda")
-load("output/function_results_18_12_2020/bp_skogkat.rda")
-load("output/function_results_18_12_2020/bp_kant.rda")
-load("output/function_results_18_12_2020/bp_treart.rda")
-load("output/function_results_18_12_2020/bp_helling.rda")
-load("output/function_results_18_12_2020/bp_HOH.rda")
-load("output/function_results_18_12_2020/bp_tretett.rda")
-load("output/function_results_18_12_2020/bp_moose.rda")
+load("output/function_results_2021_02_03/bp_disthus.rda")
+load("output/function_results_2021_02_03/bp_distvei.rda")
+load("output/function_results_2021_02_03/bp_skogkat.rda")
+load("output/function_results_2021_02_03/bp_kant.rda")
+load("output/function_results_2021_02_03/bp_treart.rda")
+load("output/function_results_2021_02_03/bp_helling.rda")
+load("output/function_results_2021_02_03/bp_HOH.rda")
+load("output/function_results_2021_02_03/bp_tretett.rda")
+load("output/function_results_2021_02_03/bp_moose.rda")
 
 # Recruits (direct)
-load("output/function_results_18_12_2020/recruit_disthus.rda")
-load("output/function_results_18_12_2020/recruit_distvei.rda")
-load("output/function_results_18_12_2020/recruit_skogkat.rda")
-load("output/function_results_18_12_2020/recruit_kant.rda")
-load("output/function_results_18_12_2020/recruit_treart.rda")
-load("output/function_results_18_12_2020/recruit_helling.rda")
-# load("output/function_results_18_12_2020/recruit_beite.rda")
-load("output/function_results_18_12_2020/recruit_HOH.rda")
-load("output/function_results_18_12_2020/recruit_moose.rda")
+load("output/function_results_2021_02_03/recruit_disthus.rda")
+load("output/function_results_2021_02_03/recruit_distvei.rda")
+load("output/function_results_2021_02_03/recruit_skogkat.rda")
+load("output/function_results_2021_02_03/recruit_kant.rda")
+load("output/function_results_2021_02_03/recruit_treart.rda")
+load("output/function_results_2021_02_03/recruit_helling.rda")
+# load("output/function_results_2021_02_03/recruit_beite.rda")
+load("output/function_results_2021_02_03/recruit_HOH.rda")
+load("output/function_results_2021_02_03/recruit_moose.rda")
 
 # Total (indirect + direct)
-load("output/function_results_18_12_2020/total_disthus.rda")
-load("output/function_results_18_12_2020/total_distvei.rda")
-load("output/function_results_18_12_2020/total_skogkat.rda")
-load("output/function_results_18_12_2020/total_kant.rda")
-load("output/function_results_18_12_2020/total_treart.rda")
-load("output/function_results_18_12_2020/total_helling.rda")
-load("output/function_results_18_12_2020/total_beite.rda")
-load("output/function_results_18_12_2020/total_tretett.rda")
-load("output/function_results_18_12_2020/total_HOH.rda")
-load("output/function_results_18_12_2020/total_moose.rda")
+load("output/function_results_2021_02_03/total_disthus.rda")
+load("output/function_results_2021_02_03/total_distvei.rda")
+load("output/function_results_2021_02_03/total_skogkat.rda")
+load("output/function_results_2021_02_03/total_kant.rda")
+load("output/function_results_2021_02_03/total_treart.rda")
+load("output/function_results_2021_02_03/total_helling.rda")
+load("output/function_results_2021_02_03/total_beite.rda")
+load("output/function_results_2021_02_03/total_tretett.rda")
+load("output/function_results_2021_02_03/total_HOH.rda")
+load("output/function_results_2021_02_03/total_moose.rda")
 
 ```
 
@@ -934,14 +935,14 @@ pdt_beite <- ggplot() +
 pdt_moose <- ggplot() + 
   geom_ribbon(data = recruit_moose, aes(x = var, ymin = CI025, ymax = CI975), 
               linetype = 0, alpha = 0.2, show.legend = F) +
-  geom_line(data = recruit_moose, aes(var, point, color = "direct (only\n on probability)", linetype = "direct (only\n on probability)"), 
+  geom_line(data = recruit_moose, aes(var, point, color = "direct", linetype = "direct"), 
             size = 1.5, show.legend = T) +
   
   geom_ribbon(data = total_moose, aes(x = var, ymin = CI025, ymax = CI975), fill = "#009E73", linetype = 0, alpha = 0.2, show.legend = F) +
-  geom_line(data = total_moose, aes(var, point, color = "total (only\n on probability)", linetype = "total (only\n on probability)"), 
+  geom_line(data = total_moose, aes(var, point, color = "total", linetype = "total"), 
             size = 1.5, show.legend = T) +
   scale_linetype_manual("Effect",
-                        values = c("direct (only\n on probability)" = 3,"total (only\n on probability)" = 1)) +
+                        values = c("direct" = 3,"total" = 1)) +
   xlab("Moose density (5 year mean)\n") + 
   ylab("Recruitment (ha 10yr)\n") +
   theme_light()+
@@ -993,7 +994,7 @@ hurdle_husvei <- ggarrange(nullplot, nullplot, ph_disthus, ph_distvei,
           widths = c(1,1),
           draw = F
           )
-ggsave(file = "function_browse_hurdle_husvei.pdf", hurdle_husvei, width = 30, height = 15, units = "cm") #, dpi = 150
+ggsave(file = "function_browse_hurdle_husvei.tiff", hurdle_husvei, width = 30, height = 15, units = "cm", dpi = 150) #, dpi = 150
 
 # rest
 nullplot <- ggplot()+
@@ -1008,7 +1009,7 @@ hurdle_grid <- ggarrange(nullplot, nullplot, nullplot, ph_treart, ph_skogkat, nu
           widths = c(1,1,0.1),
           draw = F
           )
-ggsave(file = "function_browse_hurdle_grid.tiff", hurdle_grid, width = 30, height = 45, units = "cm", dpi = 150) #, dpi = 150
+ggsave(file = "function_browse_hurdle_grid.pdf", hurdle_grid, width = 30, height = 45, units = "cm") #, dpi = 150
 
  
 
@@ -1025,7 +1026,7 @@ total_direct_husvei <- ggarrange(nullplot, nullplot, pdt_disthus, pdt_distvei,
           widths = c(1,1),
           draw = F
           )
-ggsave(file = "function_total_direct_husvei.tiff", total_direct_husvei, width = 30, height = 15, units = "cm", dpi = 150) #, dpi = 150
+ggsave(file = "function_total_direct_husvei.pdf", total_direct_husvei, width = 30, height = 15, units = "cm") #, dpi = 150
 
 # rest
 nullplot <- ggplot()+
@@ -1040,7 +1041,7 @@ total_direct_grid <- ggarrange(nullplot, nullplot, pdt_beite, pdt_treart, pdt_sk
           widths = c(1,1),
           draw = F
           )
-ggsave(file = "function_total_direct_grid.pdf", total_direct_grid, width = 30, height = 45, units = "cm") #, dpi = 150
+ggsave(file = "function_total_direct_grid.tiff", total_direct_grid, width = 30, height = 45, units = "cm", dpi = 150) #, dpi = 150
 
 ```
 

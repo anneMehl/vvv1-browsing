@@ -629,7 +629,7 @@ browse$bt100 <- browse$beitetrykk9/100
 #### Make new variable moose density (mean over 5 year period)
 ```{r}
 library(readr)
-moose_mean_density <- read_csv("processdata/five_y_mean_density.csv", na = "NA")
+moose_mean_density <- read_csv("processdata/five_y_mean_density_2021_02_01.csv", na = "NA")
 str(moose_mean_density)
 library(tidyverse)
 moose_mean_density <- moose_mean_density %>%
@@ -639,7 +639,7 @@ str(moose_mean_density)
 
 browse <- left_join(browse, moose_mean_density, by = "KOMNR")
 str(browse$moose_density)
-sum(is.na(browse$moose_density))
+sum(is.na(browse$moose_density)) # 6807 --> Either "elgareal" was 0 or NA
 which(is.na(browse$moose_density))
 browse$moose_density <- ifelse(is.na(browse$moose_density), 0, browse$moose_density)
 sum(is.na(browse$moose_density))
@@ -777,7 +777,7 @@ names(browse)
 browse <- browse[,-c(3:5,18)]
 names(browse)
 
-save(browse, file = "browse.rda")
+save(browse, file = "browse_2021_02_01.rda")
 
 
 ```
@@ -786,7 +786,7 @@ save(browse, file = "browse.rda")
 
 ## Roads data set
 ```{r}
-load("processdata/browse.rda")
+load("processdata/browse_2021_02_01.rda")
 names(browse)
 browse_roads <- browse[,-c(4,16:20,22)]
 names(browse_roads)
@@ -796,6 +796,6 @@ summary(browse_roads$disthus)
 str(browse_roads)
 
 
-save(browse_roads, file = "browse_roads.rda")
+save(browse_roads, file = "browse_roads_2021_02_02.rda")
 
 ```
