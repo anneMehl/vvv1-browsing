@@ -1051,6 +1051,8 @@ ggsave(file = "function_total_direct_grid.tiff", total_direct_grid, width = 30, 
 ## Figures data forest category and tree species group for the results/ appendix
 ```{r}
 library(ggplot2)
+load("processdata/browse_roads_2021_02_02.rda")
+str(browse_roads)
 
 fp1 <- ggplot(data = browse_roads, aes(treartgruppe9)) +
   geom_bar()+
@@ -1071,7 +1073,7 @@ library(gridExtra)
 fp_grid <- grid.arrange(fp1, fp2,
           nrow = 2, ncol = 1)
 
-ggsave(file = "fp_grid.pdf", fp_grid, width = 15, height = 30, units = "cm") #, dpi = 150
+ggsave(file = "fp_grid.tiff", fp_grid, width = 15, height = 30, units = "cm", dpi = 150) #, dpi = 150
 ```
 
 
@@ -1079,9 +1081,13 @@ ggsave(file = "fp_grid.pdf", fp_grid, width = 15, height = 30, units = "cm") #, 
 
 ## min, max, se and more of some variables
 ```{r}
+library(psych)
+load("processdata/recruits_roads_2021_02_03.rda")
+str(recruits_roads)
+
 describe(browse_roads$beitetrykk9)
 describe(recruits_roads$recruitment)
-# describe(recruits_roads$recruitment_ratio)
+
 ```
 
 

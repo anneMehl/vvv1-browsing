@@ -458,7 +458,7 @@ browse_h_beta1 <- glmmTMB(bt100 ~ disthus_200 + log(distvei2+1) + skogkategori +
             family = beta_family())
 summary(browse_h_beta1)
 
-browse_h_beta2 <- glmmTMB(bt100 ~ disthus_200 + log(distvei2+1) + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+browse_h_beta2 <- glmmTMB(bt100 ~ disthus_200 + log(distvei2+1) + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + ac + (1|KOMNR),
             data = browse_house,
             family = beta_family()) # BEST
 
