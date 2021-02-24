@@ -157,9 +157,13 @@ head(dat1)
 load("output/recruitment_2021_02_02/rec_h_bin2_600.rda")
 zeromod2 <- rec_h_bin2_600
 summary(zeromod2)
+zeromod2 <- rec_h_bin2_600_int
+summary(zeromod2)
 
 load("output/recruitment_2021_02_02/rec_h_beta3_TMB.rda")
 percmod2 <- rec_h_beta3_TMB
+summary(percmod2)
+percmod2 <- rec_h_beta3_TMB_int
 summary(percmod2)
 
 load("processdata/recruits_house_2021_02_02.rda")
@@ -249,7 +253,7 @@ source("function_resp_curve_08_12_2020_rev_BVM.R")
 #### Select focal variable
 ```{r}
 (focal = c( "disthus", "distvei", "skogkategori", "treartgruppe9", "kant", 
-           "helling", "HOH", "tretetthet9", "beitetrykk9", "moose_density")[10])
+           "helling", "HOH", "tretetthet9", "beitetrykk9", "moose_density")[1])
 ## REMEMBER to load the road datasets and models after disthus (house model)!!!!!
 ```
 
@@ -261,10 +265,10 @@ total = total effect
 bp_moose <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[1], nvals=100, plotit=F, nb_btstrp=99)
 
-recruit_moose <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
+recruit_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
 
-total_moose <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+total_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=99)
 ```
 
@@ -456,7 +460,7 @@ pdt_disthus <- ggplot() +
                      values = cbPalette) +
     scale_fill_manual(values = "#009E73")
 #,legend.title = element_text(size = 50)
-  
+
 
 # pt_disthus <- ggplot() + 
 #   geom_line(data = total_disthus, aes(var, point, color = "total"), linetype = 1, size = 1, show.legend = T) +
