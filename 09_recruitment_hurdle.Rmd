@@ -227,6 +227,16 @@ summary(rec_h_bin2_600)
 
 save(rec_h_bin2, file = "output/recruitment_2021_02_02/rec_h_bin2.rda")
 save(rec_h_bin2_600, file = "output/recruitment_2021_02_02/rec_h_bin2_600.rda")
+
+
+
+## Model with interaction for discussion
+rec_h_bin2_600_int <- glmer(recruitment_bin ~ disthus_600*beitetrykk9 + log(distvei2+1) + skogkategori + treartgruppe9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house)
+summary(rec_h_bin2_600_int)
+
+
 ```
 
 #### AIC selection bin models
@@ -259,6 +269,7 @@ library(sjPlot)
 plot_model(rec_h_bin2_600, type = "diag")
 plot_model(rec_h_bin2_600, type = "eff")
 plot_model(rec_h_bin2_600, type = "est")
+plot_model(rec_h_bin2_600_int, type = "int")
 
 ## TRY also performance::check_model for model assumptions and model performance summaries with performance::model_performance; to test performance between models use compare_performance (can be for glm, lm, lmerMod at the same time)
 # library(performance)
@@ -475,6 +486,14 @@ rec_h_beta3_TMB <- glmmTMB(recruitment ~ disthus_600 + log(distvei2+1) + skogkat
 summary(rec_h_beta3_TMB)
 save(rec_h_beta3_TMB, file = "output/recruitment_2021_02_02/rec_h_beta3_TMB.rda")
 
+
+
+# Model with interaction for discussion
+rec_h_beta3_TMB_int <- glmmTMB(recruitment ~ disthus_600*beitetrykk9 + log(distvei2+1) + skogkategori + treartgruppe9 + kant + helling + HOH + I(HOH^2) +  ac + (1|KOMNR),
+                           family = poisson,
+                           data = recruits_house)
+summary(rec_h_beta3_TMB_int)
+
 ```
 
 
@@ -512,11 +531,17 @@ plot_model(rec_h_beta3_TMB, type = "diag")
 plot_model(rec_h_beta3_TMB, type = "eff")
 plot_model(rec_h_beta3_TMB, type = "est")
 
+plot_model(rec_h_beta3_TMB_int, type = "int")
+
 # library(performance)
 # # check_model(rec_h_beta7_TMB)
 # model_performance(rec_h_beta3_TMB)
 
 tab_model(rec_h_beta3_TMB, transform = NULL,
+          show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, p.threshold = c(0.05, 0.01, 0.001))
+
+
+tab_model(rec_h_beta3_TMB_int, transform = NULL,
           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, p.threshold = c(0.05, 0.01, 0.001))
 
 ```
@@ -586,6 +611,19 @@ family = binomial(),
 data = recruits_roads) # BEST
 
 
+
+# Model with interaction for discussion
+rec_r_bin3_int  <- glmer(recruitment_bin ~ log(distvei2+1)*beitetrykk9 + skogkategori + treartgruppe9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = recruits_roads)
+
+rec_r_bin3_int2  <- glmer(recruitment_bin ~ distvei2*beitetrykk9 + skogkategori + treartgruppe9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = recruits_roads)
+
+summary(rec_r_bin3_int)
+summary(rec_r_bin3_int2)
+
 ```
 
 #### AIC selection bin models
@@ -625,6 +663,13 @@ library(sjPlot)
 plot_model(rec_r_bin3, type = "diag")
 plot_model(rec_r_bin3, type = "eff")
 plot_model(rec_r_bin3, type = "est")
+
+plot_model(rec_r_bin3_int, type = "int")
+plot_model(rec_r_bin3_int2, type = "int", mdrt.values = "quart")
+# "minmax" -> (default) minimum and maximum values (lower and upper bounds) of the moderator are used to plot the interaction between independent variable and moderator(s).
+# "meansd" -> uses the mean value of the moderator as well as one standard deviation below and above mean value to plot the effect of the moderator on the independent variable (following the convention suggested by Cohen and Cohen and popularized by Aiken and West (1991), i.e. using the mean, the value one standard deviation above, and the value one standard deviation below the mean as values of the moderator, see Grace-Martin K: 3 Tips to Make Interpreting Moderation Effects Easier).
+# "quart" -> calculates and uses the quartiles (lower, median and upper) of the moderator value.
+
 
 tab_model(rec_r_bin3, transform = NULL,
           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, p.threshold = c(0.05, 0.01, 0.001))
@@ -700,6 +745,18 @@ summary(rec_r_beta2_TMB)
 save(rec_r_beta2_TMB, file = "output/recruitment_2021_02_02/rec_r_beta2_TMB.rda")
 
 
+# Model with interaction for discussion
+rec_r_beta2_TMB_int <- glmmTMB(recruitment ~ log(distvei2+1)*beitetrykk9 + skogkategori + treartgruppe9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = poisson,
+data = recruits_roads)
+
+rec_r_beta2_TMB_int2 <- glmmTMB(recruitment ~ distvei2*beitetrykk9 + skogkategori + treartgruppe9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = poisson,
+data = recruits_roads)
+
+summary(rec_r_beta2_TMB_int)
+summary(rec_r_beta2_TMB_int2)
+
 ```
 
 
@@ -749,6 +806,13 @@ library(sjPlot)
 plot_model(rec_r_beta2_TMB, type = "diag")
 plot_model(rec_r_beta2_TMB, type = "eff") 
 plot_model(rec_r_beta2_TMB, type = "est")
+
+plot_model(rec_r_beta2_TMB_int, type = "int")
+plot_model(rec_r_beta2_TMB_int2, type = "int", mdrt.values = "quart")
+# "minmax" -> (default) minimum and maximum values (lower and upper bounds) of the moderator are used to plot the interaction between independent variable and moderator(s).
+# "meansd" -> uses the mean value of the moderator as well as one standard deviation below and above mean value to plot the effect of the moderator on the independent variable (following the convention suggested by Cohen and Cohen and popularized by Aiken and West (1991), i.e. using the mean, the value one standard deviation above, and the value one standard deviation below the mean as values of the moderator, see Grace-Martin K: 3 Tips to Make Interpreting Moderation Effects Easier).
+# "quart" -> calculates and uses the quartiles (lower, median and upper) of the moderator value.
+
 
 tab_model(rec_r_beta2_TMB, transform = NULL,
           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, p.threshold = c(0.05, 0.01, 0.001))
