@@ -231,7 +231,6 @@ data = browse_house)
 
 
 
-
 ```
 
 #### AIC selection bin models
