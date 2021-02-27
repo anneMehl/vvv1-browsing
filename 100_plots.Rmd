@@ -409,3 +409,11 @@ ggcorr(browse9.6sc, use = "pearson", nbreaks = 6, label = T, low = "red3", high 
 
 
 
+```{r}
+
+ggplot(recruits_roads, aes(distvei2, recruitment, color = treartgruppe9)) + 
+  geom_smooth(method = "lm")
+
+
+```
+
