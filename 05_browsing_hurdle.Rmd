@@ -561,7 +561,7 @@ browse_roads$beite_bin <- ifelse(browse_roads$beitetrykk9 == 0, 0, 1)
 browse_roads$tretetthet9 <- scale(browse_roads$tretetthet9)
 browse_roads$helling <- scale(browse_roads$helling)
 browse_roads$HOH <- scale(browse_roads$HOH)
-browse_roads$moose_density <- scale(browse_roads$moose_density)
+# browse_roads$moose_density <- scale(browse_roads$moose_density)
 
 str(browse_roads)
 summary(browse_roads$tretetthet9)
@@ -653,7 +653,7 @@ tab_model(browse_r_bin1, transform = NULL,
 
 #### Save bin roads
 ```{r}
-save(browse_r_bin1, file = "browse_r_bin1.rda")
+save(browse_r_bin1, file = "output/browsing_2021_02_02/browse_r_bin1.rda")
 
 ```
 
@@ -787,18 +787,18 @@ library(sjPlot)
 library(ggplot2)
 
 ## House
-load("processdata/browse_house.rda")
+load("processdata/browse_house_2021_02_01.rda")
 str(browse_house) # Check if variables are scales - if not scale
 load("output/browsing_2021_02_02/browse_h_bin1.rda")
 browse_house$beite_bin <- ifelse(browse_house$beitetrykk9 == 0, 0, 1)
 summary(browse_h_bin1)
 
 # # Scale
-# browse_house$tretetthet9 <- scale(browse_house$tretetthet9)
-# browse_house$helling <- scale(browse_house$helling)
-# browse_house$HOH <- scale(browse_house$HOH)
+browse_house$tretetthet9 <- scale(browse_house$tretetthet9)
+browse_house$helling <- scale(browse_house$helling)
+browse_house$HOH <- scale(browse_house$HOH)
 # browse_house$moose_density <- scale(browse_house$moose_density)
-# browse_house$disthus_200 <- scale(browse_house$disthus_200)
+browse_house$disthus_200 <- scale(browse_house$disthus_200)
 
 
 
@@ -814,16 +814,16 @@ p_browse_bin1_house <- p_browse_bin1_house + theme_light() +
 
 
 ## Roads
-load("processdata/browse_roads.rda")
+load("processdata/browse_roads_2021_02_02.rda")
 str(browse_roads) # Check if variables are scales - if not scale
 load("output/browsing_2021_02_02/browse_r_bin1.rda")
 summary(browse_r_bin1)
 browse_roads$beite_bin <- ifelse(browse_roads$beitetrykk9 == 0, 0, 1)
 
 # Scale
-# browse_roads$tretetthet9 <- scale(browse_roads$tretetthet9)
-# browse_roads$helling <- scale(browse_roads$helling)
-# browse_roads$HOH <- scale(browse_roads$HOH)
+browse_roads$tretetthet9 <- scale(browse_roads$tretetthet9)
+browse_roads$helling <- scale(browse_roads$helling)
+browse_roads$HOH <- scale(browse_roads$HOH)
 # browse_roads$moose_density <- scale(browse_roads$moose_density)
 
 
@@ -904,14 +904,17 @@ p_browse_bin8 <- p_browse_bin8 + theme_light() +
 
 
 library(gridExtra)
-grid.arrange(p_browse_bin1_house, p_browse_bin1, p_browse_bin2, p_browse_bin3,
+browse_eff_plot_1_bin <- grid.arrange(p_browse_bin1_house, p_browse_bin1, p_browse_bin2, p_browse_bin3,
           nrow = 2, ncol = 2)
 
-grid.arrange(p_browse_bin8, p_browse_bin4, p_browse_bin5, p_browse_bin6, p_browse_bin7,
+browse_eff_plot_2_bin <- grid.arrange(p_browse_bin8, p_browse_bin4, p_browse_bin5, p_browse_bin6, p_browse_bin7,
           nrow = 3, ncol = 2)
 
 # type = "pred" = Predicted values (marginal effects) for specific model terms. See ggpredict for details.
 # type = "eff" = Similar to type = "pred", however, discrete predictors are held constant at their proportions (not reference level). See ggeffect for details. ggeffect() computes marginal effects by internally calling Effect. Effect constructs an "eff" object for a term (usually a high-order term), absorbing the lower-order terms marginal to the term in question, and averaging over other terms in the model.
+
+ggsave(file = "browse_eff_plot_1_bin.tiff", browse_eff_plot_1_bin, width = 30, height = 30, units = "cm", dpi = 150) #, dpi = 150
+ggsave(file = "browse_eff_plot_2_bin.tiff", browse_eff_plot_2_bin, width = 30, height = 30, units = "cm", dpi = 150) #, dpi = 150
 
 ```
 
