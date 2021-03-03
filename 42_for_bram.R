@@ -5,22 +5,23 @@ library(glmmTMB)
 ## Load HOUSE models data----
 
 #### Browsing pressure 
-load("output/browse_04_12_2020/browse_h_bin1.rda")
+load("output/browsing_2021_02_02/browse_h_bin1.rda")
 zeromod1 <- browse_h_bin1
 summary(zeromod1)
 
-load("output/browse_04_12_2020/browse_h_beta2.rda")
+load("output/browsing_2021_02_02/browse_h_beta2.rda")
 percmod1 <- browse_h_beta2
 summary(percmod1)
 
-load("processdata/browse_house.rda")
+load("processdata/browse_house_2021_02_01.rda")
 str(browse_house) # Check if variables are scaled, else scale below
-browse_house <- browse_house[ ,-c(4,16:20,22)] #8,
+# browse_house <- browse_house[ ,-c(4,16:20,22)] #8,
+
 # Scale
 browse_house$tretetthet9 <- scale(browse_house$tretetthet9)
 browse_house$helling <- scale(browse_house$helling)
 browse_house$HOH <- scale(browse_house$HOH)
-browse_house$moose_density <- scale(browse_house$moose_density)
+# browse_house$moose_density <- scale(browse_house$moose_density)
 browse_house$disthus_200 <- scale(browse_house$disthus_200)
 str(browse_house)
 
@@ -29,24 +30,24 @@ head(dat1)
 
 
 #### Recruitment
-load("output/recruitment_07_12_2020/rec_h_bin7_600.rda")
-
-zeromod2 <- rec_h_bin7_600
+load("output/recruitment_2021_02_02/rec_h_bin2_600_int.rda")
+zeromod2 <- rec_h_bin2_600_int
 summary(zeromod2)
 
-load("output/recruitment_07_12_2020/rec_h_beta7_TMB.rda")
-percmod2 <- rec_h_beta7_TMB
+
+load("output/recruitment_2021_02_02/rec_h_beta3_TMB_int.rda")
+percmod2 <- rec_h_beta3_TMB_int
 summary(percmod2)
 
-load("processdata/recruits_house.rda")
+load("processdata/recruits_house_2021_02_02.rda")
 str(recruits_house)
 # recruits_house <- recruits_house[ ,-c(7)]
 recruits_house$recruitment_bin <- ifelse(recruits_house$recruitment == 0, 0, 1)
 # scale
-recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
+# recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
 recruits_house$helling <- scale(recruits_house$helling)
 recruits_house$HOH <- scale(recruits_house$HOH)
-recruits_house$moose_density <- scale(recruits_house$moose_density)
+# recruits_house$moose_density <- scale(recruits_house$moose_density)
 recruits_house$disthus_600 <- scale(recruits_house$disthus_600)
 # recruits_house$disthus_500 <- scale(recruits_house$disthus_500)
 
@@ -61,12 +62,13 @@ head(dat2)
 
 
 
-source("function_resp_curve_08_12_2020.R")
+source("function_resp_curve_08_12_2020_rev_BVM.R")
 
 
 #### Select focal variable
-(focal = c("distvei", "skogkategori", "treartgruppe9", "kant", 
-           "helling", "HOH", "tretetthet9", "beitetrykk9", "disthus", "moose_density")[9])
+(focal = c( "disthus", "distvei", "skogkategori", "treartgruppe9", "kant", 
+            "helling", "HOH", "tretetthet9", "beitetrykk9", "moose_density")[1])
+## REMEMBER to load the road datasets and models after disthus (house model)!!!!!
 
 
 
@@ -89,22 +91,22 @@ resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
 
 
 #### Browsing pressure
-load("output/browse_04_12_2020/browse_r_bin1.rda")
+load("output/browsing_2021_02_02/browse_r_bin1.rda")
 zeromod1 <- browse_r_bin1
 summary(zeromod1)
 
-load("output/browse_04_12_2020/browse_r_beta3.rda")
-percmod1 <- browse_r_beta3 
+load("output/browsing_2021_02_02/browse_r_beta2.rda")
+percmod1 <- browse_r_beta2 
 summary(percmod1)
 
-load("processdata/browse_roads.rda")
+load("processdata/browse_roads_2021_02_02.rda")
 str(browse_roads)
 browse_roads$beite_bin <- ifelse(browse_roads$beitetrykk9 == 0, 0, 1)
 # Scale
 browse_roads$tretetthet9 <- scale(browse_roads$tretetthet9)
 browse_roads$helling <- scale(browse_roads$helling)
 browse_roads$HOH <- scale(browse_roads$HOH)
-browse_roads$moose_density <- scale(browse_roads$moose_density)
+# browse_roads$moose_density <- scale(browse_roads$moose_density)
 str(browse_roads)
 
 dat1 <- browse_roads
@@ -112,25 +114,25 @@ head(dat1)
 
 
 #### Recruitment
-load("output/recruitment_07_12_2020/rec_r_bin3.rda")
+load("output/recruitment_2021_02_02/rec_r_bin3.rda")
 zeromod2 <- rec_r_bin3
 summary(zeromod2)
 
-load("output/recruitment_07_12_2020/rec_r_beta4_TMB.rda")
-percmod2 <- rec_r_beta4_TMB
+load("output/recruitment_2021_02_02/rec_r_beta2_TMB.rda")
+percmod2 <- rec_r_beta2_TMB
 summary(percmod2)
 
-load("processdata/recruits_roads.rda")
+load("processdata/recruits_roads_2021_02_03.rda")
 str(recruits_roads)
 recruits_roads$recruitment_bin <- ifelse(recruits_roads$recruitment == 0, 0, 1)
 is.integer(recruits_roads$recruitment)
 recruits_roads$recruitment <- as.integer(recruits_roads$recruitment)
 is.integer(recruits_roads$recruitment)
 # Scale
-recruits_roads$beitetrykk9 <- scale(recruits_roads$beitetrykk9)
+# recruits_roads$beitetrykk9 <- scale(recruits_roads$beitetrykk9)
 recruits_roads$helling <- scale(recruits_roads$helling)
 recruits_roads$HOH <- scale(recruits_roads$HOH)
-recruits_roads$moose_density <- scale(recruits_roads$moose_density)
+# recruits_roads$moose_density <- scale(recruits_roads$moose_density)
 recruits_roads$tretetthet9 <- scale(recruits_roads$tretetthet9) # this is not in the recruitment model, but is used when the total effect gets calculated
 
 dat2 <- recruits_roads
@@ -143,12 +145,13 @@ head(dat2)
 
 ## Load and run function ----
 
-source("function_resp_curve_08_12_2020.R")
+source("function_resp_curve_08_12_2020_rev_BVM.R")
 
 
 #### Select focal variable
-(focal = c("distvei", "skogkategori", "treartgruppe9", "kant", 
-           "helling", "HOH", "tretetthet9", "beitetrykk9", "disthus", "moose_density")[9])
+(focal = c( "disthus", "distvei", "skogkategori", "treartgruppe9", "kant", 
+            "helling", "HOH", "tretetthet9", "beitetrykk9", "moose_density")[1])
+## REMEMBER to load the road datasets and models after disthus (house model)!!!!!
 
 
 
@@ -211,7 +214,7 @@ total_disthus$var <- total_disthus$var * 162.9665 + 499.182
 # attributes(browse_roads$tretetthet9) # $`scaled:center` 993.2908 $`scaled:scale` 1152.076
 bp_helling$var <- bp_helling$var * 20.63004 + 19.83571
 bp_HOH$var <- bp_HOH$var * 243.1602 + 378.861
-bp_moose_density$var <- bp_moose_density$var * 196.1478 + 184.0303
+# bp_moose_density$var <- bp_moose_density$var * 196.1478 + 184.0303
 bp_tretett$var <- bp_tretett$var * 1152.076 + 993.2908
 
 bp_distvei$var <- exp(bp_distvei$var)-1
@@ -224,7 +227,7 @@ bp_distvei$var <- exp(bp_distvei$var)-1
 recruit_bp$var <- recruit_bp$var * 30.81325 + 26.01752
 recruit_helling$var <- recruit_helling$var * 19.60225 + 19.10349
 recruit_HOH$var <- recruit_HOH$var * 245.9447 + 365.9363
-recruit_moose_density$var <- recruit_moose_density$var * 203.1264 + 200.6176
+# recruit_moose_density$var <- recruit_moose_density$var * 203.1264 + 200.6176
 
 recruit_distvei$var <- exp(recruit_distvei$var)-1
 

@@ -145,7 +145,7 @@ str(browse_house) # Check if variables are scaled, else scale below
 browse_house$tretetthet9 <- scale(browse_house$tretetthet9)
 browse_house$helling <- scale(browse_house$helling)
 browse_house$HOH <- scale(browse_house$HOH)
-browse_house$moose_density <- scale(browse_house$moose_density)
+# browse_house$moose_density <- scale(browse_house$moose_density)
 browse_house$disthus_200 <- scale(browse_house$disthus_200)
 str(browse_house)
 
@@ -154,15 +154,14 @@ head(dat1)
 
 
 #### Recruitment ----
-load("output/recruitment_2021_02_02/rec_h_bin2_600.rda")
-zeromod2 <- rec_h_bin2_600
-summary(zeromod2)
+load("output/recruitment_2021_02_02/rec_h_bin2_600_int.rda")
 zeromod2 <- rec_h_bin2_600_int
+# load("output/recruitment_07_12_2020/rec_h_bin2_600_.rda")
+# zeromod2 <- rec_h_bin2_600
 summary(zeromod2)
 
-load("output/recruitment_2021_02_02/rec_h_beta3_TMB.rda")
-percmod2 <- rec_h_beta3_TMB
-summary(percmod2)
+
+load("output/recruitment_2021_02_02/rec_h_beta3_TMB_int.rda")
 percmod2 <- rec_h_beta3_TMB_int
 summary(percmod2)
 
@@ -174,7 +173,7 @@ recruits_house$recruitment_bin <- ifelse(recruits_house$recruitment == 0, 0, 1)
 # recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
 recruits_house$helling <- scale(recruits_house$helling)
 recruits_house$HOH <- scale(recruits_house$HOH)
-recruits_house$moose_density <- scale(recruits_house$moose_density)
+# recruits_house$moose_density <- scale(recruits_house$moose_density)
 recruits_house$disthus_600 <- scale(recruits_house$disthus_600)
 # recruits_house$disthus_500 <- scale(recruits_house$disthus_500)
 
@@ -209,7 +208,7 @@ browse_roads$beite_bin <- ifelse(browse_roads$beitetrykk9 == 0, 0, 1)
 browse_roads$tretetthet9 <- scale(browse_roads$tretetthet9)
 browse_roads$helling <- scale(browse_roads$helling)
 browse_roads$HOH <- scale(browse_roads$HOH)
-browse_roads$moose_density <- scale(browse_roads$moose_density)
+# browse_roads$moose_density <- scale(browse_roads$moose_density)
 str(browse_roads)
 
 dat1 <- browse_roads
@@ -235,7 +234,7 @@ is.integer(recruits_roads$recruitment)
 # recruits_roads$beitetrykk9 <- scale(recruits_roads$beitetrykk9)
 recruits_roads$helling <- scale(recruits_roads$helling)
 recruits_roads$HOH <- scale(recruits_roads$HOH)
-recruits_roads$moose_density <- scale(recruits_roads$moose_density)
+# recruits_roads$moose_density <- scale(recruits_roads$moose_density)
 recruits_roads$tretetthet9 <- scale(recruits_roads$tretetthet9) # this is not in the recruitment model, but is used when the total effect gets calculated
 
 dat2 <- recruits_roads
@@ -247,14 +246,16 @@ head(dat2)
 
 ## Load and run function
 ```{r}
-source("function_resp_curve_08_12_2020_rev_BVM.R")
+# source("function_resp_curve_08_12_2020_rev_BVM.R")
+source("function_resp_curve_08_12_2020_rev_added_browsingvalue.R")
 ```
 
 #### Select focal variable
 ```{r}
 (focal = c( "disthus", "distvei", "skogkategori", "treartgruppe9", "kant", 
-           "helling", "HOH", "tretetthet9", "beitetrykk9", "moose_density")[1])
+           "helling", "HOH", "tretetthet9", "beitetrykk9", "moose_density")[10])
 ## REMEMBER to load the road datasets and models after disthus (house model)!!!!!
+
 ```
 
 #### Run function for the different models/ focals and SAVE them
@@ -265,11 +266,15 @@ total = total effect
 bp_moose <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[1], nvals=100, plotit=F, nb_btstrp=99)
 
-recruit_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
+recruit_moose <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
 
-total_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+total_moose <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=99)
+
+# For interaction, choose between: browsingvalue="max" or "min"
+recruit_int_max <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+           which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99, browsingvalue = "max")
 ```
 
 #### Save function data!
@@ -342,7 +347,7 @@ bp_disthus$var <- bp_disthus$var * 27.71453 + 192.2636
 # attributes(browse_roads$tretetthet9) # $`scaled:center` 993.2908 $`scaled:scale` 1152.076
 bp_helling$var <- bp_helling$var * 20.63004 + 19.83571
 bp_HOH$var <- as.integer(bp_HOH$var * 243.1602 + 378.861) # for some reason I got scientific notation here, solves by using as.integer
-bp_moose$var <- bp_moose$var * 0.2047208 + 0.2775515
+# bp_moose$var <- bp_moose$var * 0.2047208 + 0.2775515
 bp_tretett$var <- bp_tretett$var * 1152.076 + 993.2908
 
 bp_distvei$var <- exp(bp_distvei$var)-1
@@ -356,6 +361,8 @@ bp_distvei$var <- exp(bp_distvei$var)-1
 
 # attributes(recruits_house$disthus_600) # $`scaled:center` 499.182 $`scaled:scale` 162.9665
 recruit_disthus$var <- recruit_disthus$var * 162.9665 + 499.182
+recruit_int_min$var <- recruit_int_min$var * 162.9665 + 499.182
+recruit_int_max$var <- recruit_int_max$var * 162.9665 + 499.182
 
 ### Roads
 
@@ -366,7 +373,7 @@ recruit_disthus$var <- recruit_disthus$var * 162.9665 + 499.182
 # recruit_bp$var <- recruit_bp$var * 30.81325 + 26.01752
 recruit_helling$var <- recruit_helling$var * 19.60225 + 19.10349
 recruit_HOH$var <- as.integer(recruit_HOH$var * 245.9447 + 365.9363)
-recruit_moose$var <- recruit_moose$var * 0.1988112 + 0.2841981
+# recruit_moose$var <- recruit_moose$var * 0.1988112 + 0.2841981
 
 recruit_distvei$var <- exp(recruit_distvei$var)-1
 
@@ -473,16 +480,30 @@ pdt_disthus <- ggplot() +
 #   scale_color_manual(name = "Effect on \nRecruitment (ha 10yr) (ha 10yr)", 
 #                      values = c("total" = "#009292", "direct" = "#004949"))
 # 
-# pd_disthus <- ggplot() + 
-#   geom_line(data = recruit_disthus, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
-#   geom_ribbon(data = recruit_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
-#   xlab("\nDistance to house (m)") + 
-#   ylab("Recruitment (ha 10yr) (ha 10yr)\n") +
-#   theme_light()+
-#   theme(axis.text = element_text(size = 10),
-#         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
-#   scale_color_manual(name = "Effect on \nRecruitment (ha 10yr) (ha 10yr)", 
-#                      values = c("total" = "#009292", "direct" = "#004949"))
+pd_disthus <- ggplot() +
+  geom_line(data = recruit_int_min, aes(var, point), colour = "red", linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = recruit_int_min, aes(x = var, ymin = CI025, ymax = CI975), colour = "red", linetype = 2, alpha = 0.2) +
+  geom_line(data = recruit_int_max, aes(var, point), colour = "blue", linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = recruit_int_max, aes(x = var, ymin = CI025, ymax = CI975), colour = "blue", linetype = 2, alpha = 0.2) +
+  xlab("\nDistance to house (m)") +
+  ylab("Recruitment (ha 10yr)\n") +
+  theme_light()+
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  scale_color_manual(name = "Effect on \nRecruitment (ha 10yr)",
+                     values = c("total" = "#009292", "direct" = "#004949"))
+
+pd_disthus <- ggplot() +
+  geom_line(data = recruit_disthus, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
+  geom_ribbon(data = recruit_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+  xlab("\nDistance to house (m)") +
+  ylab("Recruitment (ha 10yr)\n") +
+  theme_light()+
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+  scale_color_manual(name = "Effect on \nRecruitment (ha 10yr)",
+                     values = c("total" = "#009292", "direct" = "#004949"))
+
 
 ph_disthus <- ggplot() +
   geom_ribbon(data = bp_disthus, aes(x = var, ymin = CI025, ymax = CI975), show.legend = F, 
@@ -512,7 +533,7 @@ pdt_distvei <- ggplot() +
   scale_linetype_manual("Effect",
                         values = c("direct" = 3,"total" = 1)) +
   xlab("\nDistance to road (m)") + 
-  ylab("") +
+  ylab("Recruitment (ha 10yr)\n") +
   theme_light()+
   theme(axis.text = element_text(size = 20), # face = "bold"
         axis.title = element_text(family = "sans", size = 25),
@@ -554,7 +575,7 @@ ph_distvei <- ggplot() +
   theme(axis.text = element_text(size = 20),
         axis.title = element_text(family = "sans", size = 25)) +
   xlab("Distance to road (m)\n") + 
-  ylab("") +
+  ylab("Browsing pressure (%)\n") +
     scale_fill_manual(values = "#0072B2")
 
 
@@ -609,7 +630,7 @@ ph_skogkat <- ggplot(data = bp_skogkat,aes(var, point)) +
         axis.text.y = element_text(size = 20),
         axis.title = element_text(family = "sans", size = 25)) +
   xlab("Forest category\n") + 
-  ylab("") +
+  ylab("Browsing pressure (%)\n") +
   scale_x_discrete(labels = c("High-prod. \nold forest", "High-prod. \nyoung forest", "Low-prod. \nold forest", "Low-prod. \nyoung forest", "Unproductive \nforest")) 
 
 
@@ -663,7 +684,7 @@ ph_treart <- ggplot(data = bp_treart,aes(var, point)) +
         axis.text.y = element_text(size = 20),
         axis.title = element_text(family = "sans", size = 25)) +
   xlab("Tree species groups\n") + 
-  ylab("Browsing pressure (%)\n") +
+  ylab("") +
   scale_x_discrete(labels = c("Pine", "Other deciduous \ntrees", "Rowan, aspen, \nwillow")) 
 
 # kant ----
@@ -715,7 +736,7 @@ ph_kant <- ggplot(data = bp_kant, aes(var, point)) +
         axis.text.y = element_text(size = 20),
         axis.title = element_text(family = "sans", size = 25)) +
   xlab("Edge effect\n") + 
-  ylab("Browsing pressure (%)\n") +
+  ylab("") +
   scale_x_discrete(labels = c("Edge \n<10m", "Edge \n>20m", "Edge \n10-20m", "Edge \nmissing"))
 
 # hell ----
@@ -732,7 +753,7 @@ pdt_hell <- ggplot() +
   scale_linetype_manual("Effect",
                         values = c("direct" = 3,"total" = 1)) +
   xlab("Slope (%)\n") +
-  ylab("") +
+  ylab("Recruitment (ha 10yr)\n") +
   theme_light()+
   theme(axis.text = element_text(size = 20), # face = "bold"
         axis.title = element_text(family = "sans", size = 25),
@@ -775,7 +796,7 @@ ph_hell <- ggplot() +
   theme(axis.text = element_text(size = 20),
         axis.title = element_text(family = "sans", size = 25)) +
   xlab("Slope (%)\n") + 
-  ylab("Browsing pressure (%)\n") +
+  ylab("") +
     scale_fill_manual(values = "#0072B2")
 
 
@@ -794,7 +815,7 @@ pdt_hoh <- ggplot() +
                         values = c("direct" = 3,"total" = 1)) +
   
   xlab("Altitude (masl)\n") + 
-  ylab("Recruitment (ha 10yr)\n") +
+  ylab("") +
   theme_light()+
   theme(axis.text = element_text(size = 20), # face = "bold"
         axis.title = element_text(family = "sans", size = 25),
@@ -837,7 +858,7 @@ ph_hoh <- ggplot() +
   theme(axis.text = element_text(size = 20),
         axis.title = element_text(family = "sans", size = 25)) +
   xlab("Altitude (masl)\n") + 
-  ylab("") +
+  ylab("Browsing pressure (%)\n") +
     scale_fill_manual(values = "#0072B2")
 
 
@@ -885,7 +906,7 @@ ph_tretett <- ggplot() +
         axis.text.y = element_text(size = 20),
         axis.title = element_text(family = "sans", size = 25)) +
   xlab("Tree density (ha)\n") + 
-  ylab("") +
+  ylab("Browsing pressure (%)\n") +
     scale_fill_manual(values = "#0072B2")
 
 
@@ -899,7 +920,7 @@ pdt_beite <- ggplot() +
   scale_linetype_manual("Effect",
                         values = c("direct" = 3)) +
   xlab("Browsing pressure (%)\n") + 
-  ylab("Recruitment (ha 10yr)\n") +
+  ylab("") +
   theme_light()+
   theme(axis.text = element_text(size = 20), # face = "bold"
         axis.title = element_text(family = "sans", size = 25),
@@ -948,7 +969,7 @@ pdt_moose <- ggplot() +
   scale_linetype_manual("Effect",
                         values = c("direct" = 3,"total" = 1)) +
   xlab("Moose density (5 yr mean)\n") + 
-  ylab("Recruitment (ha 10yr)\n") +
+  ylab("") +
   theme_light()+
   theme(axis.text = element_text(size = 20), # face = "bold"
         axis.title = element_text(family = "sans", size = 25),
@@ -968,7 +989,7 @@ ph_moose <- ggplot() +
   theme(axis.text = element_text(size = 20),
         axis.title = element_text(family = "sans", size = 25)) +
   xlab("Moose density (5 yr mean)\n") + 
-  ylab("Browsing pressure (%)\n") +
+  ylab("") +
     scale_fill_manual(values = "#0072B2")
 
 
@@ -986,34 +1007,33 @@ library(grid)
 
 ## browsing pressure #############
 
-# disthus and distvei
+# disthus
 nullplot <- ggplot()+
   theme_void()
-hurdle_husvei <- ggarrange(nullplot, nullplot, ph_disthus, ph_distvei,
-          ncol = 2,
+hurdle_husvei <- ggarrange(nullplot, ph_disthus,
+          ncol = 1,
           nrow = 2,
           heights = c(0.1,1),
-          labels = c("","", "(a)", "(b)"),
           label.args = list(gp = gpar(font = 2, fontsize = 15), x = unit(1,"line"), hjust = -1, vjust = 0),
-          widths = c(1,1),
+          widths = c(1),
           draw = F
           )
-ggsave(file = "function_browse_hurdle_husvei.pdf", hurdle_husvei, width = 30, height = 15, units = "cm") #, dpi = 150
+ggsave(file = "figs_tabs/total_direct_function/2021_03_03/function_browse_hurdle_hus.tiff", hurdle_husvei, width = 15, height = 15, units = "cm", dpi = 150) #, dpi = 150
 
 # rest
 nullplot <- ggplot()+
   theme_void()
 
-hurdle_grid <- ggarrange(nullplot, nullplot, nullplot, ph_treart, ph_skogkat, nullplot, ph_kant, ph_tretett, nullplot, ph_hell, ph_hoh, nullplot, ph_moose,
-          ncol = 3,
+hurdle_grid <- ggarrange(nullplot, nullplot, ph_distvei, ph_treart, ph_skogkat, ph_kant, ph_tretett, ph_hell, ph_hoh, ph_moose,
+          ncol = 2,
           nrow = 5,
-          heights = c(0.2,1, 1, 1, 1),
-          labels = c("","","","(a)", "(b)","", "(c)", "(d)","", "(e)", "(f)","", "(g)"),
+          heights = c(0.2,1, 1, 1, 1),# 0.2
+          labels = c("","","(a)", "(b)", "(c)", "(d)","(e)", "(f)","(g)","(h)"),
           label.args = list(gp = gpar(font = 2, fontsize = 15), x = unit(1,"line"), hjust = -2.5, vjust = -1),
-          widths = c(1,1,0.1),
+          widths = c(1,1),# 0.1
           draw = F
           )
-ggsave(file = "function_browse_hurdle_grid.tiff", hurdle_grid, width = 30, height = 45, units = "cm", dpi = 150) #, dpi = 150
+ggsave(file = "figs_tabs/total_direct_function/2021_03_03/function_browse_hurdle_grid_0303.pdf", hurdle_grid, width = 30, height = 45, units = "cm") #, dpi = 150
 
  
 
@@ -1021,31 +1041,30 @@ ggsave(file = "function_browse_hurdle_grid.tiff", hurdle_grid, width = 30, heigh
 ## total/direct ##############
 nullplot <- ggplot()+
   theme_void()
-total_direct_husvei <- ggarrange(nullplot, nullplot, pdt_disthus, pdt_distvei,
-          ncol = 2,
+total_direct_husvei <- ggarrange(nullplot, pdt_disthus, 
+          ncol = 1,
           nrow = 2,
           heights = c(0.1,1),
-          labels = c("","", "(a)", "(b)"),
           label.args = list(gp = gpar(font = 2, fontsize = 15), x = unit(1,"line"), hjust = -1, vjust = 0),
-          widths = c(1,1),
+          widths = c(1),
           draw = F
           )
-ggsave(file = "function_total_direct_husvei.tiff", total_direct_husvei, width = 30, height = 15, units = "cm", dpi = 150) #, dpi = 150
+ggsave(file = "figs_tabs/total_direct_function/2021_03_03/function_total_direct_hus.pdf", total_direct_husvei, width = 15, height = 15, units = "cm") #, dpi = 150
 
 # rest
 nullplot <- ggplot()+
   theme_void()
 
-total_direct_grid <- ggarrange(nullplot, nullplot, pdt_beite, pdt_treart, pdt_skogkat, pdt_kant,  pdt_hoh, pdt_hell,  pdt_moose, pdt_tretett,
-          ncol = 2,
-          nrow = 5,
-          heights = c(0.2,1, 1, 1, 1),
-          labels = c("","", "(a)", "(b)", "(c)", "(d)", "(e)", "(f)", "(g)", "(h)"),
+total_direct_grid <- ggarrange(nullplot, nullplot, nullplot, nullplot, pdt_distvei, pdt_beite, pdt_treart, nullplot, pdt_skogkat, pdt_kant,  pdt_hoh, nullplot, pdt_hell,  pdt_moose, pdt_tretett, nullplot,
+          ncol = 4,
+          nrow = 4,
+          heights = c(0.2,1, 1, 1),
+          labels = c("","", "", "", "(a)", "(b)", "(c)", "", "(d)", "(e)", "(f)", "", "(g)", "(h)", "(i)",""),
           label.args = list(gp = gpar(font = 2, fontsize = 15), x = unit(1,"line"), hjust = -2.5, vjust = -1),
-          widths = c(1,1),
+          widths = c(1,1,1, 0.1),
           draw = F
           )
-ggsave(file = "function_total_direct_grid.pdf", total_direct_grid, width = 30, height = 45, units = "cm") #, dpi = 150
+ggsave(file = "figs_tabs/total_direct_function/2021_03_03/function_total_direct_grid_0303.tiff", total_direct_grid, width = 40, height = 40, units = "cm", dpi = 150) #, dpi = 150
 
 ```
 
@@ -1146,6 +1165,30 @@ ggcorr(recruits_house, use = "pearson", nbreaks = 6, label = T, low = "red3", hi
 ggcorr(recruits_roads, use = "pearson", nbreaks = 6, label = T, low = "red3", high = "green3", label_round = 2, name = "Correlation Scale", label_alpha = T, hjust = 0.75) +
   ggtitle(label = "Correlation Plot") +
   theme(plot.title = element_text(hjust = 0.6))
+
+
+
+
+## correlation thinning (or similar) and distances
+load("rawdata/browse0.1.rda")
+ggcorr(data = NULL, cor_matrix = cor(browse0.1[, c(84, 103, 105)], use = "complete.obs"), method = "pearson", nbreaks = 6, label = T, low = "red3", high = "green3",  
+       label_round = 1, label_alpha = T, hjust = 0.75) +
+  ggtitle(label = "") +
+  theme(plot.title = element_text(hjust = 0.6))
+
+cor_matrix <- browse0.1[, c(84, 103, 105)]
+cor(cor_matrix, use = "complete.obs")
+
+cor.test(browse0.1$ungskog, browse0.1$disthus)
+
+
+ggplot(browse0.1, aes(ungskog)) +
+  geom_histogram()
+ggplot(browse0.1, aes(disthus)) +
+  geom_histogram()
+
+ggplot(browse0.1, aes(disthus, color = ungskog))
+  geom_histogram()
 
 
 ```
