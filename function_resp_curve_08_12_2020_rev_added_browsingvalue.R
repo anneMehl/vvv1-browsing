@@ -16,19 +16,20 @@ make_modelmatrix <- function(mod, dat, focal, isfactor, nvals, whurdle=c("BP", "
   modframe <- modframe[,-1]
   fcts <- names(modframe)[sapply(modframe, class)=="factor"]
   nofcts <- names(modframe)[sapply(modframe, class)!="factor"]
-  focal <- ifelse((focal=="disthus_600" & whurdle=="trees" & type=="perc"), NA, focal) #changed _400 to _600 08-12-2020
-  focal <- ifelse((grepl("distvei", focal) & whurdle=="trees" & type=="perc"), NA, focal) #added 13-01-2020, removed helling 15-01-2020
+  #focal <- ifelse((focal=="disthus_600" & whurdle=="trees" & type=="perc"), NA, focal) #changed _400 to _600 08-12-2020
+  #focal <- ifelse((grepl("distvei", focal) & whurdle=="trees" & type=="perc"), NA, focal) #added 13-01-2020, removed helling 15-01-2020
   isfactor <- ifelse(is.na(focal), F, isfactor)
   if (!isfactor & !is.na(focal)) nofcts <- nofcts[!grepl(focal, nofcts)]
   for (i in nofcts){
     if (!is.na(match(i, colnames(mm)))){
-      mm[c(1:nvals),i] <- rep(median(mm[,i]), each=nvals)
       if (i=="beitetrykk9"){ 
         if (browsingvalue=="median") mm[c(1:nvals),i] <- rep(median(mm[,i]), each=nvals)
         if (browsingvalue=="025pct") mm[c(1:nvals),i] <- rep(quantile(mm[,i], probs=0.025), each=nvals)
         if (browsingvalue=="0975pct") mm[c(1:nvals),i] <- rep(quantile(mm[,i], probs=0.975), each=nvals)
         if (browsingvalue=="min") mm[c(1:nvals),i] <- rep(min(mm[,i]), each=nvals)
         if (browsingvalue=="max") mm[c(1:nvals),i] <- rep(max(mm[,i]), each=nvals)
+      }else{
+        mm[c(1:nvals),i] <- rep(median(mm[,i]), each=nvals)
       }
     }
   }
@@ -60,9 +61,9 @@ bootstrap_focal <- function(mod, focal, isfactor, nb_btstrp, whurdle=c("BP", "tr
   coef <- fixef(mod)
   if (type=="perc") coef <- coef[[1]] 
   mat <- matrix(coef, nrow=length(coef), ncol=nb_btstrp+1, byrow=F)
-  focal <- ifelse((focal=="disthus_600" & whurdle=="trees" & type=="perc"), NA, focal) #changed _400 to _600 08-12-2020
-  focal <- ifelse((grepl("distvei", focal) & whurdle=="trees" & type=="perc"), NA, focal) #added 13-01-2020, removed helling 15-01-2020
-  focal <- ifelse((grepl("moose_density", focal) & type=="perc"), NA, focal) #added 17-12-2020
+  #focal <- ifelse((focal=="disthus_600" & whurdle=="trees" & type=="perc"), NA, focal) #changed _400 to _600 08-12-2020
+  #focal <- ifelse((grepl("distvei", focal) & whurdle=="trees" & type=="perc"), NA, focal) #added 13-01-2020, removed helling 15-01-2020
+  #focal <- ifelse((grepl("moose_density", focal) & type=="perc"), NA, focal) #added 17-12-2020
   if (!is.na(focal)){
     if (type=="perc"){ 
       ses <- sqrt(diag(as.matrix(vcov(mod))[[1]]))
@@ -220,18 +221,18 @@ resp_curve <- function(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2
 
       mm3 <- make_modelmatrix(mod=zeromod2, dat=dat2, focal=focal2, isfactor=isfactor, nvals=nvals, whurdle="trees", type="zero", browsingvalue=browsingvalue)
       mm4 <- make_modelmatrix(mod=percmod2, dat=dat2, focal=focal2, isfactor=isfactor, nvals=nvals, whurdle="trees", type="perc", browsingvalue=browsingvalue)
-  
-      #include first hurdle results...
-      toto <- function(x, mm, pred_smpl){
-        mm[,which(colnames(mm)=="beitetrykk9")] <- pred_smpl[,x] # changed from: "browpres_merged"
-        if (which_effect=="hurdle2_only"){
-          mm[,which(colnames(mm)=="beitetrykk9")] <- mean(pred_smpl[,1])#pred_smpl[1,1]#mean(pred_smpl[,1]), changed from: "browpres_merged"
-        }
-        return(mm)
-      }
+
       if (focal1=="kant"){
         mm3 <- mm3[c(1:4),]
         mm4 <- mm4[c(1:4),]
+      }
+      
+      #include first hurdle results...
+      toto <- function(x, mm, pred_smpl){
+        if (which_effect!="hurdle2_only"){
+          mm[,which(colnames(mm)=="beitetrykk9")] <- pred_smpl[,x]
+        }
+        return(mm)
       }
       lmm3 <- lapply(c(1:ncol(pred_smpl)), toto, mm=mm3, pred_smpl=pred_smpl)
       lmm4 <- lapply(c(1:ncol(pred_smpl)), toto, mm=mm4, pred_smpl=pred_smpl)
