@@ -253,7 +253,7 @@ source("function_resp_curve_08_12_2020_rev_added_browsingvalue.R")
 #### Select focal variable
 ```{r}
 (focal = c( "disthus", "distvei", "skogkategori", "treartgruppe9", "kant", 
-           "helling", "HOH", "tretetthet9", "beitetrykk9", "moose_density")[10])
+           "helling", "HOH", "tretetthet9", "beitetrykk9", "moose_density")[1])
 ## REMEMBER to load the road datasets and models after disthus (house model)!!!!!
 
 ```
@@ -266,21 +266,21 @@ total = total effect
 bp_moose <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[1], nvals=100, plotit=F, nb_btstrp=99)
 
-recruit_moose <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
+recruit_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
 
-total_moose <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+total_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=99)
 
 # For interaction, choose between: browsingvalue="max" or "min"
-recruit_int_max <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
-           which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99, browsingvalue = "max")
+recruit_int_max2 <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+           which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=99, browsingvalue = "max")
 ```
 
 #### Save function data!
 ```{r}
 save(bp_moose, file = "output/function_results_2021_02_03/bp_moose.rda")
-save(recruit_moose, file = "output/function_results_2021_02_03/recruit_moose.rda")
+save(recruit_int_min, file = "output/function_results_2021_02_03/recruit_int_min.rda")
 save(total_moose, file = "output/function_results_2021_02_03/total_moose.rda")
 ```
 
@@ -301,7 +301,9 @@ load("output/function_results_2021_02_03/bp_tretett.rda")
 load("output/function_results_2021_02_03/bp_moose.rda")
 
 # Recruits (direct)
-load("output/function_results_2021_02_03/recruit_disthus.rda")
+# load("output/function_results_2021_02_03/recruit_disthus.rda")
+load("output/function_results_2021_02_03/recruit_int_min.rda")
+load("output/function_results_2021_02_03/recruit_int_max.rda")
 load("output/function_results_2021_02_03/recruit_distvei.rda")
 load("output/function_results_2021_02_03/recruit_skogkat.rda")
 load("output/function_results_2021_02_03/recruit_kant.rda")
@@ -312,7 +314,7 @@ load("output/function_results_2021_02_03/recruit_HOH.rda")
 load("output/function_results_2021_02_03/recruit_moose.rda")
 
 # Total (indirect + direct)
-load("output/function_results_2021_02_03/total_disthus.rda")
+# load("output/function_results_2021_02_03/total_disthus.rda")
 load("output/function_results_2021_02_03/total_distvei.rda")
 load("output/function_results_2021_02_03/total_skogkat.rda")
 load("output/function_results_2021_02_03/total_kant.rda")
@@ -384,6 +386,8 @@ recruit_distvei$var <- exp(recruit_distvei$var)-1
 
 ### House
 total_disthus$var <- total_disthus$var * 162.9665 + 499.182
+recruit_int_min2$var <- recruit_int_min2$var * 162.9665 + 499.182
+recruit_int_max2$var <- recruit_int_max2$var * 162.9665 + 499.182
 
 ### Roads
 # attributes(recruits_roads$tretetthet9) # $`scaled:center` 984.6252 $`scaled:scale` 1193.3
@@ -440,32 +444,32 @@ cbPalette <- c("#999999", "#009E73", "#56B4E9", "#E69F00", "#F0E442", "#0072B2",
   
   
 # disthus ----
-pdt_disthus <- ggplot() + 
-  geom_ribbon(data = recruit_disthus, aes(x = var, ymin = CI025, ymax = CI975), 
-              linetype = 0, alpha = 0.2, show.legend = F) +
-  geom_line(data = recruit_disthus, aes(var, point, 
-                                        color = "direct", 
-                                        linetype = "direct"),
-            size = 1.5, show.legend = T) +
-  
-  geom_line(data = total_disthus, aes(var, point, color = "total", linetype = "total"), 
-            size = 1.5, show.legend = T) +
-  geom_ribbon(data = total_disthus, aes(x = var, ymin = CI025, ymax = CI975), 
-              fill = "#009E73", linetype = 0, alpha = 0.2, show.legend = F) +
-  
-  scale_linetype_manual("Effect",
-                        values = c("direct" = 3,"total" = 1)) +
-  xlab("\nDistance to house (m)") + 
-  ylab("Recruitment (ha 10yr)") +
-  theme_light()+
-  theme(axis.text = element_text(size = 20), # face = "bold"
-        axis.title = element_text(family = "sans", size = 25),
-        legend.position = c(0.8, 0.85),
-        legend.text = element_text(size = 15),
-        legend.title = element_text(size = 15)) +
-  scale_color_manual(name = "Effect", 
-                     values = cbPalette) +
-    scale_fill_manual(values = "#009E73")
+# pdt_disthus <- ggplot() + 
+#   geom_ribbon(data = recruit_disthus, aes(x = var, ymin = CI025, ymax = CI975), 
+#               linetype = 0, alpha = 0.2, show.legend = F) +
+#   geom_line(data = recruit_disthus, aes(var, point, 
+#                                         color = "direct", 
+#                                         linetype = "direct"),
+#             size = 1.5, show.legend = T) +
+#   
+#   geom_line(data = total_disthus, aes(var, point, color = "total", linetype = "total"), 
+#             size = 1.5, show.legend = T) +
+#   geom_ribbon(data = total_disthus, aes(x = var, ymin = CI025, ymax = CI975), 
+#               fill = "#009E73", linetype = 0, alpha = 0.2, show.legend = F) +
+#   
+#   scale_linetype_manual("Effect",
+#                         values = c("direct" = 3,"total" = 1)) +
+#   xlab("\nDistance to house (m)") + 
+#   ylab("Recruitment (ha 10yr)") +
+#   theme_light()+
+#   theme(axis.text = element_text(size = 20), # face = "bold"
+#         axis.title = element_text(family = "sans", size = 25),
+#         legend.position = c(0.8, 0.85),
+#         legend.text = element_text(size = 15),
+#         legend.title = element_text(size = 15)) +
+#   scale_color_manual(name = "Effect", 
+#                      values = cbPalette) +
+#     scale_fill_manual(values = "#009E73")
 #,legend.title = element_text(size = 50)
 
 
@@ -480,29 +484,59 @@ pdt_disthus <- ggplot() +
 #   scale_color_manual(name = "Effect on \nRecruitment (ha 10yr) (ha 10yr)", 
 #                      values = c("total" = "#009292", "direct" = "#004949"))
 # 
-pd_disthus <- ggplot() +
-  geom_line(data = recruit_int_min, aes(var, point), colour = "red", linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = recruit_int_min, aes(x = var, ymin = CI025, ymax = CI975), colour = "red", linetype = 2, alpha = 0.2) +
-  geom_line(data = recruit_int_max, aes(var, point), colour = "blue", linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = recruit_int_max, aes(x = var, ymin = CI025, ymax = CI975), colour = "blue", linetype = 2, alpha = 0.2) +
-  xlab("\nDistance to house (m)") +
-  ylab("Recruitment (ha 10yr)\n") +
-  theme_light()+
-  theme(axis.text = element_text(size = 10),
-        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
-  scale_color_manual(name = "Effect on \nRecruitment (ha 10yr)",
-                     values = c("total" = "#009292", "direct" = "#004949"))
+
+# pt_disthus <- ggplot() +
+#   geom_ribbon(data = recruit_int_min2, aes(x = var, ymin = CI025, ymax = CI975), linetype = 0, alpha = 0.2, show.legend = F)+ 
+#   geom_line(data = recruit_int_min2, aes(var, point, colour = "low", linetype = "low"),  size = 1.5, show.legend = T) +
+#   geom_ribbon(data = recruit_int_max2, aes(x = var, ymin = CI025, ymax = CI975), linetype = 0, alpha = 0.2, show.legend = F) +
+#   geom_line(data = recruit_int_max2, aes(var, point, colour = "high", linetype = "high"), size = 1.5, show.legend = T) + 
+#   scale_linetype_manual("Browsing pressure",
+#                         values = c("low" = 1,"high" = 1)) +
+#   xlab("\nDistance to house (m)") + 
+#   ylab("Recruitment (ha 10yr)\n") +
+#   theme_light()+
+#   theme(axis.text = element_text(size = 20), # face = "bold"
+#         axis.title = element_text(family = "sans", size = 25),
+#         legend.position = c(0.8, 0.85),
+#         legend.text = element_text(size = 15),
+#         legend.title = element_text(size = 15)) +
+#   scale_color_manual(name = "Browsing pressure", 
+#                      values = c("low" = "red", "high" = "blue")) +
+#     scale_fill_manual(values = "#009E73")
+
+
 
 pd_disthus <- ggplot() +
-  geom_line(data = recruit_disthus, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
-  geom_ribbon(data = recruit_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
-  xlab("\nDistance to house (m)") +
+  geom_ribbon(data = recruit_int_min, aes(x = var, ymin = CI025, ymax = CI975), linetype = 3, alpha = 0.2, show.legend = F)+ 
+  geom_line(data = recruit_int_min, aes(var, point, colour = "low", linetype = "low"),  size = 1.5, show.legend = T) +
+  geom_ribbon(data = recruit_int_max, aes(x = var, ymin = CI025, ymax = CI975), fill = "#999999", linetype = 3, alpha = 0.2, show.legend = F) +
+  geom_line(data = recruit_int_max, aes(var, point, colour = "high", linetype = "high"), size = 1.5, show.legend = T) + 
+  scale_linetype_manual("Browsing pressure",
+                        values = c("low" = 3,"high" = 3), guide = guide_legend(reverse=TRUE)) +
+  xlab("\nDistance to house (m)") + 
   ylab("Recruitment (ha 10yr)\n") +
   theme_light()+
-  theme(axis.text = element_text(size = 10),
-        axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
-  scale_color_manual(name = "Effect on \nRecruitment (ha 10yr)",
-                     values = c("total" = "#009292", "direct" = "#004949"))
+  theme(axis.text = element_text(size = 20), # face = "bold"
+        axis.title = element_text(family = "sans", size = 25),
+        legend.position = c(0.8, 0.85),
+        legend.text = element_text(size = 15),
+        legend.title = element_text(size = 15)) +
+  scale_color_manual(name = "Browsing pressure", 
+                     values = c("low" = "#56B4E9", "high" = "#0072B2"), guide = guide_legend(reverse=TRUE)) +
+    scale_fill_manual(values = "#999999")
+
+
+
+# pd_disthus <- ggplot() +
+#   geom_line(data = recruit_disthus, aes(var, point, color = "direct"), linetype = 1, size = 1, show.legend = T) +
+#   geom_ribbon(data = recruit_disthus, aes(x = var, ymin = CI025, ymax = CI975), colour = "#004949", linetype = 2, alpha = 0.2) +
+#   xlab("\nDistance to house (m)") +
+#   ylab("Recruitment (ha 10yr)\n") +
+#   theme_light()+
+#   theme(axis.text = element_text(size = 10),
+#         axis.title = element_text(family = "sans", size = 14, color = "grey30")) +
+#   scale_color_manual(name = "Effect on \nRecruitment (ha 10yr)",
+#                      values = c("total" = "#009292", "direct" = "#004949"))
 
 
 ph_disthus <- ggplot() +
@@ -1041,7 +1075,7 @@ ggsave(file = "figs_tabs/total_direct_function/2021_03_03/function_browse_hurdle
 ## total/direct ##############
 nullplot <- ggplot()+
   theme_void()
-total_direct_husvei <- ggarrange(nullplot, pdt_disthus, 
+total_direct_husvei <- ggarrange(nullplot, pd_disthus, 
           ncol = 1,
           nrow = 2,
           heights = c(0.1,1),
@@ -1049,7 +1083,7 @@ total_direct_husvei <- ggarrange(nullplot, pdt_disthus,
           widths = c(1),
           draw = F
           )
-ggsave(file = "figs_tabs/total_direct_function/2021_03_03/function_total_direct_hus.pdf", total_direct_husvei, width = 15, height = 15, units = "cm") #, dpi = 150
+ggsave(file = "figs_tabs/total_direct_function/2021_03_03/function_total_direct_hus_int.tiff", total_direct_husvei, width = 15, height = 15, units = "cm", dpi = 150) #, dpi = 150
 
 # rest
 nullplot <- ggplot()+
