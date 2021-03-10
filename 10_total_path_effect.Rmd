@@ -1203,7 +1203,15 @@ ggcorr(recruits_roads, use = "pearson", nbreaks = 6, label = T, low = "red3", hi
 
 
 
-## correlation thinning (or similar) and distances
+
+```
+
+
+
+
+## correlation ungskogspleie (or similar) and distances
+```{r}
+
 load("rawdata/browse0.1.rda")
 ggcorr(data = NULL, cor_matrix = cor(browse0.1[, c(84, 103, 105)], use = "complete.obs"), method = "pearson", nbreaks = 6, label = T, low = "red3", high = "green3",  
        label_round = 1, label_alpha = T, hjust = 0.75) +
@@ -1213,7 +1221,7 @@ ggcorr(data = NULL, cor_matrix = cor(browse0.1[, c(84, 103, 105)], use = "comple
 cor_matrix <- browse0.1[, c(84, 103, 105)]
 cor(cor_matrix, use = "complete.obs")
 
-cor.test(browse0.1$ungskog, browse0.1$disthus)
+cor.test(browse0.2_ung$ungskogspleie, browse0.2_ung$disthuskat_600)
 
 
 ggplot(browse0.1, aes(ungskog)) +
@@ -1225,4 +1233,58 @@ ggplot(browse0.1, aes(disthus, color = ungskog))
   geom_histogram()
 
 
+load("processdata/browse0.2_ung.rda")
+names(browse0.2_ung)
+browse0.2_ung <- browse0.2_ung[browse0.2_ung$takst == 9, ]
+
+browse0.2_ung$skogkategori <- as.factor(browse0.2_ung$skogkategori)
+browse0.2_ung$treartgruppe9 <- as.factor(browse0.2_ung$treartgruppe9)
+browse0.2_ung$disthus_600 <- ifelse(browse0.2_ung$disthus >= 600, 600, browse0.2_ung$disthus)
+browse0.2_ung$disthuskat_600 <- ifelse(browse0.2_ung$disthuskat >= 600, 600, browse0.2_ung$disthuskat)
+
+browse0.2_ung2 <- browse0.2_ung[browse0.2_ung$ungskogspleie > 0, ]
+
+browse0.2_ung <- browse0.2_ung[which(browse0.2_ung$skogkategori == "Høyproduktiv_ungskog" | browse0.2_ung$skogkategori == "Lavproduktiv_ungskog"), ]
+table(browse0.2_ung$skogkategori)
+
+browse0.2_ung <- browse0.2_ung[which(browse0.2_ung$treartgruppe9 == "ROS" | browse0.2_ung$treartgruppe9 == "LAUV"), ]
+
+browse0.2_ung3 <- browse0.2_ung[which(browse0.2_ung$treartgruppe9 == "ROS"), ]
+browse0.2_ung4 <- browse0.2_ung[which(browse0.2_ung$treartgruppe9 == "LAUV"), ]
+table(browse0.2_ung$treartgruppe9)
+
+summary(browse0.2_ung$ungskogspleie)
+
+
+
+
+glm_ungskog <- glm(ungskogspleie ~ disthus, data = browse0.2_ung)
+glm_ungskog_kat <- glm(ungskogspleie ~ disthuskat_600, data = browse0.2_ung)
+glm_ungskog_kat3 <- glm(ungskogspleie ~ disthuskat_600, data = browse0.2_ung3)
+glm_ungskog_kat4 <- glm(ungskogspleie ~ disthuskat_600, data = browse0.2_ung4)
+# glm_ungskog2 <- glm(ungskogspleie ~ disthus_600, data = browse0.2_ung, family = binomial)
+# glm_ungskog_pos <- glm(ungskogspleie ~ disthus, data = browse0.2_ung2)
+glm_ungskog_kat_pos <- glm(ungskogspleie ~ disthuskat_600, data = browse0.2_ung2)
+
+
+summary(glm_ungskog)
+summary(glm_ungskog_kat)
+summary(glm_ungskog_kat3)
+summary(glm_ungskog_kat4)
+# summary(glm_ungskog2)
+# summary(glm_ungskog_pos)
+summary(glm_ungskog_kat_pos)
+
+library(ggplot2)
+library(pscl)
+pR2(glm_ungskog)
+
+plot(glm_ungskog)
+
+library(ggiraphExtra)
+ggPredict(glm_ungskog_kat_pos, se=TRUE, interactive=TRUE, digits=3)
+
+ggplot(browse0.2_ung, aes(disthuskat_600, ungskogspleie)) +
+  stat_smooth(method = glm)
 ```
+
