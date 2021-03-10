@@ -3,6 +3,8 @@ title: "test_browsing"
 author: "anne"
 date: "31 oktober 2018"
 output: word_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -21,7 +23,7 @@ browse0.1 <- read_delim("rawdata/Beitetrykk_og_forstyrrelse _i_9_og_10_takst_pa_
 +         grouping_mark = "."), na = "null", 
 +     trim_ws = TRUE)
 
-browse0.1 <- read_csv2("rawdata/Beitetrykk_og_forstyrrelse _i_9_og_10_takst_pa_artsgruppeniva_2019-01-31.csv", na = c("null", "NA"))
+browse0.1 <- read_csv("rawdata/Beitetrykk_og_forstyrrelse _i_9_og_10_takst_pa_artsgruppeniva_2019-01-31.csv", na = c("null", "NA"))
 
 
 # 
@@ -33,6 +35,19 @@ save(browse0.1, file = "browse0.1.rda")
 
 
 load("rawdata/browse0.1.rda")
+
+
+
+
+## ungskogspleie
+browse0.2 <- read_delim("rawdata/Beitetrykk_og_forstyrrelse_i_9_10_og_11_takst_pa_artsgruppeniva.csv", ";", escape_double = FALSE, na = "NA", trim_ws = TRUE)
+
+names(browse0.2)
+browse0.2_ung <- browse0.2[, c(1,5,55,94,108,110,116,118)]
+names(browse0.2_ung)
+
+save(browse0.2_ung, file = "processdata/browse0.2_ung.rda")
+
 
 ```
 
