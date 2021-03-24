@@ -198,9 +198,9 @@ recruits_house$disthus <- scale(recruits_house$disthus)
 recruits_house$helling <- scale(recruits_house$helling)
 recruits_house$HOH <- scale(recruits_house$HOH)
 recruits_house$moose_density <- scale(recruits_house$moose_density)
+recruits_house$tretetthet9 <- scale(recruits_house$tretetthet9)
 
 recruits_house$disthus_600 <- scale(recruits_house$disthus_600)
-
 recruits_house$disthus_500 <- scale(recruits_house$disthus_500)
 
 summary(recruits_house$helling)
@@ -210,7 +210,7 @@ summary(recruits_house$helling)
 
 ```{r}
 library(lme4)
-rec_h_bin1 <- glmer(recruitment_bin ~ disthus_500 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+rec_h_bin1 <- glmer(recruitment_bin ~ disthus_500 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + tretetthet9 +  ac + (1|KOMNR),
 family = binomial(),
 data = recruits_house)
 summary(rec_h_bin1)
@@ -235,7 +235,13 @@ rec_h_bin2_600_int <- glmer(recruitment_bin ~ disthus_600*beitetrykk9 + log(dist
 family = binomial(),
 data = recruits_house) # BEST
 summary(rec_h_bin2_600_int)
-save(rec_h_bin2_600_int, file = "output/recruitment_2021_02_02/rec_h_bin2_600_int.rda")
+
+rec_h_bin2_600_int2 <- glmer(recruitment_bin ~ disthus_600*beitetrykk9 + log(distvei2+1) + skogkategori + treartgruppe9 + tretetthet9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house) 
+summary(rec_h_bin2_600_int2)
+
+save(rec_h_bin2_600_int2, file = "output/recruitment_2021_02_02/rec_h_bin2_600_int2.rda")
 
 ```
 
@@ -262,11 +268,23 @@ aictab(candmods_rec_house_bin, modnames = NULL,
 # Mod2 20 22776.65      0.00  0.65   0.65 -11368.33
 # Mod1 19 22777.90      1.25  0.35   1.00 -11369.95
 
+
+candmods_rec_house_bin <- list(rec_h_bin2_600_int, rec_h_bin2_600_int2, rec_h_bin1)
+aictab(candmods_rec_house_bin, modnames = NULL,
+                       second.ord = F, nobs = NULL, sort = TRUE)
+
+# Model selection based on AIC:
+# 
+#       K      AIC Delta_AIC AICWt Cum.Wt        LL
+# Mod2 21 21536.77      0.00     1      1 -10747.39
+# Mod3 20 21557.53     20.76     0      1 -10758.77
+# Mod1 20 22776.65   1239.88     0      1 -11368.33
+
 ```
 
 #### Summary bin house
 ```{r}
-summary(rec_h_bin2_600_int)
+summary(rec_h_bin2_600_int2)
 # vcov(rec_h_bin5)
 ```
 
@@ -275,11 +293,11 @@ summary(rec_h_bin2_600_int)
 #### Plots bin house
 ```{r}
 library(sjPlot)
-plot_model(rec_h_bin2_600, type = "diag")
-plot_model(rec_h_bin2_600, type = "eff")
-plot_model(rec_h_bin2_600, type = "est")
+plot_model(rec_h_bin2_600_int2, type = "diag")
+plot_model(rec_h_bin2_600_int2, type = "eff")
+plot_model(rec_h_bin2_600_int2, type = "est")
 
-p_rec_h_bin2_600_int <- plot_model(rec_h_bin2_600_int, type = "int", terms = "disthus_600 [all]:beitetrykk9", mdrt.values = "minmax")
+rec_h_bin2_600_int2 <- plot_model(rec_h_bin2_600_int2, type = "int", terms = "disthus_600 [all]:beitetrykk9", mdrt.values = "minmax")
 # "minmax" -> (default) minimum and maximum values (lower and upper bounds) of the moderator are used to plot the interaction between independent variable and moderator(s).
 # "meansd" -> uses the mean value of the moderator as well as one standard deviation below and above mean value to plot the effect of the moderator on the independent variable (following the convention suggested by Cohen and Cohen and popularized by Aiken and West (1991), i.e. using the mean, the value one standard deviation above, and the value one standard deviation below the mean as values of the moderator, see Grace-Martin K: 3 Tips to Make Interpreting Moderation Effects Easier).
 # "quart" -> calculates and uses the quartiles (lower, median and upper) of the moderator value.
@@ -293,7 +311,7 @@ p_rec_h_bin2_600_int <- plot_model(rec_h_bin2_600_int, type = "int", terms = "di
 # compare_performance(rec_h_bin7_600, rec_h_bin7_600_test)
 
  
-tab_model(rec_h_bin2_600_int, transform = NULL,
+tab_model(rec_h_bin2_600_int2, transform = NULL,
           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, p.threshold = c(0.05, 0.01, 0.001))
 
 
