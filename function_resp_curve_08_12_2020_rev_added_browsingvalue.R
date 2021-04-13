@@ -133,7 +133,7 @@ resp_curve <- function(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2
   focal1 <- focal1[grepl(focal, focal1)]
   focal1 <- ifelse(length(focal1)==0, NA, focal1)
   focal2 <- c("distvei2",   "skogkategori", "treartgruppe9", "kant","helling", "HOH", 
-              "beitetrykk9", "disthus_600", "moose_density") # changed variable names from: "distvei2",   "skogkategori", "treartgruppe", "helling", "HOH", "browspres_merged", "disthus_400"
+              "beitetrykk9", "tretetthet9", "disthus_600", "moose_density") # changed variable names from: "distvei2",   "skogkategori", "treartgruppe", "helling", "HOH", "browspres_merged", "disthus_400"; 25.03.2021 added tretetthet9
   focal2 <- focal2[grepl(focal, focal2)]
   focal2 <- ifelse(length(focal2)==0, NA, focal2)
     
