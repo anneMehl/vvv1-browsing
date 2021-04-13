@@ -519,3 +519,54 @@ tab_model(rec_h_beta4_TMB_500, transform = NULL,
 save(rec_h_beta4_TMB_500, file = "output/recruitment_2021_04_12/rec_h_beta4_TMB_500.rda")
 ```
 
+
+
+
+
+
+## Delta AIC comparison figure
+```{r}
+library(readr)
+delta_aic_comparison <- read_csv("figs_tabs/delta_aic_comparison.csv", na = "NA")
+str(delta_aic_comparison)
+
+delta_aic_comparison <- delta_aic_comparison[-c(9), ]
+str(delta_aic_comparison)
+
+library(ggplot2)
+overview <- ggplot() + 
+  geom_point(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_bp_bin, color = "Browsing pressure\nbinary\n"), show.legend = T) + 
+  geom_point(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_bp_zt, color = "Browsing pressure\nzero-truncated\n"), show.legend = T) + 
+  geom_point(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_rec_bin, color = "recruitment\nbinary\n"), show.legend = T) + 
+  geom_point(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_rec_zt, color = "recruitment\nzero-truncated"), show.legend = T) +
+  labs(x="Threshold cut-off\n", y = "delta AIC\n")+
+   theme_classic() +
+  scale_color_manual(name = "Model", 
+                     values = c("Browsing pressure\nbinary\n" = "#56B4E9", "Browsing pressure\nzero-truncated\n" = "#0072B2", "recruitment\nbinary\n" = "#b37c00", "recruitment\nzero-truncated" = "#E69F00")) +
+  scale_x_continuous(breaks = c(0, 100, 200, 300, 400, 500, 600, 3000)) +
+  scale_y_continuous(breaks = c(0, 500, 1000, 2000, 3000, 4000, 5000, 7500))
+
+
+
+
+detail <- ggplot() + 
+  geom_vline(xintercept = 500, linetype="solid", color = "grey70", size=1) + 
+  geom_hline(yintercept = 20, linetype="solid", color = "grey70", size=1) + 
+  geom_hline(yintercept = 10, linetype="dashed", color = "grey80", size=1) + 
+  geom_point(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_bp_bin, color = "Browsing pressure\nbinary\n"), show.legend = T) + 
+  geom_point(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_bp_zt, color = "Browsing pressure\nzero-truncated\n"), show.legend = T) + 
+  geom_point(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_rec_bin, color = "recruitment\nbinary\n"), show.legend = T) + 
+  geom_point(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_rec_zt, color = "recruitment\nzero-truncated"), show.legend = T) +
+  labs(x="Threshold cut-off\n", y = "delta AIC\n")+
+   theme_classic() +
+  scale_color_manual(name = "Model", 
+                     values = c("Browsing pressure\nbinary\n" = "#56B4E9", "Browsing pressure\nzero-truncated\n" = "#0072B2", "recruitment\nbinary\n" = "#b37c00", "recruitment\nzero-truncated" = "#E69F00")) +
+  scale_x_continuous(breaks = c(0, 100, 200, 300, 400, 500, 600, 3000)) +
+  scale_y_continuous(breaks = c(0, 5, 10, 20, 30, 40, 50))+ 
+  coord_cartesian(xlim = c(0, 600), ylim = c(0, 50))
+
+```
+
+
+
+
