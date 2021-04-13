@@ -313,22 +313,12 @@ plot_model(browse_h_bin9, type = "eff")
 plot_model(browse_h_bin9_500, type = "eff")
 plot_model(browse_h_bin9, type = "est")
 
-p_browse_bin9_house <- plot_model(browse_h_bin9, type = c("eff"), transform = T, terms = c("disthus_200 [0:200]"))
-p_browse_bin9_house <- p_browse_bin9_house + theme_light() +
-  theme(plot.title = element_blank(),
-    axis.text = element_text(family = "sans", size = 20, color = "grey30"),
-        axis.title = element_text(family = "sans", size = 20, color = "grey30")) +
-  xlab("Distance to houses\n") +
-  ylab("Browsing pressure\n")
-
- 
 tab_model(browse_h_bin9_500, transform = NULL,
           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, p.threshold = c(0.05, 0.01, 0.001))
 
-# ggstatsplot::ggcoefstats(
-#   x = browse_h_bin1,
-#   title = "generalized linear mixed-effects model"
-# )
+
+plot_model(browse_h_bin2, type = "eff", terms = "disthus [0:1000]")
+
 
 ```
 
@@ -545,10 +535,11 @@ plot_model(browse_h_beta4_500, type = "diag")
 plot_model(browse_h_beta4_500, type = "eff")
 plot_model(browse_h_beta4_500, type = "est")
 
-
-
 tab_model(browse_h_beta4_500, transform = NULL,
           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, p.threshold = c(0.05, 0.01, 0.001))
+
+
+plot_model(browse_h_beta2, type = "eff", terms = "disthus [0:1000]")
 
 
 ```

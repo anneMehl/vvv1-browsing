@@ -230,10 +230,10 @@ aictab(candmods_rec_house_bin, modnames = NULL,
 
 # Model selection based on AICc:
 # 
-#       K      AIC Delta_AIC AICWt Cum.Wt        LL
-# Mod3 20 21536.66      0.00     1      1 -10748.33
-# Mod1 20 21557.53     20.87     0      1 -10758.77
-# Mod2 19 22793.06   1256.39     0      1 -11377.53
+#                 K      AIC Delta_AIC AICWt Cum.Wt        LL
+# Mod3           20 21536.66      0.00     1      1 -10748.33
+# disthus_500    20 21557.53     20.87     0      1 -10758.77
+# log(disthus+1) 19 22793.06   1256.39     0      1 -11377.53
 
 ```
 
@@ -251,10 +251,11 @@ plot_model(rec_h_bin3, type = "diag")
 plot_model(rec_h_bin3, type = "eff")
 plot_model(rec_h_bin3, type = "est")
 
-
- 
 tab_model(rec_h_bin3, transform = NULL,
           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, p.threshold = c(0.05, 0.01, 0.001))
+
+
+plot_model(rec_h_bin2, type = "eff", terms = "disthus [0:1000]")
 
 
 ```
@@ -511,6 +512,10 @@ plot_model(rec_h_beta4_TMB, type = "est")
 tab_model(rec_h_beta4_TMB_500, transform = NULL,
           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, p.threshold = c(0.05, 0.01, 0.001))
 
+
+plot_model(rec_h_beta2, type = "eff", terms = "disthus [0:1000]")
+rec_h_beta2
+
 ```
 
 
@@ -547,6 +552,27 @@ overview <- ggplot() +
   scale_y_continuous(breaks = c(0, 500, 1000, 2000, 3000, 4000, 5000, 7500))
 
 
+overview2 <- ggplot() + 
+  geom_point(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_bp_bin, color = "Browsing pressure\nbinary\n"), show.legend = T) + 
+  geom_line(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_bp_bin, color = "Browsing pressure\nbinary\n"), show.legend = T) +
+  
+  geom_point(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_bp_zt, color = "Browsing pressure\nzero-truncated\n"), show.legend = T) + 
+  geom_line(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_bp_zt, color = "Browsing pressure\nzero-truncated\n"), show.legend = T) +
+  
+  geom_point(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_rec_bin, color = "recruitment\nbinary\n"), show.legend = T) + 
+  geom_line(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_rec_bin, color = "recruitment\nbinary\n"), show.legend = T) + 
+  
+  geom_point(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_rec_zt, color = "recruitment\nzero-truncated"), show.legend = T) +
+  geom_line(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_rec_zt, color = "recruitment\nzero-truncated"), show.legend = T) +
+  
+  labs(x="Threshold cut-off\n", y = "delta AIC\n")+
+   theme_classic() +
+  scale_color_manual(name = "Model", 
+                     values = c("Browsing pressure\nbinary\n" = "#56B4E9", "Browsing pressure\nzero-truncated\n" = "#0072B2", "recruitment\nbinary\n" = "#b37c00", "recruitment\nzero-truncated" = "#E69F00")) +
+  scale_x_continuous(breaks = c(0, 100, 200, 300, 400, 500, 600, 3000)) +
+  scale_y_continuous(breaks = c(0, 500, 1000, 2000, 3000, 4000, 5000, 7500))
+
+
 
 
 detail <- ggplot() + 
@@ -564,6 +590,100 @@ detail <- ggplot() +
   scale_x_continuous(breaks = c(0, 100, 200, 300, 400, 500, 600, 3000)) +
   scale_y_continuous(breaks = c(0, 5, 10, 20, 30, 40, 50))+ 
   coord_cartesian(xlim = c(0, 600), ylim = c(0, 50))
+
+
+detail2 <- ggplot() + 
+  geom_vline(xintercept = 500, linetype="solid", color = "grey70", size=1) + 
+  geom_hline(yintercept = 20, linetype="solid", color = "grey70", size=1) + 
+  geom_hline(yintercept = 10, linetype="dashed", color = "grey80", size=1) + 
+  geom_point(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_bp_bin, color = "Browsing pressure\nbinary\n"), show.legend = T) +
+  geom_line(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_bp_bin, color = "Browsing pressure\nbinary\n"), show.legend = T) + 
+  
+  geom_point(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_bp_zt, color = "Browsing pressure\nzero-truncated\n"), show.legend = T) + 
+  geom_line(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_bp_zt, color = "Browsing pressure\nzero-truncated\n"), show.legend = T) +
+  
+  geom_point(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_rec_bin, color = "recruitment\nbinary\n"), show.legend = T) + 
+  geom_line(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_rec_bin, color = "recruitment\nbinary\n"), show.legend = T) + 
+  
+  geom_point(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_rec_zt, color = "recruitment\nzero-truncated"), show.legend = T) +
+  geom_line(data = delta_aic_comparison, aes(x = threshold, y = delta_aic_rec_zt, color = "recruitment\nzero-truncated"), show.legend = T) +
+  
+  labs(x="Threshold cut-off\n", y = "delta AIC\n")+
+   theme_classic() +
+  scale_color_manual(name = "Model", 
+                     values = c("Browsing pressure\nbinary\n" = "#56B4E9", "Browsing pressure\nzero-truncated\n" = "#0072B2", "recruitment\nbinary\n" = "#b37c00", "recruitment\nzero-truncated" = "#E69F00")) +
+  scale_x_continuous(breaks = c(0, 100, 200, 300, 400, 500, 600, 3000)) +
+  scale_y_continuous(breaks = c(0, 5, 10, 20, 30, 40, 50))+ 
+  coord_cartesian(xlim = c(100, 600), ylim = c(0, 50))
+
+
+
+
+# 
+# str(delta_aic_comparison)
+# delta_aic_comparison_2 <- delta_aic_comparison[-c(8), ]
+# 
+# overview2 <- ggplot() + 
+#   geom_smooth(data = delta_aic_comparison_2, aes(x = threshold, y = delta_aic_bp_bin, color = "Browsing pressure\nbinary\n"), method = "loess", se = F, show.legend = T) + 
+#   geom_smooth(data = delta_aic_comparison_2, aes(x = threshold, y = delta_aic_bp_zt, color = "Browsing pressure\nzero-truncated\n"), method = "loess", se = F,  show.legend = T) + 
+#   geom_smooth(data = delta_aic_comparison_2, aes(x = threshold, y = delta_aic_rec_bin, color = "recruitment\nbinary\n"), method = "loess", se = F,  show.legend = T) + 
+#   geom_smooth(data = delta_aic_comparison_2, aes(x = threshold, y = delta_aic_rec_zt, color = "recruitment\nzero-truncated"), method = "loess", se = F,  show.legend = T) +
+#   labs(x="Threshold cut-off\n", y = "delta AIC\n")+
+#    theme_classic() +
+#   scale_color_manual(name = "Model", 
+#                      values = c("Browsing pressure\nbinary\n" = "#56B4E9", "Browsing pressure\nzero-truncated\n" = "#0072B2", "recruitment\nbinary\n" = "#b37c00", "recruitment\nzero-truncated" = "#E69F00")) +
+#   scale_x_continuous(breaks = c(0, 100, 200, 300, 400, 500, 600, 3000)) +
+#   scale_y_continuous(breaks = c(0, 500, 1000, 2000, 3000, 4000, 5000, 7500))
+# 
+# 
+# overview3 <- ggplot() + 
+#   geom_smooth(data = delta_aic_comparison_2, aes(x = threshold, y = delta_aic_bp_bin, color = "Browsing pressure\nbinary\n"), method = "lm", se = F, show.legend = T) + 
+#   geom_smooth(data = delta_aic_comparison_2, aes(x = threshold, y = delta_aic_bp_zt, color = "Browsing pressure\nzero-truncated\n"), method = "loess", se = F,  show.legend = T) + 
+#   geom_smooth(data = delta_aic_comparison_2, aes(x = threshold, y = delta_aic_rec_bin, color = "recruitment\nbinary\n"), method = "lm", se = F,  show.legend = T) + 
+#   geom_smooth(data = delta_aic_comparison_2, aes(x = threshold, y = delta_aic_rec_zt, color = "recruitment\nzero-truncated"), method = "lm", se = F,  show.legend = T) +
+#   labs(x="Threshold cut-off\n", y = "delta AIC\n")+
+#    theme_classic() +
+#   scale_color_manual(name = "Model", 
+#                      values = c("Browsing pressure\nbinary\n" = "#56B4E9", "Browsing pressure\nzero-truncated\n" = "#0072B2", "recruitment\nbinary\n" = "#b37c00", "recruitment\nzero-truncated" = "#E69F00")) +
+#   scale_x_continuous(breaks = c(0, 100, 200, 300, 400, 500, 600, 3000)) +
+#   scale_y_continuous(breaks = c(0, 500, 1000, 2000, 3000, 4000, 5000, 7500))
+# 
+# 
+# 
+# 
+# detail2 <- ggplot() + 
+#   geom_vline(xintercept = 500, linetype="solid", color = "grey70", size=1) + 
+#   geom_hline(yintercept = 20, linetype="solid", color = "grey70", size=1) + 
+#   geom_hline(yintercept = 10, linetype="dashed", color = "grey80", size=1) + 
+#   geom_smooth(data = delta_aic_comparison_2, aes(x = threshold, y = delta_aic_bp_bin, color = "Browsing pressure\nbinary\n"), method = "lm", se = F, show.legend = T) + 
+#   geom_smooth(data = delta_aic_comparison_2, aes(x = threshold, y = delta_aic_bp_zt, color = "Browsing pressure\nzero-truncated\n"), method = "lm", se = F, show.legend = T) + 
+#   geom_smooth(data = delta_aic_comparison_2, aes(x = threshold, y = delta_aic_rec_bin, color = "recruitment\nbinary\n"), method = "lm", se = F, show.legend = T) + 
+#   geom_smooth(data = delta_aic_comparison_2, aes(x = threshold, y = delta_aic_rec_zt, color = "recruitment\nzero-truncated"), method = "lm", se = F, show.legend = T) +
+#   labs(x="Threshold cut-off\n", y = "delta AIC\n")+
+#    theme_classic() +
+#   scale_color_manual(name = "Model", 
+#                      values = c("Browsing pressure\nbinary\n" = "#56B4E9", "Browsing pressure\nzero-truncated\n" = "#0072B2", "recruitment\nbinary\n" = "#b37c00", "recruitment\nzero-truncated" = "#E69F00")) +
+#   scale_x_continuous(breaks = c(0, 100, 200, 300, 400, 500, 600, 3000)) +
+#   scale_y_continuous(breaks = c(0, 5, 10, 20, 30, 40, 50))+ 
+#   coord_cartesian(xlim = c(0, 600), ylim = c(0, 50))
+# 
+# 
+# detail3 <- ggplot() + 
+#   geom_vline(xintercept = 500, linetype="solid", color = "grey70", size=1) + 
+#   geom_hline(yintercept = 20, linetype="solid", color = "grey70", size=1) + 
+#   geom_hline(yintercept = 10, linetype="dashed", color = "grey80", size=1) + 
+#   geom_smooth(data = delta_aic_comparison_2, aes(x = threshold, y = delta_aic_bp_bin, color = "Browsing pressure\nbinary\n"), method = "loess", se = F, show.legend = T) + 
+#   geom_smooth(data = delta_aic_comparison_2, aes(x = threshold, y = delta_aic_bp_zt, color = "Browsing pressure\nzero-truncated\n"), method = "loess", se = F, show.legend = T) + 
+#   geom_smooth(data = delta_aic_comparison_2, aes(x = threshold, y = delta_aic_rec_bin, color = "recruitment\nbinary\n"), method = "loess", se = F, show.legend = T) + 
+#   geom_smooth(data = delta_aic_comparison_2, aes(x = threshold, y = delta_aic_rec_zt, color = "recruitment\nzero-truncated"), method = "loess", se = F, show.legend = T) +
+#   labs(x="Threshold cut-off\n", y = "delta AIC\n")+
+#    theme_classic() +
+#   scale_color_manual(name = "Model", 
+#                      values = c("Browsing pressure\nbinary\n" = "#56B4E9", "Browsing pressure\nzero-truncated\n" = "#0072B2", "recruitment\nbinary\n" = "#b37c00", "recruitment\nzero-truncated" = "#E69F00")) +
+#   scale_x_continuous(breaks = c(0, 100, 200, 300, 400, 500, 600, 3000)) +
+#   scale_y_continuous(breaks = c(0, 5, 10, 20, 30, 40, 50))+ 
+#   coord_cartesian(xlim = c(0, 600), ylim = c(0, 50))
+
 
 ```
 
