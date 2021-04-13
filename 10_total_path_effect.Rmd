@@ -154,15 +154,19 @@ head(dat1)
 
 
 #### Recruitment ----
-load("output/recruitment_2021_02_02/rec_h_bin2_600_int.rda")
-zeromod2 <- rec_h_bin2_600_int
+load("output/recruitment_2021_03_25/rec_h_bin2_600_int2.rda")
+zeromod2 <- rec_h_bin2_600_int2
+# load("output/recruitment_2021_02_02/rec_h_bin2_600_int.rda")
+# zeromod2 <- rec_h_bin2_600_int
 # load("output/recruitment_07_12_2020/rec_h_bin2_600_.rda")
 # zeromod2 <- rec_h_bin2_600
 summary(zeromod2)
 
 
-load("output/recruitment_2021_02_02/rec_h_beta3_TMB_int.rda")
-percmod2 <- rec_h_beta3_TMB_int
+load("output/recruitment_2021_03_25/rec_h_beta3_TMB_int2.rda")
+percmod2 <- rec_h_beta3_TMB_int2
+# load("output/recruitment_2021_02_02/rec_h_beta3_TMB_int.rda")
+# percmod2 <- rec_h_beta3_TMB_int
 summary(percmod2)
 
 load("processdata/recruits_house_2021_02_02.rda")
@@ -173,6 +177,7 @@ recruits_house$recruitment_bin <- ifelse(recruits_house$recruitment == 0, 0, 1)
 # recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
 recruits_house$helling <- scale(recruits_house$helling)
 recruits_house$HOH <- scale(recruits_house$HOH)
+recruits_house$tretetthet9 <- scale(recruits_house$tretetthet9)
 # recruits_house$moose_density <- scale(recruits_house$moose_density)
 recruits_house$disthus_600 <- scale(recruits_house$disthus_600)
 # recruits_house$disthus_500 <- scale(recruits_house$disthus_500)
@@ -216,12 +221,16 @@ head(dat1)
 
 
 #### Recruitment ----
-load("output/recruitment_2021_02_02/rec_r_bin3.rda")
-zeromod2 <- rec_r_bin3
+load("output/recruitment_2021_03_25/rec_r_bin3_2.rda")
+zeromod2 <- rec_r_bin3_2
+# load("output/recruitment_2021_02_02/rec_r_bin3.rda")
+# zeromod2 <- rec_r_bin3
 summary(zeromod2)
 
-load("output/recruitment_2021_02_02/rec_r_beta2_TMB.rda")
-percmod2 <- rec_r_beta2_TMB
+load("output/recruitment_2021_03_25/rec_r_beta2_2_TMB.rda")
+percmod2 <- rec_r_beta2_2_TMB
+# load("output/recruitment_2021_02_02/rec_r_beta2_TMB.rda")
+# percmod2 <- rec_r_beta2_TMB
 summary(percmod2)
 
 load("processdata/recruits_roads_2021_02_03.rda")
@@ -234,8 +243,8 @@ is.integer(recruits_roads$recruitment)
 # recruits_roads$beitetrykk9 <- scale(recruits_roads$beitetrykk9)
 recruits_roads$helling <- scale(recruits_roads$helling)
 recruits_roads$HOH <- scale(recruits_roads$HOH)
+recruits_roads$tretetthet9 <- scale(recruits_roads$tretetthet9)
 # recruits_roads$moose_density <- scale(recruits_roads$moose_density)
-recruits_roads$tretetthet9 <- scale(recruits_roads$tretetthet9) # this is not in the recruitment model, but is used when the total effect gets calculated
 
 dat2 <- recruits_roads
 head(dat2)
@@ -253,7 +262,7 @@ source("function_resp_curve_08_12_2020_rev_added_browsingvalue.R")
 #### Select focal variable
 ```{r}
 (focal = c( "disthus", "distvei", "skogkategori", "treartgruppe9", "kant", 
-           "helling", "HOH", "tretetthet9", "beitetrykk9", "moose_density")[1])
+           "helling", "HOH", "tretetthet9", "beitetrykk9", "moose_density")[10])
 ## REMEMBER to load the road datasets and models after disthus (house model)!!!!!
 
 ```
@@ -266,22 +275,28 @@ total = total effect
 bp_moose <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[1], nvals=100, plotit=F, nb_btstrp=99)
 
-recruit_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
+recruit_moose <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2,
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99)
 
-total_disthus <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+total_moose <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
            which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=99)
 
 # For interaction, choose between: browsingvalue="max" or "min"
-recruit_int_max2 <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
-           which_effect=c("hurdle1_only", "hurdle2_only", "total")[3], nvals=100, plotit=F, nb_btstrp=99, browsingvalue = "max")
+recruit_int_min <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+           which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99, browsingvalue = "min")
+recruit_int_max <- resp_curve(focal, dat1, dat2, zeromod1, percmod1, zeromod2, percmod2, 
+           which_effect=c("hurdle1_only", "hurdle2_only", "total")[2], nvals=100, plotit=F, nb_btstrp=99, browsingvalue = "max")
 ```
 
 #### Save function data!
 ```{r}
 save(bp_moose, file = "output/function_results_2021_02_03/bp_moose.rda")
-save(recruit_int_min, file = "output/function_results_2021_02_03/recruit_int_min.rda")
-save(total_moose, file = "output/function_results_2021_02_03/total_moose.rda")
+
+save(recruit_int_max, file = "output/function_results_2021_03_25/recruit_int_max.rda")
+
+save(recruit_tretett, file = "output/function_results_2021_03_25/house/recruit_tretett.rda")
+save(total_tretett, file = "output/function_results_2021_03_25/house/total_tretett.rda") 
+ 
 ```
 
 
@@ -302,28 +317,29 @@ load("output/function_results_2021_02_03/bp_moose.rda")
 
 # Recruits (direct)
 # load("output/function_results_2021_02_03/recruit_disthus.rda")
-load("output/function_results_2021_02_03/recruit_int_min.rda")
-load("output/function_results_2021_02_03/recruit_int_max.rda")
-load("output/function_results_2021_02_03/recruit_distvei.rda")
-load("output/function_results_2021_02_03/recruit_skogkat.rda")
-load("output/function_results_2021_02_03/recruit_kant.rda")
-load("output/function_results_2021_02_03/recruit_treart.rda")
-load("output/function_results_2021_02_03/recruit_helling.rda")
-load("output/function_results_2021_02_03/recruit_beite.rda")
-load("output/function_results_2021_02_03/recruit_HOH.rda")
-load("output/function_results_2021_02_03/recruit_moose.rda")
+load("output/function_results_2021_03_25/recruit_int_min.rda")
+load("output/function_results_2021_03_25/recruit_int_max.rda")
+load("output/function_results_2021_03_25/recruit_distvei.rda")
+load("output/function_results_2021_03_25/recruit_skogkat.rda")
+load("output/function_results_2021_03_25/recruit_kant.rda")
+load("output/function_results_2021_03_25/recruit_treart.rda")
+load("output/function_results_2021_03_25/recruit_helling.rda")
+load("output/function_results_2021_03_25/recruit_beite.rda")
+load("output/function_results_2021_03_25/recruit_HOH.rda")
+load("output/function_results_2021_03_25/recruit_moose.rda")
+load("output/function_results_2021_03_25/recruit_tretett.rda")
 
 # Total (indirect + direct)
-# load("output/function_results_2021_02_03/total_disthus.rda")
-load("output/function_results_2021_02_03/total_distvei.rda")
-load("output/function_results_2021_02_03/total_skogkat.rda")
-load("output/function_results_2021_02_03/total_kant.rda")
-load("output/function_results_2021_02_03/total_treart.rda")
-load("output/function_results_2021_02_03/total_helling.rda")
-load("output/function_results_2021_02_03/total_beite.rda")
-load("output/function_results_2021_02_03/total_tretett.rda")
-load("output/function_results_2021_02_03/total_HOH.rda")
-load("output/function_results_2021_02_03/total_moose.rda")
+# load("output/function_results_2021_03_25/total_disthus.rda")
+load("output/function_results_2021_03_25/total_distvei.rda")
+load("output/function_results_2021_03_25/total_skogkat.rda")
+load("output/function_results_2021_03_25/total_kant.rda")
+load("output/function_results_2021_03_25/total_treart.rda")
+load("output/function_results_2021_03_25/total_helling.rda")
+load("output/function_results_2021_03_25/total_beite.rda")
+load("output/function_results_2021_03_25/total_tretett.rda")
+load("output/function_results_2021_03_25/total_HOH.rda")
+load("output/function_results_2021_03_25/total_moose.rda")
 
 ```
 
@@ -366,6 +382,14 @@ recruit_disthus$var <- recruit_disthus$var * 162.9665 + 499.182
 recruit_int_min$var <- recruit_int_min$var * 162.9665 + 499.182
 recruit_int_max$var <- recruit_int_max$var * 162.9665 + 499.182
 
+# attributes(recruits_house$helling) # $`scaled:center` 19.68501 $`scaled:scale` 20.08128
+# attributes(recruits_house$HOH) # $`scaled:center` 365.9363 $`scaled:scale` 245.9447
+# attributes(recruits_house$tretetthet9) # $`scaled:center` 1043.477 $`scaled:scale` 1308.988
+recruit_tretett$var <- recruit_tretett$var * 1308.988 + 1043.477
+recruit_hell$var <- recruit_hell$var * 20.08128 + 19.68501
+recruit_HOH$var <- as.integer(recruit_HOH$var * 245.9447 + 365.9363)
+
+
 ### Roads
 
 # attributes(recruits_roads$beitetrykk9) # $`scaled:center` 26.01752 $`scaled:scale` 30.81325
@@ -375,9 +399,12 @@ recruit_int_max$var <- recruit_int_max$var * 162.9665 + 499.182
 # recruit_bp$var <- recruit_bp$var * 30.81325 + 26.01752
 recruit_helling$var <- recruit_helling$var * 19.60225 + 19.10349
 recruit_HOH$var <- as.integer(recruit_HOH$var * 245.9447 + 365.9363)
+recruit_tretett$var <- recruit_tretett$var * 1193.3 + 984.6252
 # recruit_moose$var <- recruit_moose$var * 0.1988112 + 0.2841981
 
 recruit_distvei$var <- exp(recruit_distvei$var)-1
+
+
 
 
 
@@ -388,6 +415,11 @@ recruit_distvei$var <- exp(recruit_distvei$var)-1
 total_disthus$var <- total_disthus$var * 162.9665 + 499.182
 recruit_int_min2$var <- recruit_int_min2$var * 162.9665 + 499.182
 recruit_int_max2$var <- recruit_int_max2$var * 162.9665 + 499.182
+
+total_tretett$var <- total_tretett$var * 1308.988 + 1043.477
+total_hell$var <- total_hell$var * 20.08128 + 19.68501
+total_HOH$var <- as.integer(total_HOH$var * 245.9447 + 365.9363)
+total_distvei$var <- exp(total_distvei$var)-1
 
 ### Roads
 # attributes(recruits_roads$tretetthet9) # $`scaled:center` 984.6252 $`scaled:scale` 1193.3
@@ -775,13 +807,13 @@ ph_kant <- ggplot(data = bp_kant, aes(var, point)) +
 
 # hell ----
 pdt_hell <- ggplot() + 
-  geom_ribbon(data = recruit_helling, aes(x = var, ymin = CI025, ymax = CI975), 
+  geom_ribbon(data = recruit_hell, aes(x = var, ymin = CI025, ymax = CI975), 
               linetype = 0, alpha = 0.2, show.legend = F) +  
-  geom_line(data = recruit_helling, aes(var, point, color = "direct", linetype = "direct"), 
+  geom_line(data = recruit_hell, aes(var, point, color = "direct", linetype = "direct"), 
             size = 1.5, show.legend = T) +
   
-  geom_ribbon(data = total_helling, aes(x = var, ymin = CI025, ymax = CI975), fill = "#009E73", linetype = 0, alpha = 0.2, show.legend = F) +
-  geom_line(data = total_helling, aes(var, point, color = "total", linetype = "total"), 
+  geom_ribbon(data = total_hell, aes(x = var, ymin = CI025, ymax = CI975), fill = "#009E73", linetype = 0, alpha = 0.2, show.legend = F) +
+  geom_line(data = total_hell, aes(var, point, color = "total", linetype = "total"), 
             size = 1.5, show.legend = T) +
   
   scale_linetype_manual("Effect",
@@ -898,22 +930,28 @@ ph_hoh <- ggplot() +
 
 # tretett ----
 pdt_tretett <- ggplot() + 
+  geom_ribbon(data = recruit_tretett, aes(x = var, ymin = CI025, ymax = CI975), 
+              linetype = 0, alpha = 0.2, show.legend = F) +
+  geom_line(data = recruit_tretett, aes(var, point, color = "direct", linetype = "direct"), 
+            size = 1.5, show.legend = T) +
+  
   geom_ribbon(data = total_tretett, aes(x = var, ymin = CI025, ymax = CI975), fill = "#009E73", linetype = 0, alpha = 0.2, show.legend = F) +
-  geom_line(data = total_tretett, aes(var, point, color = "indirect", linetype = "indirect"),
+  geom_line(data = total_tretett, aes(var, point, color = "total", linetype = "total"), 
             size = 1.5, show.legend = T) +
   
   scale_linetype_manual("Effect",
-                        values = c("indirect" = 1)) +
+                        values = c("direct" = 3,"total" = 1)) +
+  
   xlab("Tree density (ha)\n") + 
   ylab("") +
   theme_light()+
   theme(axis.text = element_text(size = 20), # face = "bold"
         axis.title = element_text(family = "sans", size = 25),
-        legend.position = c(0.7, 0.75),
+        legend.position = c(0.2, 0.75),
         legend.text = element_text(size = 15),
         legend.title = element_text(size = 15)) +
   scale_color_manual(name = "Effect", 
-                     values = "#009E73") +
+                     values = cbPalette) +
     scale_fill_manual(values = "#009E73")
 
 # pt_tretett <- ggplot() + 
@@ -1015,6 +1053,7 @@ pdt_moose <- ggplot() +
     scale_fill_manual(values = "#009E73")
 
 
+
 ph_moose <- ggplot() +
   geom_ribbon(data = bp_moose, aes(x = var, ymin = CI025, ymax = CI975), show.legend = F, 
               fill = "#0072B2", linetype = 0, alpha = 0.2) + 
@@ -1083,7 +1122,7 @@ total_direct_husvei <- ggarrange(nullplot, pd_disthus,
           widths = c(1),
           draw = F
           )
-ggsave(file = "figs_tabs/total_direct_function/2021_03_03/function_total_direct_hus_int.tiff", total_direct_husvei, width = 15, height = 15, units = "cm", dpi = 150) #, dpi = 150
+ggsave(file = "figs_tabs/total_direct_function/2021_03_25/function_total_direct_hus_int.tiff", total_direct_husvei, width = 15, height = 15, units = "cm", dpi = 150) #, dpi = 150
 
 # rest
 nullplot <- ggplot()+
@@ -1098,7 +1137,19 @@ total_direct_grid <- ggarrange(nullplot, nullplot, nullplot, nullplot, pdt_distv
           widths = c(1,1,1, 0.1),
           draw = F
           )
-ggsave(file = "figs_tabs/total_direct_function/2021_03_03/function_total_direct_grid_0303.tiff", total_direct_grid, width = 40, height = 40, units = "cm", dpi = 150) #, dpi = 150
+ggsave(file = "figs_tabs/total_direct_function/2021_03_25/function_total_direct_grid_0303.tiff", total_direct_grid, width = 40, height = 40, units = "cm", dpi = 150) #, dpi = 150
+
+
+total_direct_grid <- ggarrange(nullplot, nullplot, nullplot, pdt_treart, pdt_skogkat, pdt_kant,  pdt_hoh, pdt_hell,  pdt_moose, pdt_tretett,
+          ncol = 3,
+          nrow = 4,
+          heights = c(0.2, 1, 1, 1),
+          labels = c(), #"","", "", "", "(a)", "(b)", "(c)", "", "(d)", "(e)", "(f)", "", "(g)", "(h)", "(i)",""
+          label.args = list(gp = gpar(font = 2, fontsize = 15), x = unit(1,"line"), hjust = -2.5, vjust = -1),
+          widths = c(1,1,1),
+          draw = F
+          )
+ggsave(file = "figs_tabs/total_direct_function/2021_03_25/function_total_direct_grid_house.tiff", total_direct_grid, width = 40, height = 40, units = "cm", dpi = 150) #, dpi = 150
 
 ```
 
@@ -1152,12 +1203,20 @@ describe(recruits_roads$recruitment)
 ## % of plots within 200m from roads/ houses (for how much of the forest lies within these areas)
 ```{r}
 ## Browsing
+load("processdata/browse_house_2021_02_01.rda")
+length(levels(as.factor(browse_house$FLATEID))) # total 11561
+length(levels(as.factor(browse_house$FLATEID[browse_house$distvei2 <= "200"]))) # 2844 (total: 11561), 24.60 %
+length(levels(as.factor(browse_house$FLATEID[browse_house$disthus <= "200"]))) # 3748 (total: 11561), 32.42 %
 
 length(levels(as.factor(browse$FLATEID[browse$distvei2 <= "200"]))) # 2844 (total: 11561), 24.60 %
 length(levels(as.factor(browse$FLATEID[browse$disthus <= "200"]))) # 3748 (total: 11561), 32.42 %
 
 
 ## Recruitment
+load("processdata/recruits_house_2021_02_02.rda")
+length(levels(as.factor(recruits$FLATEID[recruits$distvei2 <= "200"]))) # 2602 (total: 10547), 24.67 %
+length(levels(as.factor(recruits$FLATEID[recruits$disthus_600 <= "200"]))) # 662 (total: 10547), 6.28 %
+
 length(levels(as.factor(recruits$FLATEID[recruits$distvei2 <= "200"]))) # 2602 (total: 10547), 24.67 %
 length(levels(as.factor(recruits$FLATEID[recruits$disthus_600 <= "200"]))) # 662 (total: 10547), 6.28 %
 
