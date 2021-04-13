@@ -8,6 +8,8 @@ processdata/
 rawdata/
 figs_tabs/
 output/
+til_christer/
+til_christer.R
 *.rda
 .csv
 
