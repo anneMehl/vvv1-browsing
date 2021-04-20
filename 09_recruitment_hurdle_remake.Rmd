@@ -59,7 +59,7 @@ check_zeroinflation(m_test_zi)
 
 #### Load data house threshold
 ```{r}
-load("processdata/recruits_2021_02_01.rda")
+load("processdata/recruits_2021_04_19.rda")
 names(recruits)
 
 recruits_house <- recruits
@@ -77,7 +77,7 @@ recruits_house$disthus <- scale(recruits_house$disthus)
 
 recruits_house$distvei2 <- scale(recruits_house$distvei2)
 
-# recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
+recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
 recruits_house$helling <- scale(recruits_house$helling)
 recruits_house$HOH <- scale(recruits_house$HOH)
 recruits_house$moose_density <- scale(recruits_house$moose_density)
@@ -100,35 +100,35 @@ summary(recruits_house$disthus)
 ```{r}
 library(lme4)
 
-bin_cuthouse1 <- glmer(factor(recruitment > 0) ~ disthus + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+bin_cuthouse1 <- glmer(factor(recruitment > 0) ~ disthus + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
 family = binomial(),
 data = recruits_house)
 
-bin_cuthouse2 <- glmer(factor(recruitment > 0) ~ disthus_600 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+bin_cuthouse2 <- glmer(factor(recruitment > 0) ~ disthus_600 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
 family = binomial(),
 data = recruits_house)
 
-bin_cuthouse3 <- glmer(factor(recruitment > 0) ~ disthus_500 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+bin_cuthouse3 <- glmer(factor(recruitment > 0) ~ disthus_500 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
 family = binomial(),
 data = recruits_house) # BEST
 
-bin_cuthouse4 <- glmer(factor(recruitment > 0) ~ disthus_400 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+bin_cuthouse4 <- glmer(factor(recruitment > 0) ~ disthus_400 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
 family = binomial(),
 data = recruits_house)
 
-bin_cuthouse5 <- glmer(factor(recruitment > 0) ~ disthus_350 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+bin_cuthouse5 <- glmer(factor(recruitment > 0) ~ disthus_350 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
 family = binomial(),
 data = recruits_house)
 
-bin_cuthouse6 <- glmer(factor(recruitment > 0) ~ disthus_300 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+bin_cuthouse6 <- glmer(factor(recruitment > 0) ~ disthus_300 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
 family = binomial(),
 data = recruits_house)
 
-bin_cuthouse7 <- glmer(factor(recruitment > 0) ~ disthus_200 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+bin_cuthouse7 <- glmer(factor(recruitment > 0) ~ disthus_200 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
 family = binomial(),
 data = recruits_house)
 
-bin_cuthouse8 <- glmer(factor(recruitment > 0) ~ disthus_150 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+bin_cuthouse8 <- glmer(factor(recruitment > 0) ~ disthus_150 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
 family = binomial(),
 data = recruits_house)
 
@@ -145,27 +145,166 @@ aictab(candmods_bin_cuthouse, modnames = NULL,
 # Model selection based on AICc:
 # 
 #       K      AIC Delta_AIC AICWt Cum.Wt        LL
-# 500  19 22815.51      0.00  0.47   0.47 -11388.76
-# 600  19 22815.58      0.07  0.46   0.93 -11388.79
-# 400  19 22819.32      3.81  0.07   1.00 -11390.66
-# 350  19 22825.61     10.10  0.00   1.00 -11393.81
-# 300  19 22833.41     17.90  0.00   1.00 -11397.71
-# 200  19 22847.68     32.17  0.00   1.00 -11404.84
-# 150  19 22861.53     46.02  0.00   1.00 -11411.76
-# full 19 22886.53     71.02  0.00   1.00 -11424.27
+# Mod3 20 22798.08      0.00  0.48   0.48 -11379.04
+# Mod2 20 22798.23      0.14  0.45   0.92 -11379.11
+# Mod4 20 22801.88      3.79  0.07   1.00 -11380.94
+# Mod5 20 22808.16     10.08  0.00   1.00 -11384.08
+# Mod6 20 22815.91     17.83  0.00   1.00 -11387.95
+# Mod7 20 22829.85     31.77  0.00   1.00 -11394.92
+# Mod8 20 22843.69     45.61  0.00   1.00 -11401.84
+# Mod1 20 22868.69     70.61  0.00   1.00 -11414.35
 
 ```
+
+
+
+
+
+
+
+
+
+## Bin threshold distance to road
+
+#### Load data road threshold
+```{r}
+load("processdata/recruits_2021_04_19.rda")
+names(recruits)
+
+recruits_house <- recruits
+
+# load("processdata/recruits_house.rda")
+
+names(recruits_house)
+str(recruits_house)
+```
+
+
+#### Scale variables if necessary
+```{r}
+
+recruits_house$disthus <- scale(recruits_house$disthus)
+
+recruits_house$distvei2 <- scale(recruits_house$distvei2)
+
+recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
+recruits_house$helling <- scale(recruits_house$helling)
+recruits_house$HOH <- scale(recruits_house$HOH)
+recruits_house$moose_density <- scale(recruits_house$moose_density)
+
+recruits_house$distvei_600 <- scale(recruits_house$distvei_600)
+
+recruits_house$distvei_500 <- scale(recruits_house$distvei_500)
+
+recruits_house$distvei_400 <- scale(recruits_house$distvei_400)
+recruits_house$distvei_350 <- scale(recruits_house$distvei_350)
+recruits_house$distvei_300 <- scale(recruits_house$distvei_300)
+recruits_house$distvei_200 <- scale(recruits_house$distvei_200)
+recruits_house$distvei_150 <- scale(recruits_house$distvei_150)
+recruits_house$distvei_100 <- scale(recruits_house$distvei_100)
+recruits_house$distvei_50 <- scale(recruits_house$distvei_50)
+
+summary(recruits_house$disthus)
+```
+
+
+#### Checking for the cut for distvei
+```{r}
+library(lme4)
+
+bin_cutroad1 <- glmer(factor(recruitment > 0) ~ disthus + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house)
+
+bin_cutroad2 <- glmer(factor(recruitment > 0) ~ distvei_600 + disthus + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house)
+
+bin_cutroad3 <- glmer(factor(recruitment > 0) ~ distvei_500 + disthus + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house) 
+
+bin_cutroad4 <- glmer(factor(recruitment > 0) ~ distvei_400 + disthus + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house) # BEST
+
+bin_cutroad5 <- glmer(factor(recruitment > 0) ~ distvei_350 + disthus + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house)
+
+bin_cutroad6 <- glmer(factor(recruitment > 0) ~ distvei_300 + disthus + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house)
+
+bin_cutroad7 <- glmer(factor(recruitment > 0) ~ distvei_200 + disthus + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house)
+
+bin_cutroad8 <- glmer(factor(recruitment > 0) ~ distvei_150 + disthus + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house)
+
+```
+
+#### AIC selection threshold roads
+```{r}
+library(AICcmodavg)
+
+candmods_bin_cuthouse <- list(bin_cutroad1, bin_cutroad2, bin_cutroad3, bin_cutroad4, bin_cutroad5, bin_cutroad6, bin_cutroad7, bin_cutroad8)
+aictab(candmods_bin_cuthouse, modnames = NULL,
+                       second.ord = F, nobs = NULL, sort = TRUE)
+
+# Model selection based on AICc:
+# 
+#       K      AIC Delta_AIC AICWt Cum.Wt        LL
+# Mod4 20 22780.32      0.00  0.48   0.48 -11370.16
+# Mod3 20 22780.73      0.41  0.39   0.87 -11370.36
+# Mod6 20 22784.41      4.09  0.06   0.93 -11372.21
+# Mod5 19 22784.97      4.65  0.05   0.97 -11373.49
+# Mod2 20 22787.23      6.91  0.02   0.99 -11373.62
+# Mod7 20 22787.96      7.64  0.01   1.00 -11373.98
+# Mod8 20 22795.27     14.95  0.00   1.00 -11377.63
+# Mod1 20 22868.69     88.37  0.00   1.00 -11414.35
+
+```
+
+
+```{r}
+str(recruits_house)
+recruits_house$disthus_500 <- scale(recruits_house$disthus_500)
+
+distveilog_bin <- glmer(factor(recruitment > 0) ~ disthus_500 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house) # BEST
+
+bin_cutroad4 <- glmer(factor(recruitment > 0) ~ distvei_400 + disthus + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house)
+
+
+candmods_bin_cutroad <- list(distveilog_bin, bin_cutroad4)
+aictab(candmods_bin_cutroad, modnames = NULL,
+                       second.ord = F, nobs = NULL, sort = TRUE)
+#       K      AIC Delta_AIC AICWt Cum.Wt        LL
+# Mod1 20 22759.27      0.00     1      1 -11359.64
+# Mod2 20 22780.32     21.05     0      1 -11370.16
+
+save(distveilog_bin, file = "output/log_or_thresh/distveilog_bin.rda")
+save(bin_cutroad4, file = "output/log_or_thresh/bin_cutroad4.rda")
+
+```
+
 
 #### Save recruits_house dataset
 ```{r}
+load("processdata/recruits_2021_04_19.rda")
 str(recruits)
 names(recruits)
-recruits_house <- recruits[, -c(4,19:23)]
+recruits_house <- recruits[, -c(4,20:33)]
 names(recruits_house)
-save(recruits_house, file = "recruits_house_2021_02_02.rda")
+save(recruits_house, file = "processdata/recruits_house_2021_04_19.rda")
 
 ```
-
 
 
 
@@ -173,7 +312,8 @@ save(recruits_house, file = "recruits_house_2021_02_02.rda")
 
 #### Load data
 ```{r}
-load("processdata/recruits_house_2021_02_02.rda")
+# load("processdata/recruits_house_2021_02_02.rda")
+load("processdata/recruits_house_2021_04_19.rda")
 str(recruits_house)
 recruits_house$recruitment_bin <- ifelse(recruits_house$recruitment == 0, 0, 1)
 
@@ -193,7 +333,7 @@ recruits_house$HOH <- scale(recruits_house$HOH)
 recruits_house$tretetthet9 <- scale(recruits_house$tretetthet9)
 
 # recruits_house$disthus_600 <- scale(recruits_house$disthus_600)
-recruits_house$disthus_500 <- scale(recruits_house$disthus_500)
+# recruits_house$disthus_500 <- scale(recruits_house$disthus_500)
 
 summary(recruits_house$helling)
 ```
@@ -202,20 +342,29 @@ summary(recruits_house$helling)
 
 ```{r}
 library(lme4)
-rec_h_bin1 <- glmer(recruitment_bin ~ disthus_500 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + tretetthet9 +  ac + (1|KOMNR),
+rec_h_bin1 <- glmer(recruitment_bin ~ disthus_600 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house) # disthus_500 is best, but adjust to zero-trunc model with disthus_600
+rec_h_bin1_1 <- glmer(recruitment_bin ~ disthus_600 + log(distvei2+1) + skogkategori + treartgruppe9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
 family = binomial(),
 data = recruits_house)
 
-rec_h_bin2 <- glmer(recruitment_bin ~ log(disthus+1) + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+## test for interactions 
+rec_h_bin2 <- glmer(recruitment_bin ~ disthus_600*log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + tretetthet9 + behandling1011 + ac + (1|KOMNR),
 family = binomial(),
 data = recruits_house)
 
-rec_h_bin3 <- glmer(recruitment_bin ~ disthus_500 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + tretetthet9 +  ac + (1|KOMNR),
+rec_h_bin3 <- glmer(recruitment_bin ~ disthus_600*skogkategori + log(distvei2+1) + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + tretetthet9 + behandling1011 + ac + (1|KOMNR),
 family = binomial(),
-data = recruits_house)  # BEST
-summary(rec_h_bin3)
+data = recruits_house)
 
+rec_h_bin4 <- glmer(recruitment_bin ~ disthus_600*treartgruppe9 + log(distvei2+1) + skogkategori + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + tretetthet9 + behandling1011 + ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house) # best
 
+rec_h_bin5 <- glmer(recruitment_bin ~ disthus_600*treartgruppe9 + disthus_600*log(distvei2+1) + skogkategori + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + tretetthet9 + behandling1011 + ac + (1|KOMNR),
+family = binomial(),
+data = recruits_house)
 
 
 ```
@@ -224,16 +373,22 @@ summary(rec_h_bin3)
 ```{r}
 library(AICcmodavg)
 
-candmods_rec_house_bin <- list(rec_h_bin1, rec_h_bin2, rec_h_bin3)
+candmods_rec_house_bin <- list(rec_h_bin1, rec_h_bin2, rec_h_bin3, rec_h_bin4, rec_h_bin5)
 aictab(candmods_rec_house_bin, modnames = NULL,
                        second.ord = F, nobs = NULL, sort = TRUE)
 
-# Model selection based on AICc:
-# 
-#                 K      AIC Delta_AIC AICWt Cum.Wt        LL
-# Mod3           20 21536.66      0.00     1      1 -10748.33
-# disthus_500    20 21557.53     20.87     0      1 -10758.77
-# log(disthus+1) 19 22793.06   1256.39     0      1 -11377.53
+#       K      AIC Delta_AIC AICWt Cum.Wt        LL
+# Mod4 23 21452.46      0.00  0.59   0.59 -10703.23
+# Mod5 24 21453.22      0.76  0.41   1.00 -10702.61
+# Mod2 22 21508.81     56.35  0.00   1.00 -10732.40
+# Mod3 25 21514.87     62.41  0.00   1.00 -10732.44
+# Mod1 20 22759.77   1307.31  0.00   1.00 -11359.89
+
+save(rec_h_bin1, file = "output/2021_04_18/rec_h_bin1.rda") # save into 18. April, same as Browsing models
+save(rec_h_bin2, file = "output/2021_04_18/rec_h_bin2.rda")
+save(rec_h_bin3, file = "output/2021_04_18/rec_h_bin3.rda")
+save(rec_h_bin4, file = "output/2021_04_18/rec_h_bin4.rda")
+save(rec_h_bin5, file = "output/2021_04_18/rec_h_bin5.rda")
 
 ```
 
@@ -255,8 +410,20 @@ tab_model(rec_h_bin3, transform = NULL,
           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, p.threshold = c(0.05, 0.01, 0.001))
 
 
-plot_model(rec_h_bin2, type = "eff", terms = "disthus [0:1000]")
+plot_model(rec_h_bin1, type = "eff", terms = "disthus_600")
+plot_model(rec_h_bin1, type = "eff", terms = "distvei2 [0:600]")
+# plot_model(rec_h_bin5, type = "int") # I really don't get why this is not working....
+plot_model(rec_h_bin2, type = "eff", terms = c("disthus_600", "distvei2"))
+plot_model(rec_h_bin1, type = "eff", terms = "skogkategori")
+plot_model(rec_h_bin3, type = "int")
+plot_model(rec_h_bin1, type = "eff", terms = "treartgruppe9")
+plot_model(rec_h_bin4, type = "int")
 
+plot_model(rec_h_bin5, type = "eff", terms = c("disthus_600", "distvei2"))
+plot_model(rec_h_bin5, type = "eff", terms = c("disthus_600", "treartgruppe9"))
+
+plot_model(rec_h_bin1_1, type = "eff", terms = "disthus_600")
+plot_model(rec_h_bin1_1, type = "eff", terms = "distvei2 [0:600]")
 
 ```
 
@@ -277,7 +444,7 @@ save(rec_h_bin3, file = "output/recruitment_2021_04_12/rec_h_bin3.rda")
 ## Load data house threshold
 ```{r}
 
-load("processdata/recruits_2021_02_01.rda")
+load("processdata/recruits_2021_04_19.rda")
 names(recruits)
 
 recruits_house <- recruits
@@ -305,7 +472,7 @@ is.integer(recruits_house$recruitment)
 recruits_house$disthus <- scale(recruits_house$disthus)
 recruits_house$distvei2 <- scale(recruits_house$distvei2)
 
-# recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
+recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
 recruits_house$helling <- scale(recruits_house$helling)
 recruits_house$HOH <- scale(recruits_house$HOH)
 recruits_house$moose_density <- scale(recruits_house$moose_density)
@@ -328,35 +495,35 @@ summary(recruits_house$disthus_600)
 library(lme4)
 
 
-beta_cuthouse1 <- glmer(recruitment ~ disthus + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+beta_cuthouse1 <- glmer(recruitment ~ disthus + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
 family = poisson(),
 data = recruits_house)
 
-beta_cuthouse2 <- glmer(recruitment ~ disthus_600 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+beta_cuthouse2 <- glmer(recruitment ~ disthus_600 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
 family = poisson(),
 data = recruits_house) # BEST
 
-beta_cuthouse3 <- glmer(recruitment ~ disthus_500 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+beta_cuthouse3 <- glmer(recruitment ~ disthus_500 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
 family = poisson(),
 data = recruits_house) 
 
-beta_cuthouse4 <- glmer(recruitment ~ disthus_400 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+beta_cuthouse4 <- glmer(recruitment ~ disthus_400 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
 family = poisson(),
 data = recruits_house)
 
-beta_cuthouse5 <- glmer(recruitment ~ disthus_350 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+beta_cuthouse5 <- glmer(recruitment ~ disthus_350 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
 family = poisson(),
 data = recruits_house)
 
-beta_cuthouse6 <- glmer(recruitment ~ disthus_300 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+beta_cuthouse6 <- glmer(recruitment ~ disthus_300 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
 family = poisson(),
 data = recruits_house)
 
-beta_cuthouse7 <- glmer(recruitment ~ disthus_200 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+beta_cuthouse7 <- glmer(recruitment ~ disthus_200 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
 family = poisson(),
 data = recruits_house)
 
-beta_cuthouse8 <- glmer(recruitment ~ disthus_150 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+beta_cuthouse8 <- glmer(recruitment ~ disthus_150 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
 family = poisson(),
 data = recruits_house)
 
@@ -387,11 +554,158 @@ aictab(candmods_beta_cuthouse, modnames = NULL,
 
 
 
+
+
+
+
+## Load data road threshold
+```{r}
+
+load("processdata/recruits_2021_04_19.rda")
+names(recruits)
+
+recruits_house <- recruits
+
+str(recruits_house)
+
+```
+
+
+
+#### Prepare data set for second part of the hurdle
+```{r}
+recruits_house <- recruits_house[recruits_house$recruitment > 0, ]
+str(recruits_house)
+summary(recruits_house$recruitment)
+
+is.integer(recruits_house$recruitment)
+recruits_house$recruitment <- as.integer(recruits_house$recruitment)
+is.integer(recruits_house$recruitment)
+```
+
+
+#### Scale variables if necessary
+```{r}
+recruits_house$disthus <- scale(recruits_house$disthus)
+# recruits_house$distvei2 <- scale(recruits_house$distvei2)
+
+# recruits_house$beitetrykk9 <- scale(recruits_house$beitetrykk9)
+recruits_house$helling <- scale(recruits_house$helling)
+recruits_house$HOH <- scale(recruits_house$HOH)
+recruits_house$moose_density <- scale(recruits_house$moose_density)
+
+recruits_house$distvei_600 <- scale(recruits_house$distvei_600)
+
+recruits_house$distvei_500 <- scale(recruits_house$distvei_500)
+
+recruits_house$distvei_400 <- scale(recruits_house$distvei_400)
+recruits_house$distvei_350 <- scale(recruits_house$distvei_350)
+recruits_house$distvei_300 <- scale(recruits_house$distvei_300)
+recruits_house$distvei_200 <- scale(recruits_house$distvei_200)
+recruits_house$distvei_150 <- scale(recruits_house$distvei_150)
+recruits_house$distvei_100 <- scale(recruits_house$distvei_100)
+recruits_house$distvei_50 <- scale(recruits_house$distvei_50)
+
+# summary(recruits_house$disthus_600)
+```
+
+#### Checking for the threshold for distvei
+```{r}
+library(lme4)
+
+
+beta_cutroad1 <- glmer(recruitment ~ disthus + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = poisson(),
+data = recruits_house)
+
+beta_cutroad2 <- glmer(recruitment ~ distvei_600 + disthus + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = poisson(),
+data = recruits_house) # BEST
+
+beta_cutroad3 <- glmer(recruitment ~ distvei_500 + disthus + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = poisson(),
+data = recruits_house) 
+
+beta_cutroad4 <- glmer(recruitment ~ distvei_400 + disthus + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = poisson(),
+data = recruits_house)
+
+beta_cutroad5 <- glmer(recruitment ~ distvei_350 + disthus + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = poisson(),
+data = recruits_house)
+
+beta_cutroad6 <- glmer(recruitment ~ distvei_300 + disthus + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = poisson(),
+data = recruits_house)
+
+beta_cutroad7 <- glmer(recruitment ~ distvei_200 + disthus + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = poisson(),
+data = recruits_house)
+
+beta_cutroad8 <- glmer(recruitment ~ distvei_150 + disthus + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = poisson(),
+data = recruits_house)
+
+```
+
+#### AIC selection threshold roads
+```{r}
+library(AICcmodavg)
+
+candmods_beta_cuthouse <- list(beta_cutroad1, beta_cutroad2, beta_cutroad3, beta_cutroad4, beta_cutroad5, beta_cutroad6, beta_cutroad7, beta_cutroad8)
+aictab(candmods_beta_cuthouse, modnames = NULL,
+                       second.ord = F, nobs = NULL, sort = TRUE)
+
+# Model selection based on AICc:
+# 
+#       K     AIC Delta_AIC AICWt Cum.Wt        LL
+# Mod2 19 1149435      0.00     1      1 -574698.5
+# Mod3 19 1149528     92.58     0      1 -574744.8
+# Mod4 19 1149978    543.38     0      1 -574970.2
+# Mod8 19 1150002    566.82     0      1 -574981.9
+# Mod5 19 1150241    805.76     0      1 -575101.4
+# Mod7 19 1150421    986.39     0      1 -575191.7
+# Mod6 19 1150859   1424.14     0      1 -575410.6
+# Mod1 19 1153297   3861.93     0      1 -576629.5
+
+```
+
+
+```{r}
+recruits_house$disthus_600 <- scale(recruits_house$disthus_600)
+
+beta_cutroad2_log <- glmer(recruitment ~ disthus_600 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + tretetthet9 + ac + (1|KOMNR),
+family = poisson(),
+data = recruits_house)
+
+beta_cutroad2 <- glmer(recruitment ~ distvei_600 + disthus + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density +  ac + (1|KOMNR),
+family = poisson(),
+data = recruits_house)
+
+
+candmods_beta_cuthouse <- list(beta_cutroad2_log, beta_cutroad2)
+aictab(candmods_beta_cuthouse, modnames = NULL,
+                       second.ord = F, nobs = NULL, sort = TRUE)
+#       K     AIC Delta_AIC AICWt Cum.Wt        LL
+# Mod1 19 1016400       0.0     1      1 -508181.1
+# Mod2 19 1149435  133034.9     0      1 -574698.5
+
+
+save(beta_cutroad2_log, file = "output/log_or_thresh/beta_cutroad2_log.rda")
+save(beta_cutroad2, file = "output/log_or_thresh/beta_cutroad2.rda")
+
+```
+
+
+
+
+
+
 ## Zero-truncated house data
 
 #### Load models
 ```{r}
-load("processdata/recruits_house.rda")
+load("processdata/recruits_house_2021_04_19.rda")
 str(recruits_house)
 names(recruits_house)
 ```
@@ -421,8 +735,8 @@ recruits_house$HOH <- scale(recruits_house$HOH)
 # recruits_house$moose_density <- scale(recruits_house$moose_density)
 recruits_house$tretetthet9 <- scale(recruits_house$tretetthet9)
 
-recruits_house$disthus_600 <- scale(recruits_house$disthus_600)
-recruits_house$disthus_500 <- scale(recruits_house$disthus_500)
+# recruits_house$disthus_600 <- scale(recruits_house$disthus_600)
+# recruits_house$disthus_500 <- scale(recruits_house$disthus_500)
 
 # summary(recruits_house$disthus_600)
 ```
@@ -431,27 +745,32 @@ recruits_house$disthus_500 <- scale(recruits_house$disthus_500)
 #### Zero-truncated house models
 ```{r}
 library(lme4)
-rec_h_beta1 <- glmer(recruitment ~ disthus_600 + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + tretetthet9 + ac + (1|KOMNR),
+rec_h_beta1 <- glmer(recruitment ~ disthus_600 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + tretetthet9 + behandling1011 + ac + (1|KOMNR),
 family = poisson(),
 data = recruits_house)
 summary(rec_h_beta1)
 
-rec_h_beta2 <- glmer(recruitment ~ log(disthus+1) + distvei2 + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + tretetthet9 + ac + (1|KOMNR),
+rec_h_beta1_1 <- glmer(recruitment ~ disthus_600 + log(distvei2+1) + skogkategori + treartgruppe9 + kant + helling + HOH + I(HOH^2) + moose_density + tretetthet9 + behandling1011 + ac + (1|KOMNR),
 family = poisson(),
 data = recruits_house)
 
-rec_h_beta3 <- glmer(recruitment ~ disthus_600 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + tretetthet9 + ac + (1|KOMNR),
+rec_h_beta2 <- glmer(recruitment ~ disthus_600*log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + tretetthet9 + behandling1011 + ac + (1|KOMNR),
 family = poisson(),
 data = recruits_house)
-summary(rec_h_beta3)
 
-rec_h_beta4 <- glmer(recruitment ~ disthus_600 + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + tretetthet9 + ac + (1|KOMNR),
+rec_h_beta3 <- glmer(recruitment ~ disthus_600*skogkategori + log(distvei2+1) + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + tretetthet9 + behandling1011 + ac + (1|KOMNR),
 family = poisson(),
 data = recruits_house) # BEST
 
-rec_h_beta5 <- glmer(recruitment ~ log(disthus_600+1) + log(distvei2+1) + skogkategori + treartgruppe9 + beitetrykk9 + kant + helling + HOH + I(HOH^2) + tretetthet9 + ac + (1|KOMNR),
+rec_h_beta4 <- glmer(recruitment ~ disthus_600*treartgruppe9 + log(distvei2+1) + skogkategori + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + tretetthet9 + behandling1011 + ac + (1|KOMNR),
 family = poisson(),
 data = recruits_house)
+
+rec_h_beta5 <- glmer(recruitment ~ disthus_600*treartgruppe9 + log(distvei2+1) + disthus_600*skogkategori + beitetrykk9 + kant + helling + HOH + I(HOH^2) + moose_density + tretetthet9 + behandling1011 + ac + (1|KOMNR),
+family = poisson(),
+data = recruits_house)
+
+
 
 
 library(glmmTMB)
@@ -465,6 +784,7 @@ rec_h_beta4_TMB_500 <- glmmTMB(recruitment ~ disthus_500 + log(distvei2+1) + sko
 
 summary(rec_h_beta4_TMB_500)
 save(rec_h_beta4_TMB_500, file = "output/recruitment_2021_04_12/rec_h_beta4_TMB_500.rda")
+
 
 
 
@@ -482,13 +802,23 @@ aictab(candmods_rec_house_beta, modnames = NULL,
 # Model selection based on AICc:
 # 
 #       K     AIC Delta_AIC AICWt Cum.Wt        LL
-# Mod4 19 1016400      0.00  0.71   0.71 -508181.1
-# Mod3 20 1016402      1.79  0.29   1.00 -508181.0
-# Mod5 19 1017275    874.87  0.00   1.00 -508618.5
-# Mod1 20 1017547   1146.48  0.00   1.00 -508753.3
-# Mod2 20 1018674   2273.90  0.00   1.00 -509317.0
+# Mod3 25 1016053      0.00     1      1 -508001.3
+# Mod4 23 1016097     44.91     0      1 -508025.7
+# Mod2 22 1016148     95.93     0      1 -508052.2
+# Mod1 21 1016191    138.32     0      1 -508074.4
 
+#       K     AIC Delta_AIC AICWt Cum.Wt        LL
+# Mod5 27 1015962      0.00     1      1 -507954.1
+# Mod3 25 1016053     90.42     0      1 -508001.3
+# Mod4 23 1016097    135.33     0      1 -508025.7
+# Mod2 22 1016148    186.35     0      1 -508052.2
+# Mod1 21 1016191    228.74     0      1 -508074.4
 
+save(rec_h_beta1, file = "output/2021_04_18/rec_h_beta1.rda")
+save(rec_h_beta2, file = "output/2021_04_18/rec_h_beta2.rda")
+save(rec_h_beta3, file = "output/2021_04_18/rec_h_beta3.rda")
+save(rec_h_beta4, file = "output/2021_04_18/rec_h_beta4.rda")
+save(rec_h_beta5, file = "output/2021_04_18/rec_h_beta5.rda")
 
 ```
 
@@ -513,9 +843,20 @@ tab_model(rec_h_beta4_TMB_500, transform = NULL,
           show.intercept = TRUE, show.est = TRUE, show.ci = 0.95, p.threshold = c(0.05, 0.01, 0.001))
 
 
-plot_model(rec_h_beta2, type = "eff", terms = "disthus [0:1000]")
-rec_h_beta2
+plot_model(rec_h_beta1, type = "eff", terms = "disthus_600")
+plot_model(rec_h_beta1, type = "eff", terms = "distvei2 [0:600]")
+# plot_model(rec_h_bin5, type = "int") # I really don't get why this is not working....
+plot_model(rec_h_beta2, type = "eff", terms = c("disthus_600", "distvei2"))
+plot_model(rec_h_beta1, type = "eff", terms = "skogkategori")
+plot_model(rec_h_beta3, type = "int")
+plot_model(rec_h_beta1, type = "eff", terms = "treartgruppe9")
+plot_model(rec_h_beta4, type = "int")
 
+plot_model(rec_h_beta5, type = "eff", terms = c("disthus_600", "treartgruppe9")) # big difference in recruitment compared to model 4
+plot_model(rec_h_beta5, type = "eff", terms = c("disthus_600", "skogkategori"))
+
+plot_model(rec_h_beta1_1, type = "eff", terms = "disthus_600")
+plot_model(rec_h_beta1_1, type = "eff", terms = "distvei2 [0:600]")
 ```
 
 
