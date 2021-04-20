@@ -1156,32 +1156,189 @@ ggsave(file = "figs_tabs/total_direct_function/2021_03_25/function_total_direct_
 
 
 
-## Figures data forest category and tree species group for the results/ appendix
+## Figures data appendix
 ```{r}
+# library(ggplot2)
+# load("processdata/browse_roads_2021_02_02.rda")
+# str(browse_roads)
+# 
+# fp1 <- ggplot(data = browse_roads, aes(treartgruppe9)) +
+#   geom_bar()+
+#   theme_light()+
+#   scale_x_discrete(labels = c("pine", "deciduous \ntrees", "RAW")) +
+#   xlab("\nTree species groups") + 
+#   ylab("Count\n")
+# 
+# fp2 <- ggplot(data = browse_roads, aes(skogkategori)) +
+#   geom_bar()+
+#   theme_light()+
+#   scale_x_discrete(labels = c("Lowproductive \nold forest", "Highproductive \nold forest", "Highproductive \nyoung forest", "Lowproductive \nyoung forest", "Unproductive \nforest")) +
+#   xlab("\nForest category") + 
+#   ylab("Count\n")
+# 
+# 
+# library(gridExtra)
+# fp_grid <- grid.arrange(fp1, fp2,
+#           nrow = 2, ncol = 1)
+# 
+# ggsave(file = "fp_grid.tiff", fp_grid, width = 15, height = 30, units = "cm", dpi = 150) #, dpi = 150
+
+
+
+
+## Data plots appendix ----
+load("processdata/browse_incl_huskat_2021_04_15.rda")
+load("processdata/recruits_incl_huskat_2021_04_15.rda")
+names(browse)
+names(recruits)
+browse$disthuskat <- as.factor(browse$disthuskat)
+recruits$disthuskat <- as.factor(recruits$disthuskat)
+
+# library(sjlabelled)
+# browse$kant_num <- as_numeric(browse$kant)
+# recruits$kant_num <- as_numeric(recruits$kant)
+
+library(plyr)
+levels(browse$skogkategori)
+browse$skogkategori <- mapvalues(browse$skogkategori, from =  c("Lavproduktiv_eldreskog", "Høyproduktiv_eldreskog", "Høyproduktiv_ungskog", "Lavproduktiv_ungskog", "Uproduktiv_skog"), to = c("Lowproductive\nold forest",  "Highproductive\nold forest", "Highproductive\nyoung forest", "Lowproductive\nyoung forest", "Unproductive\nforest"))
+levels(browse$skogkategori)
+
+levels(browse$kant)
+browse$kant <- mapvalues(as.factor(browse$kant), from =  c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant"), to = c("Edge >20m", "Edge <10m", "Edge 10-20m", "Edge information\nmissing"))
+levels(browse$kant)
+
+levels(browse$treartgruppe9)
+browse$treartgruppe9 <- mapvalues(browse$treartgruppe9, from =  c("FURU", "LAUV", "ROS"), to = c("Pine", "Deciduous trees", "RAW"))
+levels(browse$treartgruppe9)
+
+levels(recruits$skogkategori)
+recruits$skogkategori <- mapvalues(recruits$skogkategori, from =  c("Lavproduktiv_eldreskog", "Høyproduktiv_eldreskog", "Høyproduktiv_ungskog", "Lavproduktiv_ungskog", "Uproduktiv_skog"), to = c("Lowproductive\nold forest",  "Highproductive\nold forest", "Highproductive\nyoung forest", "Lowproductive\nyoung forest", "Unproductive\nforest"))
+levels(recruits$skogkategori)
+
+levels(recruits$kant)
+recruits$kant <- mapvalues(recruits$kant, from =  c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant"), to = c("Edge >20m", "Edge <10m", "Edge 10-20m", "Edge information\nmissing"))
+levels(recruits$kant)
+
+levels(recruits$treartgruppe9)
+recruits$treartgruppe9 <- mapvalues(recruits$treartgruppe9, from =  c("FURU", "LAUV", "ROS"), to = c("Pine", "Deciduous trees", "RAW"))
+levels(recruits$treartgruppe9)
+
+
+
 library(ggplot2)
-load("processdata/browse_roads_2021_02_02.rda")
-str(browse_roads)
 
-fp1 <- ggplot(data = browse_roads, aes(treartgruppe9)) +
-  geom_bar()+
-  theme_light()+
-  scale_x_discrete(labels = c("pine", "deciduous \ntrees", "RAW")) +
-  xlab("\nTree species groups") + 
-  ylab("Count\n")
+b1 <- ggplot(browse, aes(disthuskat, fill = kant))  +
+    geom_bar(position = position_fill(reverse = F)) +
+  theme_classic() +
+  xlab("Distance to house") + 
+  guides(fill = guide_legend(title = "Edge"))+
+  guides(x =  guide_axis(angle = 90))
 
-fp2 <- ggplot(data = browse_roads, aes(skogkategori)) +
-  geom_bar()+
-  theme_light()+
-  scale_x_discrete(labels = c("Lowproductive \nold forest", "Highproductive \nold forest", "Highproductive \nyoung forest", "Lowproductive \nyoung forest", "Unproductive \nforest")) +
-  xlab("\nForest category") + 
-  ylab("Count\n")
+b2 <- ggplot(browse, aes(disthuskat, helling))  + 
+    stat_summary(fun = mean, geom = "col", position = "identity") + 
+  theme_classic() +
+  xlab("Distance to house") + 
+  ylab("Slope (mean)") +
+  guides(x =  guide_axis(angle = 90))
+
+b3 <- ggplot(browse, aes(disthuskat, HOH))  + 
+    stat_summary(fun = mean, geom = "col", position = "identity") + 
+  theme_classic() +
+  xlab("Distance to house") + 
+  ylab("Altitude (mean)") +
+  guides(x =  guide_axis(angle = 90))
+
+b4 <- ggplot(browse, aes(disthuskat, tretetthet9, fill = treartgruppe9))  + 
+    stat_summary(fun = mean, geom = "col", position = "stack") + 
+  theme_classic() +
+  xlab("Distance to house") + 
+  ylab("Tree density (mean)") + 
+  guides(fill = guide_legend(title = "Tree species\ngroup"))+
+  guides(x =  guide_axis(angle = 90))
+
+b5 <- ggplot(browse, aes(disthuskat, beitetrykk9, fill = treartgruppe9))  + 
+    stat_summary(fun = mean, geom = "col", position = "stack") + 
+  theme_classic() +
+  xlab("Distance to house") + 
+  ylab("Browsing pressure (mean)") + 
+  guides(fill = guide_legend(title = "Tree species\ngroup"))+
+  guides(x =  guide_axis(angle = 90))
+
+b6 <- ggplot(browse, aes(disthuskat, fill = skogkategori))  +
+    geom_bar(position = position_fill(reverse = F)) +
+  theme_classic() +
+  xlab("Distance to house") + 
+  guides(fill = guide_legend(title = "Forest category"))+
+  guides(x =  guide_axis(angle = 90))
 
 
 library(gridExtra)
-fp_grid <- grid.arrange(fp1, fp2,
-          nrow = 2, ncol = 1)
+b_grid <- grid.arrange(b1, b2, b3, b4, b5, b6,
+          nrow = 3, ncol = 2)
 
-ggsave(file = "fp_grid.tiff", fp_grid, width = 15, height = 30, units = "cm", dpi = 150) #, dpi = 150
+ggsave(file = "b_grid.tiff", b_grid, width = 30, height = 20, units = "cm", dpi = 150) #, dpi = 150
+
+
+## recruits ----
+r1 <- ggplot(recruits, aes(disthuskat, fill = kant))  +
+    geom_bar(position = position_fill(reverse = F)) +
+  theme_classic() +
+  xlab("\nDistance to house") + 
+  guides(fill = guide_legend(title = "Edge")) +
+  guides(x =  guide_axis(angle = 90))
+
+r2 <- ggplot(recruits, aes(disthuskat, helling))  + 
+    stat_summary(fun = mean, geom = "col", position = "identity") + 
+  theme_classic() +
+  xlab("\nDistance to house") + 
+  ylab("Slope (mean)") +
+  guides(x =  guide_axis(angle = 90))
+
+r3 <- ggplot(recruits, aes(disthuskat, HOH))  + 
+    stat_summary(fun = mean, geom = "col", position = "identity") + 
+  theme_classic() +
+  xlab("\nDistance to house") + 
+  ylab("Altitude (mean)") +
+  guides(x =  guide_axis(angle = 90))
+
+r4 <- ggplot(recruits, aes(disthuskat, tretetthet9, fill = treartgruppe9))  + 
+    stat_summary(fun = mean, geom = "col", position = "stack") + 
+  theme_classic() +
+  xlab("\nDistance to house") + 
+  ylab("Tree density (mean)") + 
+  guides(fill = guide_legend(title = "Tree species\ngroup"))+
+  guides(x =  guide_axis(angle = 90))
+
+r5 <- ggplot(recruits, aes(disthuskat, fill = skogkategori))  +
+    geom_bar(position = position_fill(reverse = F)) +
+  theme_classic() +
+  xlab("\nDistance to house") + 
+  guides(fill = guide_legend(title = "Forest category"))+
+  guides(x =  guide_axis(angle = 90))
+
+r6 <- ggplot(recruits, aes(disthuskat, recruitment))  + 
+    stat_summary(fun = mean, geom = "col", position = "identity") + 
+  theme_classic() +
+  xlab("\nDistance to house") + 
+  ylab("Recruitment (mean)") +
+  guides(x =  guide_axis(angle = 90))
+
+r7 <- ggplot(recruits, aes(disthuskat, recruitment, fill = treartgruppe9))  + 
+    stat_summary(fun = mean, geom = "col", position = "stack") + 
+  theme_classic() +
+  xlab("\nDistance to house") + 
+  ylab("Recruitment (mean)") + 
+  guides(fill = guide_legend(title = "Tree species\ngroup"))+
+  guides(x =  guide_axis(angle = 90))
+
+
+
+library(gridExtra)
+r_grid <- grid.arrange(r1, r2, r3, r4, r5, r6, r7,
+          nrow = 4, ncol = 2)
+
+ggsave(file = "r_grid.tiff", r_grid, width = 30, height = 30, units = "cm", dpi = 150) #, dpi = 150
+
 ```
 
 
