@@ -373,9 +373,15 @@ names(browse0.1)
 library(readr)
 new_trees <- read_csv("rawdata/new_trees.csv", na = "NA")
 str(new_trees)
+new_trees_treatment <- read_csv("processdata/new_trees_forest_treatment.csv", na = "NA")
+str(new_trees)
+
+new_trees <- inner_join(new_trees, new_trees_treatment, by = "FLATEID")
+str(new_trees)
+
 
 nrow(new_trees)
-nrow(na.omit(new_trees)) #2 difference
+nrow(na.omit(new_trees)) #9 difference
 new_trees <- na.omit(new_trees)
 
 head(new_trees)
@@ -504,7 +510,7 @@ recruits <- recruits %>% slice(rep(1:n(), each = 3))
 head(recruits)
 
 x <- factor(c("ROS","FURU","LAUV"))
-recruits$treartgruppe9 <- rep(x, 11603) #nrows recruits/3 = 11603, also just nrows recruits before replication
+recruits$treartgruppe9 <- rep(x, 11596) #nrows recruits/3 = 11596, also just nrows recruits before replication
 head(recruits$treartgruppe9)
 head(recruits)
 
@@ -531,12 +537,12 @@ recruits$beitetrykk9 <- ifelse(recruits$treartgruppe9 == "FURU", recruits$elgbFU
 recruits$beitetrykk9 <- ifelse(recruits$treartgruppe9 == "LAUV", recruits$elgbLAUVprs9, recruits$beitetrykk9)
 
 head(recruits$beitetrykk9, n = 12)
-sum(is.na(recruits$beitetrykk9)) #13728, meaning that there could not have been browsing pressure, because there were no trees to browse on 
+sum(is.na(recruits$beitetrykk9)) #13724, meaning that there could not have been browsing pressure, because there were no trees to browse on 
 
 
 ## NA the ones where tretetthet is 0, but we have beitetrykk values
 recruits$beitetrykk9 <- ifelse(recruits$tretetthet9 != 0, recruits$beitetrykk9, NA)
-sum(is.na(recruits$beitetrykk9)) #13831, meaning that there could not have been browsing pressure, because there were no trees to browse on  
+sum(is.na(recruits$beitetrykk9)) #13827, meaning that there could not have been browsing pressure, because there were no trees to browse on  
 
 
 ```
@@ -599,14 +605,14 @@ nrow(recruits)
 nrow(na.omit(recruits))
 
 sum(is.na(recruits$distvei2))
-sum(is.na(recruits$disthus))
+sum(is.na(recruits$disthus)) 
 sum(is.na(recruits$HOH))
 sum(is.na(recruits$region))
 sum(is.na(recruits$skogkategori))
 sum(is.na(recruits$kant))
 sum(is.na(recruits$helling)) #417, what does it mean when there is NA in helling? helling from 1-100, so I guess NA is when there is no helling, so 0?
 sum(is.na(recruits$treartgruppe9))
-sum(is.na(recruits$beitetrykk9)) # 13831, because there are 0 trees (in the 9th cycle), hence no BP --> still, there are recruits in the 10th/11th... 
+sum(is.na(recruits$beitetrykk9)) # 13827, because there are 0 trees (in the 9th cycle), hence no BP --> still, there are recruits in the 10th/11th... 
 sum(is.na(recruits$tretetthet9)) #5, meaning no trees to count? Should these not just be 0 then? Or delete?
 sum(is.na(recruits$recruitment))
 sum(is.na(recruits$recruitment_ratio))
@@ -640,7 +646,7 @@ recruits$kant <- factor(recruits$kant, levels = c("kant >20m", "kant <10m", "kan
 
 #### How many plots have been logged in cycle 10/11?
 ```{r}
-sum(recruits$hogd10 == 1) + sum(recruits$hogd11 == 1) # 622
+sum(recruits$hogd10 == 1) + sum(recruits$hogd11 == 1) # 619
 
 recruits <- recruits[which(recruits$hogd10 == 0 & recruits$hogd11 == 0), ]
 sum(recruits$hogd10 == 1) + sum(recruits$hogd11 == 1)
@@ -721,32 +727,60 @@ recruits$disthus_150 <- ifelse(recruits$disthus >= 150, 150, recruits$disthus)
 
 #### Reduce data set to variables used further
 ```{r}
-names(recruits)
-recruits <- recruits[,-c(3:5,16:17,21)]
-names(recruits)
-
-save(recruits, file = "recruits_2021_02_01.rda")
+# names(recruits)
+# recruits <- recruits[,-c(3:5,16:17,21)]
+# names(recruits)
+# 
+# save(recruits, file = "recruits_2021_02_01.rda")
 
 
 ```
 
 
-
-## Roads data set
+#### Threshold distance to road
 ```{r}
-load("processdata/recruits_2021_02_01.rda")
+# load("processdata/recruits_2021_02_01.rda")
+# names(recruits)
+
+recruits$distvei_600 <- ifelse(recruits$distvei2 >= 600, 600, recruits$distvei2)
+recruits$distvei_500 <- ifelse(recruits$distvei2 >= 500, 500, recruits$distvei2)
+recruits$distvei_400 <- ifelse(recruits$distvei2 >= 400, 400, recruits$distvei2)
+recruits$distvei_350 <- ifelse(recruits$distvei2 >= 350, 350, recruits$distvei2)
+recruits$distvei_300 <- ifelse(recruits$distvei2 >= 300, 300, recruits$distvei2)
+recruits$distvei_200 <- ifelse(recruits$distvei2 >= 200, 200, recruits$distvei2)
+recruits$distvei_150 <- ifelse(recruits$distvei2 >= 150, 150, recruits$distvei2)
+recruits$distvei_100 <- ifelse(recruits$distvei2 >= 100, 100, recruits$distvei2)
+recruits$distvei_50 <- ifelse(recruits$distvei2 >= 50, 50, recruits$distvei2)
+
+
+sum(is.na(recruits)) # 0
+
+
 names(recruits)
-recruits_roads <- recruits[,-c(4,18:23)]
-names(recruits_roads)
-recruits_roads <- recruits_roads[ which(recruits_roads$disthus > 600), ] # Threshold for the bin model was 500, but for the beta model 600 so we use 600 
-summary(recruits_roads$disthus)
+recruits <- recruits[,-c(3:5,16:17,22)]
+names(recruits)
 
-str(recruits_roads)
-
-
-save(recruits_roads, file = "recruits_roads_2021_02_03.rda")
+save(recruits, file = "processdata/recruits_2021_04_19.rda")
 
 ```
+
+
+
+<!-- ## Roads data set -->
+<!-- ```{r} -->
+<!-- load("processdata/recruits_2021_02_01.rda") -->
+<!-- names(recruits) -->
+<!-- recruits_roads <- recruits[,-c(4,18:23)] -->
+<!-- names(recruits_roads) -->
+<!-- recruits_roads <- recruits_roads[ which(recruits_roads$disthus > 600), ] # Threshold for the bin model was 500, but for the beta model 600 so we use 600  -->
+<!-- summary(recruits_roads$disthus) -->
+
+<!-- str(recruits_roads) -->
+
+
+<!-- save(recruits_roads, file = "recruits_roads_2021_02_03.rda") -->
+
+<!-- ``` -->
 
 
 
