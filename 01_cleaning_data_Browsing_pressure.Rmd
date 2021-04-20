@@ -784,18 +784,41 @@ save(browse, file = "browse_2021_02_01.rda")
 
 
 
-## Roads data set
+#### Threshold distance to road
 ```{r}
 load("processdata/browse_2021_02_01.rda")
 names(browse)
-browse_roads <- browse[,-c(4,16:20,22)]
-names(browse_roads)
-browse_roads <- browse_roads[ which(browse_roads$disthus > 200), ]
-summary(browse_roads$disthus)
 
-str(browse_roads)
+browse$distvei_600 <- ifelse(browse$distvei2 >= 600, 600, browse$distvei2)
+browse$distvei_500 <- ifelse(browse$distvei2 >= 500, 500, browse$distvei2)
+browse$distvei_400 <- ifelse(browse$distvei2 >= 400, 400, browse$distvei2)
+browse$distvei_350 <- ifelse(browse$distvei2 >= 350, 350, browse$distvei2)
+browse$distvei_300 <- ifelse(browse$distvei2 >= 300, 300, browse$distvei2)
+browse$distvei_200 <- ifelse(browse$distvei2 >= 200, 200, browse$distvei2)
+browse$distvei_150 <- ifelse(browse$distvei2 >= 150, 150, browse$distvei2)
+browse$distvei_100 <- ifelse(browse$distvei2 >= 100, 100, browse$distvei2)
+browse$distvei_50 <- ifelse(browse$distvei2 >= 50, 50, browse$distvei2)
 
 
-save(browse_roads, file = "browse_roads_2021_02_02.rda")
+sum(is.na(browse)) # 0
+
+save(browse, file = "processdata/browse_2021_04_15.rda")
 
 ```
+
+
+<!-- ## Roads data set -->
+<!-- ```{r} -->
+<!-- load("processdata/browse_2021_02_01.rda") -->
+<!-- names(browse) -->
+<!-- browse_roads <- browse[,-c(4,16:20,22)] -->
+<!-- names(browse_roads) -->
+<!-- browse_roads <- browse_roads[ which(browse_roads$disthus > 200), ] -->
+<!-- summary(browse_roads$disthus) -->
+
+<!-- str(browse_roads) -->
+
+
+<!-- save(browse_roads, file = "browse_roads_2021_02_02.rda") -->
+
+<!-- ``` -->
