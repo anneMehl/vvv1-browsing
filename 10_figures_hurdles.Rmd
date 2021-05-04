@@ -1,0 +1,614 @@
+---
+title: "figures_hurdle"
+author: "Anne"
+date: "30/04/2021"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+## Recruitment
+```{r}
+## Binary ----
+library(sjPlot)
+library(boot)
+library(tidyverse)
+
+# library(lme4)
+# rec_h_bin7_data <- glmer(recruitment_bin ~ disthus_600 + log(distvei2+1)*skogkategori + treartgruppe9 + beitetrykk9*skogkategori + kant + helling + HOH + I(HOH^2) + moose_density + behandling1011 + ac + (1|KOMNR),
+# family = binomial(),
+# data = recruits_house_bin)
+# save(rec_h_bin7_data, file = "output/2021_04_28/rec_h_bin7_data.rda")
+
+load("output/2021_04_28/rec_h_bin7_data.rda")
+
+load("processdata/recruits_house_bin_2021_05_03.rda")
+str(recruits_house_bin)
+names(recruits_house_bin)
+# is.integer(recruits_house$recruitment)
+# recruits_house$recruitment <- as.integer(recruits_house$recruitment)
+# is.integer(recruits_house$recruitment)
+# recruits_house$recruitment_bin <- ifelse(recruits_house$recruitment == 0, 0, 1)
+# 
+# recruits_house$helling <- scale(recruits_house$helling)
+# recruits_house$HOH <- scale(recruits_house$HOH)
+# recruits_house$tretetthet9 <- scale(recruits_house$tretetthet9)
+# 
+# recruits_house_bin <- recruits_house
+# save(recruits_house_bin, file = "processdata/recruits_house_bin_2021_05_03.rda")
+
+summary(rec_h_bin7_data) 
+
+
+
+## Interaction distvei*skogkategori ---
+plot_model(rec_h_bin7_data, type = "eff", terms = c("distvei2","skogkategori"))
+pred_int_bin <- get_model_data(rec_h_bin7_data, type = "eff", terms = c("distvei2","skogkategori"))
+# inv.logit(qnorm(c(0.025, 0.975), mean=logit(0.2160292), sd=0.06296116))
+
+pred_int_bin <- data.frame(pred_int_bin)
+tail(pred_int_bin)
+
+
+## disthus_600 ---
+plot_model(rec_h_bin7_data, type = "eff", terms = "disthus_600")
+pred_disthus_bin <- get_model_data(rec_h_bin7_data, type = "eff", terms = "disthus_600")
+# inv.logit(qnorm(c(0.025, 0.975), mean=logit(0.2160292), sd=0.06296116))
+
+pred_disthus_bin <- data.frame(pred_disthus_bin)
+tail(pred_disthus_bin)
+
+
+## treartgruppe9 ---
+test <- plot_model(rec_h_bin7_data, type = "eff", terms = "treartgruppe9")
+pred_treart_bin <- get_model_data(rec_h_bin7_data, type = "eff", terms = "treartgruppe9")
+# inv.logit(qnorm(c(0.025, 0.975), mean=logit(0.2160292), sd=0.06296116))
+
+pred_treart_bin <- data.frame(pred_treart_bin)
+tail(pred_treart_bin)
+
+
+## beitetrykk9*skogkategori ---
+plot_model(rec_h_bin7_data, type = "eff", terms = c("beitetrykk9","skogkategori"))
+pred_int2_bin <- get_model_data(rec_h_bin7_data, type = "eff", terms = c("beitetrykk9","skogkategori"))
+# inv.logit(qnorm(c(0.025, 0.975), mean=logit(0.2160292), sd=0.06296116))
+
+pred_int2_bin <- data.frame(pred_int2_bin)
+tail(pred_int2_bin)
+
+
+## kant ---
+plot_model(rec_h_bin7_data, type = "eff", terms = "kant")
+pred_kant_bin <- get_model_data(rec_h_bin7_data, type = "eff", terms = "kant")
+# inv.logit(qnorm(c(0.025, 0.975), mean=logit(0.2160292), sd=0.06296116))
+
+pred_kant_bin <- data.frame(pred_kant_bin)
+tail(pred_kant_bin)
+
+
+## helling ---
+plot_model(rec_h_bin7_data, type = "eff", terms = "helling")
+pred_helling_bin <- get_model_data(rec_h_bin7_data, type = "eff", terms = "helling")
+# inv.logit(qnorm(c(0.025, 0.975), mean=logit(0.2160292), sd=0.06296116))
+
+pred_helling_bin <- data.frame(pred_helling_bin)
+tail(pred_helling_bin)
+
+
+## HOH ---
+plot_model(rec_h_bin7_data, type = "eff", terms = "HOH")
+pred_hoh_bin <- get_model_data(rec_h_bin7_data, type = "eff", terms = "HOH")
+# inv.logit(qnorm(c(0.025, 0.975), mean=logit(0.2160292), sd=0.06296116))
+
+pred_hoh_bin <- data.frame(pred_hoh_bin)
+tail(pred_hoh_bin)
+
+
+## moose_density ---
+plot_model(rec_h_bin7_data, type = "eff", terms = "moose_density")
+pred_moose_bin <- get_model_data(rec_h_bin7_data, type = "eff", terms = "moose_density")
+# inv.logit(qnorm(c(0.025, 0.975), mean=logit(0.2160292), sd=0.06296116))
+
+pred_moose_bin <- data.frame(pred_moose_bin)
+tail(pred_moose_bin)
+
+
+## behandling1011 ---
+plot_model(rec_h_bin7_data, type = "eff", terms = "behandling1011")
+pred_behand_bin <- get_model_data(rec_h_bin7_data, type = "eff", terms = "behandling1011")
+# inv.logit(qnorm(c(0.025, 0.975), mean=logit(0.2160292), sd=0.06296116))
+
+pred_behand_bin <- data.frame(pred_behand_bin)
+tail(pred_behand_bin)
+
+
+
+
+## Zero-truncated ----
+# library(lme4)
+# rec_h_beta8_beta <- glmer(recruitment ~ disthus_600 + log(distvei2+1)*skogkategori + treartgruppe9 + beitetrykk9*skogkategori + kant + helling + HOH + I(HOH^2) + tretetthet9 + behandling1011 + ac + (1|KOMNR),
+# family = poisson(),
+# data = recruits_house_beta) 
+# save(rec_h_beta8_beta, file = "output/2021_04_28/rec_h_beta8_beta.rda")
+
+load("output/2021_04_28/rec_h_beta8_beta.rda")
+
+load("processdata/recruits_house_beta_2021_05_03.rda")
+str(recruits_house_beta)
+names(recruits_house_beta)
+# is.integer(recruits_house$recruitment)
+# recruits_house$recruitment <- as.integer(recruits_house$recruitment)
+# is.integer(recruits_house$recruitment)
+# recruits_house <- recruits_house[recruits_house$recruitment > 0, ]
+# 
+# recruits_house$helling <- scale(recruits_house$helling)
+# recruits_house$HOH <- scale(recruits_house$HOH)
+# recruits_house$tretetthet9 <- scale(recruits_house$tretetthet9)
+# 
+# recruits_house_beta <- recruits_house
+# save(recruits_house_beta, file = "processdata/recruits_house_beta_2021_05_03.rda")
+
+summary(rec_h_beta8_beta)
+
+
+## Interaction distvei*skogkategori ---
+plot_model(rec_h_beta8_beta, type = "eff", terms = c("distvei2","skogkategori"))
+pred_int_beta <- get_model_data(rec_h_beta8_beta, type = "eff", terms = c("distvei2","skogkategori"))
+
+pred_int_beta <- as.data.frame(pred_int_beta)
+tail(pred_int_beta)
+# exp(qnorm(c(0.025, 0.975), mean=log(276.28), sd=0.03))
+
+
+## disthus_600 ---
+plot_model(rec_h_beta8_beta, type = "eff", terms = "disthus_600")
+pred_disthus_beta <- get_model_data(rec_h_beta8_beta, type = "eff", terms = "disthus_600")
+# inv.logit(qnorm(c(0.025, 0.975), mean=logit(0.2160292), sd=0.06296116))
+
+pred_disthus_beta <- data.frame(pred_disthus_beta)
+tail(pred_disthus_beta)
+
+
+## treartgruppe9 ---
+plot_model(rec_h_beta8_beta, type = "eff", terms = "treartgruppe9")
+pred_treart_beta <- get_model_data(rec_h_beta8_beta, type = "eff", terms = "treartgruppe9")
+# inv.logit(qnorm(c(0.025, 0.975), mean=logit(0.2160292), sd=0.06296116))
+
+pred_treart_beta <- data.frame(pred_treart_beta)
+tail(pred_treart_beta)
+
+
+## beitetrykk9*skogkategori ---
+plot_model(rec_h_beta8_beta, type = "eff", terms = c("beitetrykk9","skogkategori"))
+pred_int2_beta <- get_model_data(rec_h_beta8_beta, type = "eff", terms = c("beitetrykk9","skogkategori"))
+# inv.logit(qnorm(c(0.025, 0.975), mean=logit(0.2160292), sd=0.06296116))
+
+pred_int2_beta <- data.frame(pred_int2_beta)
+tail(pred_int2_beta)
+
+
+## kant ---
+plot_model(rec_h_beta8_beta, type = "eff", terms = "kant")
+pred_kant_beta <- get_model_data(rec_h_beta8_beta, type = "eff", terms = "kant")
+# inv.logit(qnorm(c(0.025, 0.975), mean=logit(0.2160292), sd=0.06296116))
+
+pred_kant_beta <- data.frame(pred_kant_beta)
+tail(pred_kant_beta)
+
+
+## helling ---
+plot_model(rec_h_beta8_beta, type = "eff", terms = "helling")
+pred_helling_beta <- get_model_data(rec_h_beta8_beta, type = "eff", terms = "helling")
+# inv.logit(qnorm(c(0.025, 0.975), mean=logit(0.2160292), sd=0.06296116))
+
+pred_helling_beta <- data.frame(pred_helling_beta)
+tail(pred_helling_beta)
+
+
+## HOH ---
+plot_model(rec_h_beta8_beta, type = "eff", terms = "HOH")
+pred_hoh_beta <- get_model_data(rec_h_beta8_beta, type = "eff", terms = "HOH")
+# inv.logit(qnorm(c(0.025, 0.975), mean=logit(0.2160292), sd=0.06296116))
+
+pred_hoh_beta <- data.frame(pred_hoh_beta)
+tail(pred_hoh_beta)
+
+
+# ## moose_density ---
+# plot_model(rec_h_beta8_beta, type = "eff", terms = "moose_density")
+# pred_moose_beta <- get_model_data(rec_h_beta8_beta, type = "eff", terms = "moose_density")
+# # inv.logit(qnorm(c(0.025, 0.975), mean=logit(0.2160292), sd=0.06296116))
+# 
+# pred_moose_beta <- data.frame(pred_moose_beta)
+# tail(pred_moose_beta)
+
+
+## behandling1011 ---
+plot_model(rec_h_beta8_beta, type = "eff", terms = "behandling1011")
+pred_behand_beta <- get_model_data(rec_h_beta8_beta, type = "eff", terms = "behandling1011")
+# inv.logit(qnorm(c(0.025, 0.975), mean=logit(0.2160292), sd=0.06296116))
+
+pred_behand_beta <- data.frame(pred_behand_beta)
+tail(pred_behand_beta)
+
+
+```
+
+
+## Combine
+```{r}
+
+hurdleCI <- function(x){
+  quantile(inv.logit(rnorm(100000, mean=logit(x[1]), sd=x[2]))
+    *exp(rnorm(100000, mean=log(x[3]), sd=x[4])), probs=c(0.025, 0.975))
+}
+
+
+## pred_int distvei*skogkategori ----
+pred_int_vei <- cbind(data.frame(pred_int_bin), data.frame(pred_int_beta))
+sum(pred_int_vei[,1]==pred_int_vei[,8])==nrow(pred_int_vei)
+sum(pred_int_vei[,6]==pred_int_vei[,13])==nrow(pred_int_vei)
+head(pred_int_vei)
+
+tmp <- t(apply(pred_int_vei[,c(2,3,9,10)], 1, hurdleCI))
+head(tmp)
+tmp <- as.data.frame(tmp)
+
+pred_int_vei <- cbind(pred_int_vei, tmp)
+head(pred_int_vei)
+
+pred_int_vei <- pred_int_vei[, -c(3:8,10:12)]
+head(pred_int_vei)
+
+pred_int_vei$pred <- pred_int_vei$predicted*pred_int_vei$predicted.1
+head(pred_int_vei)
+
+names(pred_int_vei)[6] <- "conflow"
+names(pred_int_vei)[7] <- "confhigh"
+
+head(pred_int_vei)
+
+
+## pred_disthus_600 ----
+pred_disthus <- cbind(data.frame(pred_disthus_bin), data.frame(pred_disthus_beta))
+sum(pred_disthus[,1]==pred_disthus[,8])==nrow(pred_disthus)
+sum(pred_disthus[,6]==pred_disthus[,13])==nrow(pred_disthus)
+head(pred_disthus)
+
+tmp <- t(apply(pred_disthus[,c(2,3,9,10)], 1, hurdleCI))
+head(tmp)
+tmp <- as.data.frame(tmp)
+
+pred_disthus <- cbind(pred_disthus, tmp)
+head(pred_disthus)
+
+pred_disthus <- pred_disthus[, -c(3:8,10:12)]
+head(pred_disthus)
+
+pred_disthus$pred <- pred_disthus$predicted*pred_disthus$predicted.1
+head(pred_disthus)
+
+names(pred_disthus)[6] <- "conflow"
+names(pred_disthus)[7] <- "confhigh"
+
+head(pred_disthus)
+
+
+## treartgruppe9 ----
+pred_treart <- cbind(data.frame(pred_treart_bin), data.frame(pred_treart_beta))
+sum(pred_treart[,1]==pred_treart[,8])==nrow(pred_treart)
+sum(pred_treart[,6]==pred_treart[,13])==nrow(pred_treart)
+head(pred_treart)
+
+tmp <- t(apply(pred_treart[,c(2,3,9,10)], 1, hurdleCI))
+head(tmp)
+tmp <- as.data.frame(tmp)
+
+pred_treart <- cbind(pred_treart, tmp)
+head(pred_treart)
+
+pred_treart <- pred_treart[, -c(3:8,10:12)]
+head(pred_treart)
+
+pred_treart$pred <- pred_treart$predicted*pred_treart$predicted.1
+head(pred_treart)
+
+names(pred_treart)[6] <- "conflow"
+names(pred_treart)[7] <- "confhigh"
+
+head(pred_treart)
+
+
+## pred_int beitetrykk9*skogkategori ----
+pred_int_beite <- cbind(data.frame(pred_int2_bin), data.frame(pred_int2_beta))
+sum(pred_int_beite[,1]==pred_int_beite[,8])==nrow(pred_int_beite)
+sum(pred_int_beite[,6]==pred_int_beite[,13])==nrow(pred_int_beite)
+head(pred_int_beite)
+
+tmp <- t(apply(pred_int_beite[,c(2,3,9,10)], 1, hurdleCI))
+head(tmp)
+tmp <- as.data.frame(tmp)
+
+pred_int_beite <- cbind(pred_int_beite, tmp)
+head(pred_int_beite)
+
+pred_int_beite <- pred_int_beite[, -c(3:8,10:12)]
+head(pred_int_beite)
+
+pred_int_beite$pred <- pred_int_beite$predicted*pred_int_beite$predicted.1
+head(pred_int_beite)
+
+names(pred_int_beite)[6] <- "conflow"
+names(pred_int_beite)[7] <- "confhigh"
+
+head(pred_int_beite)
+
+
+
+## pred kant ----
+pred_kant <- cbind(data.frame(pred_kant_bin), data.frame(pred_kant_beta))
+sum(pred_kant[,1]==pred_kant[,8])==nrow(pred_kant)
+sum(pred_kant[,6]==pred_kant[,13])==nrow(pred_kant)
+head(pred_kant)
+
+tmp <- t(apply(pred_kant[,c(2,3,9,10)], 1, hurdleCI))
+head(tmp)
+tmp <- as.data.frame(tmp)
+
+pred_kant <- cbind(pred_kant, tmp)
+head(pred_kant)
+
+pred_kant <- pred_kant[, -c(3:8,10:12)]
+head(pred_kant)
+
+pred_kant$pred <- pred_kant$predicted*pred_kant$predicted.1
+head(pred_kant)
+
+names(pred_kant)[6] <- "conflow"
+names(pred_kant)[7] <- "confhigh"
+
+head(pred_kant)
+
+
+## pred helling ----
+pred_helling <- cbind(data.frame(pred_helling_bin), data.frame(pred_helling_beta))
+sum(pred_helling[,1]==pred_helling[,8])==nrow(pred_helling)
+sum(pred_helling[,6]==pred_helling[,13])==nrow(pred_helling)
+head(pred_helling)
+
+tmp <- t(apply(pred_helling[,c(2,3,9,10)], 1, hurdleCI))
+head(tmp)
+tmp <- as.data.frame(tmp)
+
+pred_helling <- cbind(pred_helling, tmp)
+head(pred_helling)
+
+pred_helling <- pred_helling[, -c(3:8,10:12)]
+head(pred_helling)
+
+pred_helling$pred <- pred_helling$predicted*pred_helling$predicted.1
+head(pred_helling)
+
+names(pred_helling)[6] <- "conflow"
+names(pred_helling)[7] <- "confhigh"
+
+head(pred_helling)
+
+
+## pred hoh ----
+pred_hoh <- cbind(data.frame(pred_hoh_bin), data.frame(pred_hoh_beta))
+sum(pred_hoh[,1]==pred_hoh[,8])==nrow(pred_hoh)
+sum(pred_hoh[,6]==pred_hoh[,13])==nrow(pred_hoh)
+head(pred_hoh)
+
+tmp <- t(apply(pred_hoh[,c(2,3,9,10)], 1, hurdleCI))
+head(tmp)
+tmp <- as.data.frame(tmp)
+
+pred_hoh <- cbind(pred_hoh, tmp)
+head(pred_hoh)
+
+pred_hoh <- pred_hoh[, -c(3:8,10:12)]
+head(pred_hoh)
+
+pred_hoh$pred <- pred_hoh$predicted*pred_hoh$predicted.1
+head(pred_hoh)
+
+names(pred_hoh)[6] <- "conflow"
+names(pred_hoh)[7] <- "confhigh"
+
+head(pred_hoh)
+
+
+## pred moose ----
+# Of course this does not work because we have nothing to combine. Basically, I can just the the function (plot_model) to plot the figure. Just needs to look the same as my other figures.
+
+
+
+## pred behandling ----
+pred_behand <- cbind(data.frame(pred_behand_bin), data.frame(pred_behand_beta))
+sum(pred_behand[,1]==pred_behand[,8])==nrow(pred_behand)
+sum(pred_behand[,6]==pred_behand[,13])==nrow(pred_behand)
+head(pred_behand)
+
+tmp <- t(apply(pred_behand[,c(2,3,9,10)], 1, hurdleCI))
+head(tmp)
+tmp <- as.data.frame(tmp)
+
+pred_behand <- cbind(pred_behand, tmp)
+head(pred_behand)
+
+pred_behand <- pred_behand[, -c(3:8,10:12)]
+head(pred_behand)
+
+pred_behand$pred <- pred_behand$predicted*pred_behand$predicted.1
+head(pred_behand)
+
+names(pred_behand)[6] <- "conflow"
+names(pred_behand)[7] <- "confhigh"
+
+head(pred_behand)
+```
+
+
+
+
+#### Translate variables to english
+```{r}
+library(plyr)
+levels(browse$skogkategori)
+browse$skogkategori <- mapvalues(browse$skogkategori, from =  c("Lavproduktiv_eldreskog", "Høyproduktiv_eldreskog", "Høyproduktiv_ungskog", "Lavproduktiv_ungskog", "Uproduktiv_skog"), to = c("Lowproductive\nold forest",  "Highproductive\nold forest", "Highproductive\nyoung forest", "Lowproductive\nyoung forest", "Unproductive\nforest"))
+levels(browse$skogkategori)
+
+levels(browse$kant)
+browse$kant <- mapvalues(as.factor(browse$kant), from =  c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant"), to = c("Edge >20m", "Edge <10m", "Edge 10-20m", "Edge information\nmissing"))
+levels(browse$kant)
+
+levels(browse$treartgruppe9)
+browse$treartgruppe9 <- mapvalues(browse$treartgruppe9, from =  c("FURU", "LAUV", "ROS"), to = c("Pine", "Deciduous trees", "RAW"))
+levels(browse$treartgruppe9)
+
+levels(recruits$skogkategori)
+recruits$skogkategori <- mapvalues(recruits$skogkategori, from =  c("Lavproduktiv_eldreskog", "Høyproduktiv_eldreskog", "Høyproduktiv_ungskog", "Lavproduktiv_ungskog", "Uproduktiv_skog"), to = c("Lowproductive\nold forest",  "Highproductive\nold forest", "Highproductive\nyoung forest", "Lowproductive\nyoung forest", "Unproductive\nforest"))
+levels(recruits$skogkategori)
+
+levels(recruits$kant)
+recruits$kant <- mapvalues(recruits$kant, from =  c("kant >20m", "kant <10m", "kant 10-20m", "mangler kant"), to = c("Edge >20m", "Edge <10m", "Edge 10-20m", "Edge information\nmissing"))
+levels(recruits$kant)
+
+levels(recruits$treartgruppe9)
+recruits$treartgruppe9 <- mapvalues(recruits$treartgruppe9, from =  c("FURU", "LAUV", "ROS"), to = c("Pine", "Deciduous trees", "RAW"))
+levels(recruits$treartgruppe9)
+```
+
+
+
+
+#### Figures recruitment
+```{r}
+library(ggplot2)
+
+p_int1 <- ggplot() +
+  geom_line(data = pred_int_vei, aes(x, pred, color = group),  size = 1.5, show.legend = T) +
+    coord_cartesian(xlim = c(0, 600)) + 
+  geom_ribbon(data = pred_int_vei, aes(x = x, ymin = conflow, ymax = confhigh, color = group), linetype = 0, alpha = 0.2, show.legend = F) +
+  theme_light() +
+  theme(axis.text.x = element_text(size = 18), # face = "bold"
+        axis.text.y = element_text(size = 20),
+        axis.title = element_text(family = "sans", size = 25),
+        legend.position = c(0.85, 0.75),
+        legend.text = element_text(size = 15),
+        legend.title = element_text(size = 15)) +
+  xlab("\nDistance to road") + 
+  ylab("Recruitment (ha 10yr)\n") 
+  
+
+p_disthus <- ggplot() +
+  geom_line(data = pred_disthus, aes(x, pred),  size = 1.5, show.legend = T) + 
+  geom_ribbon(data = pred_disthus, aes(x = x, ymin = conflow, ymax = confhigh), linetype = 0, alpha = 0.2, show.legend = F) +
+  theme_light() +
+  theme(axis.text.x = element_text(size = 18), # face = "bold"
+        axis.text.y = element_text(size = 20),
+        axis.title = element_text(family = "sans", size = 25),
+        legend.position = c(0.85, 0.75),
+        legend.text = element_text(size = 15),
+        legend.title = element_text(size = 15)) +
+  xlab("\nDistance to house") + 
+  ylab("Recruitment (ha 10yr)\n") 
+
+
+p_treart <- ggplot() +
+  geom_point(data = pred_treart, aes(x, pred),  size = 1.5, show.legend = T) + 
+  geom_errorbar(data = pred_treart, aes(x = x, ymin = conflow, ymax = confhigh), linetype = 1, show.legend = F, width = 0.1, size = 0.7) +
+  theme_light() +
+  theme(axis.text.x = element_text(size = 18), # face = "bold"
+        axis.text.y = element_text(size = 20),
+        axis.title = element_text(family = "sans", size = 25),
+        legend.position = c(0.85, 0.75),
+        legend.text = element_text(size = 15),
+        legend.title = element_text(size = 15)) +
+  xlab("\nTree species group") + 
+  ylab("Recruitment (ha 10yr)\n") # Can add xlab breaks 1, 2, 3 (and then also change to tree species groups)
+  
+
+p_int2 <- ggplot() +
+  geom_line(data = pred_int_beite, aes(x, pred, color = group),  size = 1.5, show.legend = T) + 
+  geom_ribbon(data = pred_int_beite, aes(x = x, ymin = conflow, ymax = confhigh, color = group), linetype = 0, alpha = 0.2, show.legend = F) +
+  theme_light() +
+  theme(axis.text.x = element_text(size = 18), # face = "bold"
+        axis.text.y = element_text(size = 20),
+        axis.title = element_text(family = "sans", size = 25),
+        legend.position = c(0.85, 0.75),
+        legend.text = element_text(size = 15),
+        legend.title = element_text(size = 15)) +
+  xlab("\nBrowsing pressure") + 
+  ylab("Recruitment (ha 10yr)\n") 
+
+
+p_kant <- ggplot() +
+  geom_point(data = pred_kant, aes(x, pred),  size = 1.5, show.legend = T) + 
+  geom_errorbar(data = pred_kant, aes(x = x, ymin = conflow, ymax = confhigh), linetype = 1, show.legend = F, width = 0.1, size = 0.7) +
+  theme_light() +
+  theme(axis.text.x = element_text(size = 18), # face = "bold"
+        axis.text.y = element_text(size = 20),
+        axis.title = element_text(family = "sans", size = 25),
+        legend.position = c(0.85, 0.75),
+        legend.text = element_text(size = 15),
+        legend.title = element_text(size = 15)) +
+  xlab("\nEdge effects") + 
+  ylab("Recruitment (ha 10yr)\n") # Can add xlab breaks 1, 2, 3 (and then also change to tree species groups)
+
+
+p_helling <- ggplot() +
+  geom_line(data = pred_helling, aes(x, pred),  size = 1.5, show.legend = T) + 
+  geom_ribbon(data = pred_helling, aes(x = x, ymin = conflow, ymax = confhigh), linetype = 0, alpha = 0.2, show.legend = F) +
+  theme_light() +
+  theme(axis.text.x = element_text(size = 18), # face = "bold"
+        axis.text.y = element_text(size = 20),
+        axis.title = element_text(family = "sans", size = 25),
+        legend.position = c(0.85, 0.75),
+        legend.text = element_text(size = 15),
+        legend.title = element_text(size = 15)) +
+  xlab("\nSlope") + 
+  ylab("Recruitment (ha 10yr)\n") 
+
+
+p_hoh <- ggplot() +
+  geom_line(data = pred_hoh, aes(x, pred),  size = 1.5, show.legend = T) + 
+  geom_ribbon(data = pred_hoh, aes(x = x, ymin = conflow, ymax = confhigh), linetype = 0, alpha = 0.2, show.legend = F) +
+  theme_light() +
+  theme(axis.text.x = element_text(size = 18), # face = "bold"
+        axis.text.y = element_text(size = 20),
+        axis.title = element_text(family = "sans", size = 25),
+        legend.position = c(0.85, 0.75),
+        legend.text = element_text(size = 15),
+        legend.title = element_text(size = 15)) +
+  xlab("\nAltitude") + 
+  ylab("Recruitment (ha 10yr)\n") 
+
+
+p_moose <- plot_model(rec_h_bin7_data, type = "eff", terms = "moose_density")
+p_moose <- p_moose + theme_light() +
+  theme(plot.title = element_blank(),
+        axis.text.x = element_text(size = 18), # face = "bold"
+        axis.text.y = element_text(size = 20),
+        axis.title = element_text(family = "sans", size = 25),
+        legend.position = c(0.85, 0.75),
+        legend.text = element_text(size = 15),
+        legend.title = element_text(size = 15)) +
+  xlab("\nMoose density") + 
+  ylab("Recruitment (ha 10yr)\n")
+
+
+## Helling and HOH have to be rescaled before plotting! (see code in other script)
+## Moose density only in binary model. Use plot_model to plot, I think.
+```
+
